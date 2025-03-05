@@ -47,6 +47,8 @@ function onButtonClick() {
 
 // 当扩展加载时调用此函数
 jQuery(async () => {
+
+  console.log("extension loaded1111111111111111111111111111111");
   // 这是从文件加载HTML的示例
   const settingsHtml = await $.get(`${extensionFolderPath}/example.html`);
 
