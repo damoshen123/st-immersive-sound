@@ -1,15 +1,15 @@
 <!-- You might want to add additional HTML elements to ST. 
     It's good practice to separate it out from your code -->
-<div class="example-extension-settings">
+<div class="st-immersive-sound-settings">
     <div class="inline-drawer">
         <div class="inline-drawer-toggle inline-drawer-header">
             <b>声临其境</b>
             <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
         </div>
         <div class="inline-drawer-content">
-            <div class="example-extension_block flex-container" style="align-items: center; gap: 10px;">
-                <input id="example_setting" type="checkbox" />
-                <label for="example_setting">启用插件</label>
+            <div class="st-immersive-sound_block flex-container" style="align-items: center; gap: 10px;">
+                <input id="enable_plugin" type="checkbox" />
+                <label for="enable_plugin">启用插件</label>
                 <div class="menu_button interactable" id="stopButton" tabindex="0">StopPlay</div>
                 <input id="update_plugin_button" class="menu_button" type="submit" value="检查更新" />
             </div>
@@ -115,7 +115,7 @@
                 </div>
             </details>
             <hr class="sysHR" />
-            <div class="example-extension_block flex-container">
+            <div class="st-immersive-sound_block flex-container">
                 <label for="enable3dAudio">开启3D音效:</label>
                 <input type="checkbox" id="enable3dAudio" />
             </div>
@@ -251,7 +251,7 @@
             <hr class="sysHR" />
             <details open>
                 <summary>音频缓存管理</summary>
-                <div class="example-extension_block flex-container" style="gap: 5px; flex-wrap: wrap;">
+                <div class="st-immersive-sound_block flex-container" style="gap: 5px; flex-wrap: wrap;">
                     <input id="load_world_audio_button" class="menu_button" type="submit" value="从世界书加载音频" />
                     <input id="cache_all_world_audio_button" class="menu_button" type="submit" value="缓存世界书所有音频" />
                     <input id="reload_audio_list_button" class="menu_button" type="submit" value="刷新音频列表" />

@@ -248,11 +248,50 @@ function search_yin_xiao_zi_yuan(name){
 // 记录扩展的位置，名称应与仓库名称匹配
 const extensionName = "st-immersive-sound";
 const extensionFolderPath = `scripts/extensions/third-party/st-immersive-sound`;
+
+// 在访问之前确保设置对象存在
+extension_settings[extensionName] = extension_settings[extensionName] || {};
+
 const extensionSettings = extension_settings[extensionName];
 
 
 let token;
-// const defaultSettings = {};
+const defaultSettings = {
+    enable_plugin: false,
+    highlightColor: '#FFC800',
+    highlightOpacity: 0.4,
+    textColor: '#000000',
+    readingSpeed: 600,
+    enable3dAudio: false,
+    musicFadeIn: 3,
+    musicFadeOut: 2,
+    ambianceFadeIn: 3,
+    ambianceFadeOut: 2,
+    sfxFadeIn: 0.1,
+    sfxFadeOut: 0.1,
+    masterVolume: 1,
+    musicVolume: 1,
+    ambianceVolume: 1,
+    sfxVolume: 1,
+    music_refDistance: 0.6,
+    music_maxDistance: 20,
+    music_rolloffFactor: 0.3,
+    music_posX: 0,
+    music_posY: 0,
+    music_posZ: 0,
+    ambiance_refDistance: 0.6,
+    ambiance_maxDistance: 20,
+    ambiance_rolloffFactor: 0.3,
+    ambiance_posX: 0,
+    ambiance_posY: 0,
+    ambiance_posZ: 0,
+    sfx_refDistance: 0.6,
+    sfx_maxDistance: 20,
+    sfx_rolloffFactor: 0.3,
+    sfx_posX: 0,
+    sfx_posY: 0,
+    sfx_posZ: 0,
+};
 
 
 function GM_getValue(key,defaultValue){
@@ -365,18 +404,14 @@ async function install_extension(extension_name, global) {
 
 // 如果扩展设置存在则加载，否则初始化为默认值
 async function loadSettings() {
-  // 如果设置不存在则创建
-  extension_settings[extensionName] = extension_settings[extensionName] || {};
-  if (Object.keys(extension_settings[extensionName]).length === 0) {
-    Object.assign(extension_settings[extensionName], defaultSettings);
-  }
+  // 将保存的设置与默认值合并
+  Object.assign(extensionSettings, { ...defaultSettings, ...extensionSettings });
 
-  console.log("设置被加载" , extension_settings[extensionName]);
+  console.log("设置被加载" , extensionSettings);
 
   // 在UI中更新设置
-  $("#example_setting").prop("checked", extension_settings[extensionName].example_setting).trigger("input");
+  $("#enable_plugin").prop("checked", extensionSettings.enable_plugin).trigger("input");
 
-  // Load highlight settings
   const highlightColor = extension_settings[extensionName].highlightColor || '#FFC800';
   const highlightOpacity = extension_settings[extensionName].highlightOpacity ?? 0.4;
   const textColor = extension_settings[extensionName].textColor || '#000000';
@@ -386,26 +421,24 @@ async function loadSettings() {
   $("#highlightOpacity_value").val(highlightOpacity);
 
   // Load reading speed settings
-  const readingSpeed = extension_settings[extensionName].readingSpeed || 600;
+  const readingSpeed = extensionSettings.readingSpeed;
   $("#readingSpeed").val(readingSpeed);
   $("#readingSpeed_value").val(readingSpeed);
 
   // Load 3D audio settings
-  is3dAudioEnabled = extension_settings[extensionName].enable3dAudio || false;
+  is3dAudioEnabled = extensionSettings.enable3dAudio;
   $("#enable3dAudio").prop("checked", is3dAudioEnabled);
 
   // Load Fade settings
   const fadeTypes = ['music', 'ambiance', 'sfx'];
   fadeTypes.forEach(type => {
-      const defaultIn = type === 'sfx' ? 0.1 : 3;
-      const defaultOut = type === 'sfx' ? 0.1 : 2;
-      const fadeInSetting = extension_settings[extensionName][`${type}FadeIn`];
-      const fadeOutSetting = extension_settings[extensionName][`${type}FadeOut`];
+      const fadeInSetting = extensionSettings[`${type}FadeIn`];
+      const fadeOutSetting = extensionSettings[`${type}FadeOut`];
 
-      $(`#${type}FadeIn`).val(fadeInSetting ?? defaultIn);
-      $(`#${type}FadeIn_value`).val(fadeInSetting ?? defaultIn);
-      $(`#${type}FadeOut`).val(fadeOutSetting ?? defaultOut);
-      $(`#${type}FadeOut_value`).val(fadeOutSetting ?? defaultOut);
+      $(`#${type}FadeIn`).val(fadeInSetting);
+      $(`#${type}FadeIn_value`).val(fadeInSetting);
+      $(`#${type}FadeOut`).val(fadeOutSetting);
+      $(`#${type}FadeOut_value`).val(fadeOutSetting);
   });
 
   loadPannerControls('music');
@@ -450,9 +483,9 @@ function stopAllAudio() {
 }
 
 // 当UI中的扩展设置发生变化时调用此函数
-function onExampleInput(event) {
+function onEnablePluginInput(event) {
   const value = Boolean($(event.target).prop("checked"));
-  extension_settings[extensionName].example_setting = value;
+  extension_settings[extensionName].enable_plugin = value;
   console.log("设置被更改" );
   if (!value) {
     stopAllAudio();
@@ -825,7 +858,7 @@ jQuery(async () => {
   $("#extensions_settings").append(settingsHtml);
 
   // 这些是监听事件的示例
-  $("#example_setting").on("input", onExampleInput);
+  $("#enable_plugin").on("input", onEnablePluginInput);
   $("#update_plugin_button").on("click", check_for_updates);
   // New audio management listeners
   $("#load_world_audio_button").on("click", onLoadWorldAudioClick);
@@ -1001,7 +1034,7 @@ function  p_addEventListener() {
           if (targetElement.nodeType === Node.ELEMENT_NODE) {
               
               if (event.detail === 2) { // 二击触发
-                  if (!extension_settings[extensionName].example_setting) {
+                  if (!extension_settings[extensionName].enable_plugin) {
                     console.log("声临其境 plugin is disabled.");
                     return;
                   }
