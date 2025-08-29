@@ -337,7 +337,6 @@ async function check_for_updates() {
     setTimeout(() => location.reload(), 3000);
   };
 
-  // 尝试调用 SillyTavern 的更新 API
   const update_response = await update_extension(extensionName, global);
   if (update_response.ok) {
     if ((await update_response.json()).isUpToDate) {
@@ -349,21 +348,18 @@ async function check_for_updates() {
     return true;
   }
 
-  // 如果更新 API 失败，则尝试重新安装
-  console.log("更新 API 失败, 尝试重新安装...");
-  const reinstall_response = await reinstall_extension(extensionName, global);
-  if (!reinstall_response.ok) {
-    const text = await reinstall_response.text();
-    toastr.error(text || reinstall_response.statusText, `更新插件失败`, { timeOut: 5000 });
-    console.error(`更新插件失败: ${text}`);
-    return false;
-  }
+  // const reinstall_response = await reinstall_extension(extensionName, global);
+  // if (!reinstall_response.ok) {
+  //   const text = await reinstall_response.text();
+  //   toastr.error(text || reinstall_response.statusText, `更新插件失败`, { timeOut: 5000 });
+  //   console.error(`更新插件失败: ${text}`);
+  //   return false;
+  // }
 
-  reload();
-  return true;
+  // reload();
+  // return true;
 }
 
-// 封装对 SillyTavern 后端 API 的调用
 async function update_extension(extension_name, global) {
   const response = await fetch('/api/extensions/update', {
     method: 'POST',
@@ -384,7 +380,7 @@ async function reinstall_extension(extension_name, global) {
 }
 
 async function uninstall_extension(extension_name, global) {
-    const response = await fetch('/api/extensions/uninstall', {
+    const response = await fetch('/api/extensions/delete', {
         method: 'POST',
         headers: getRequestHeaders(),
         body: JSON.stringify({ extensionName: extension_name, global }),
@@ -392,13 +388,13 @@ async function uninstall_extension(extension_name, global) {
     return response;
 }
 
-async function install_extension(extension_name, global) {
-    const response = await fetch('/api/extensions/install', {
-        method: 'POST',
-        headers: getRequestHeaders(),
-        body: JSON.stringify({ extensionName: extension_name, global }),
-    });
-    return response;
+async function install_extension(url, global) {
+  const response = await fetch('/api/extensions/install', {
+    method: 'POST',
+    headers: getRequestHeaders(),
+    body: JSON.stringify({ url, global }),
+  });
+  return response;
 }
 
 
