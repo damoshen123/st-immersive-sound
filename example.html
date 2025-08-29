@@ -3,20 +3,284 @@
 <div class="example-extension-settings">
     <div class="inline-drawer">
         <div class="inline-drawer-toggle inline-drawer-header">
-            <b>Extension Example</b>
+            <b>声临其境</b>
             <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
         </div>
         <div class="inline-drawer-content">
-            <div class="example-extension_block flex-container">
-                <input id="my_button" class="menu_button" type="submit" value="Example Button" />
-            </div>
-
-            <div class="example-extension_block flex-container">
+            <div class="example-extension_block flex-container" style="align-items: center; gap: 10px;">
                 <input id="example_setting" type="checkbox" />
-                <label for="example_setting">This is an example</label>
+                <label for="example_setting">启用插件</label>
+                <div class="menu_button interactable" id="stopButton" tabindex="0">StopPlay</div>
+                <input id="update_plugin_button" class="menu_button" type="submit" value="检查更新" />
             </div>
-
+            <div class="flex-container">
+                <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                    <small><span>阅读速度</span></small>
+                    <input class="neo-range-slider" type="range" id="readingSpeed" min="100" max="2000" step="50" value="600">
+                    <input class="neo-range-input" type="number" id="readingSpeed_value" data-for="readingSpeed" min="100" max="2000" step="50" value="600">
+                </div>
+                <div class="flexBasis48p"></div>
+            </div>
+            <audio id="audioPlayer" controls style="display: none;"></audio>
             <hr class="sysHR" />
+            <details>
+                <summary>阅读高亮设置</summary>
+                <div class="flex-container">
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>高亮颜色</span></small>
+                        <input type="color" id="highlightColor" value="#FFC800">
+                    </div>
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>字体颜色</span></small>
+                        <input type="color" id="textColor" value="#000000">
+                    </div>
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>高亮不透明度</span></small>
+                        <input class="neo-range-slider" type="range" id="highlightOpacity" min="0" max="1" step="0.1" value="0.4">
+                        <input class="neo-range-input" type="number" id="highlightOpacity_value" data-for="highlightOpacity" min="0" max="1" step="0.1" value="0.4">
+                    </div>
+                </div>
+            </details>
+            <hr class="sysHR" />
+            <details open>
+                <summary>音量设置</summary>
+                <div class="flex-container">
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>整体音量</span></small>
+                        <input class="neo-range-slider" type="range" id="masterVolume" min="0" max="2" step="0.01" value="1">
+                        <input class="neo-range-input" type="number" id="masterVolume_value" data-for="masterVolume" min="0" max="2" step="0.01" value="1">
+                    </div>
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>Music 音量</span></small>
+                        <input class="neo-range-slider" type="range" id="musicVolume" min="0" max="2" step="0.01" value="1">
+                        <input class="neo-range-input" type="number" id="musicVolume_value" data-for="musicVolume" min="0" max="2" step="0.01" value="1">
+                    </div>
+                </div>
+                <div class="flex-container">
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>Ambiance 音量</span></small>
+                        <input class="neo-range-slider" type="range" id="ambianceVolume" min="0" max="2" step="0.01" value="1">
+                        <input class="neo-range-input" type="number" id="ambianceVolume_value" data-for="ambianceVolume" min="0" max="2" step="0.01" value="1">
+                    </div>
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>SFX 音量</span></small>
+                        <input class="neo-range-slider" type="range" id="sfxVolume" min="0" max="2" step="0.01" value="1">
+                        <input class="neo-range-input" type="number" id="sfxVolume_value" data-for="sfxVolume" min="0" max="2" step="0.01" value="1">
+                    </div>
+                </div>
+                <div class="flex-container">
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                    </div>
+                    <div class="flexBasis48p"></div>
+                </div>
+            </details>
+            <hr class="sysHR" />
+            <details>
+                <summary>淡入淡出设置</summary>
+                <div class="flex-container">
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>Music 淡入时间 (s)</span></small>
+                        <input class="neo-range-slider" type="range" id="musicFadeIn" min="0" max="10" step="0.1" value="3">
+                        <input class="neo-range-input" type="number" id="musicFadeIn_value" data-for="musicFadeIn" min="0" max="10" step="0.1" value="3">
+                    </div>
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>Music 淡出时间 (s)</span></small>
+                        <input class="neo-range-slider" type="range" id="musicFadeOut" min="0" max="10" step="0.1" value="2">
+                        <input class="neo-range-input" type="number" id="musicFadeOut_value" data-for="musicFadeOut" min="0" max="10" step="0.1" value="2">
+                    </div>
+                </div>
+                <div class="flex-container">
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>Ambiance 淡入时间 (s)</span></small>
+                        <input class="neo-range-slider" type="range" id="ambianceFadeIn" min="0" max="10" step="0.1" value="3">
+                        <input class="neo-range-input" type="number" id="ambianceFadeIn_value" data-for="ambianceFadeIn" min="0" max="10" step="0.1" value="3">
+                    </div>
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>Ambiance 淡出时间 (s)</span></small>
+                        <input class="neo-range-slider" type="range" id="ambianceFadeOut" min="0" max="10" step="0.1" value="2">
+                        <input class="neo-range-input" type="number" id="ambianceFadeOut_value" data-for="ambianceFadeOut" min="0" max="10" step="0.1" value="2">
+                    </div>
+                </div>
+                <div class="flex-container">
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>SFX 淡入时间 (s)</span></small>
+                        <input class="neo-range-slider" type="range" id="sfxFadeIn" min="0" max="5" step="0.1" value="0.1">
+                        <input class="neo-range-input" type="number" id="sfxFadeIn_value" data-for="sfxFadeIn" min="0" max="5" step="0.1" value="0.1">
+                    </div>
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>SFX 淡出时间 (s)</span></small>
+                        <input class="neo-range-slider" type="range" id="sfxFadeOut" min="0" max="5" step="0.1" value="0.1">
+                        <input class="neo-range-input" type="number" id="sfxFadeOut_value" data-for="sfxFadeOut" min="0" max="5" step="0.1" value="0.1">
+                    </div>
+                </div>
+            </details>
+            <hr class="sysHR" />
+            <div class="example-extension_block flex-container">
+                <label for="enable3dAudio">开启3D音效:</label>
+                <input type="checkbox" id="enable3dAudio" />
+            </div>
+            <details>
+                <summary>pannerNode_Music 设置</summary>
+                <div class="flex-container">
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>近距离不衰减</span></small>
+                        <input class="neo-range-slider" type="range" id="music_refDistance" min="0" max="20" step="0.1" value="0.6">
+                        <input class="neo-range-input" type="number" id="music_refDistance_value" data-for="music_refDistance" min="0" max="20" step="0.1" value="0.6">
+                    </div>
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>远距离不衰减</span></small>
+                        <input class="neo-range-slider" type="range" id="music_maxDistance" min="1" max="100" step="1" value="20">
+                        <input class="neo-range-input" type="number" id="music_maxDistance_value" data-for="music_maxDistance" min="1" max="100" step="1" value="20">
+                    </div>
+                </div>
+                <div class="flex-container">
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>衰减速度</span></small>
+                        <input class="neo-range-slider" type="range" id="music_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
+                        <input class="neo-range-input" type="number" id="music_rolloffFactor_value" data-for="music_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
+                    </div>
+                    <div class="flexBasis48p"></div>
+                </div>
+                <div class="flex-container">
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>左右 (X)</span></small>
+                        <input class="neo-range-slider" type="range" id="music_posX" min="-10" max="10" value="0" step="0.1">
+                        <input class="neo-range-input" type="number" id="music_posX_value" data-for="music_posX" min="-10" max="10" step="0.1" value="0">
+                    </div>
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>上下 (Y)</span></small>
+                        <input class="neo-range-slider" type="range" id="music_posY" min="-10" max="10" value="0" step="0.1">
+                        <input class="neo-range-input" type="number" id="music_posY_value" data-for="music_posY" min="-10" max="10" step="0.1" value="0">
+                    </div>
+                </div>
+                <div class="flex-container">
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>前后 (Z)</span></small>
+                        <input class="neo-range-slider" type="range" id="music_posZ" min="-10" max="10" value="0" step="0.1">
+                        <input class="neo-range-input" type="number" id="music_posZ_value" data-for="music_posZ" min="-10" max="10" step="0.1" value="0">
+                    </div>
+                    <div class="flexBasis48p"></div>
+                </div>
+            </details>
+            <details>
+                <summary>pannerNode_Ambiance 设置</summary>
+                <div class="flex-container">
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>近距离不衰减</span></small>
+                        <input class="neo-range-slider" type="range" id="ambiance_refDistance" min="0" max="20" step="0.1" value="0.6">
+                        <input class="neo-range-input" type="number" id="ambiance_refDistance_value" data-for="ambiance_refDistance" min="0" max="20" step="0.1" value="0.6">
+                    </div>
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>远距离不衰减</span></small>
+                        <input class="neo-range-slider" type="range" id="ambiance_maxDistance" min="1" max="100" step="1" value="20">
+                        <input class="neo-range-input" type="number" id="ambiance_maxDistance_value" data-for="ambiance_maxDistance" min="1" max="100" step="1" value="20">
+                    </div>
+                </div>
+                <div class="flex-container">
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>衰减速度</span></small>
+                        <input class="neo-range-slider" type="range" id="ambiance_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
+                        <input class="neo-range-input" type="number" id="ambiance_rolloffFactor_value" data-for="ambiance_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
+                    </div>
+                    <div class="flexBasis48p"></div>
+                </div>
+                <div class="flex-container">
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>左右 (X)</span></small>
+                        <input class="neo-range-slider" type="range" id="ambiance_posX" min="-10" max="10" value="0" step="0.1">
+                        <input class="neo-range-input" type="number" id="ambiance_posX_value" data-for="ambiance_posX" min="-10" max="10" step="0.1" value="0">
+                    </div>
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>上下 (Y)</span></small>
+                        <input class="neo-range-slider" type="range" id="ambiance_posY" min="-10" max="10" value="0" step="0.1">
+                        <input class="neo-range-input" type="number" id="ambiance_posY_value" data-for="ambiance_posY" min="-10" max="10" step="0.1" value="0">
+                    </div>
+                </div>
+                <div class="flex-container">
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>前后 (Z)</span></small>
+                        <input class="neo-range-slider" type="range" id="ambiance_posZ" min="-10" max="10" value="0" step="0.1">
+                        <input class="neo-range-input" type="number" id="ambiance_posZ_value" data-for="ambiance_posZ" min="-10" max="10" step="0.1" value="0">
+                    </div>
+                    <div class="flexBasis48p"></div>
+                </div>
+            </details>
+            <details>
+                <summary>pannerNode_SFX 设置</summary>
+                <div class="flex-container">
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>近距离不衰减</span></small>
+                        <input class="neo-range-slider" type="range" id="sfx_refDistance" min="0" max="20" step="0.1" value="0.6">
+                        <input class="neo-range-input" type="number" id="sfx_refDistance_value" data-for="sfx_refDistance" min="0" max="20" step="0.1" value="0.6">
+                    </div>
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>远距离不衰减</span></small>
+                        <input class="neo-range-slider" type="range" id="sfx_maxDistance" min="1" max="100" step="1" value="20">
+                        <input class="neo-range-input" type="number" id="sfx_maxDistance_value" data-for="sfx_maxDistance" min="1" max="100" step="1" value="20">
+                    </div>
+                </div>
+                <div class="flex-container">
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>衰减速度</span></small>
+                        <input class="neo-range-slider" type="range" id="sfx_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
+                        <input class="neo-range-input" type="number" id="sfx_rolloffFactor_value" data-for="sfx_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
+                    </div>
+                    <div class="flexBasis48p"></div>
+                </div>
+                <div class="flex-container">
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>左右 (X)</span></small>
+                        <input class="neo-range-slider" type="range" id="sfx_posX" min="-10" max="10" value="0" step="0.1">
+                        <input class="neo-range-input" type="number" id="sfx_posX_value" data-for="sfx_posX" min="-10" max="10" step="0.1" value="0">
+                    </div>
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>上下 (Y)</span></small>
+                        <input class="neo-range-slider" type="range" id="sfx_posY" min="-10" max="10" value="0" step="0.1">
+                        <input class="neo-range-input" type="number" id="sfx_posY_value" data-for="sfx_posY" min="-10" max="10" step="0.1" value="0">
+                    </div>
+                </div>
+                <div class="flex-container">
+                    <div class="alignitemscenter flex-container flexFlowColumn flexGrow flexShrink gap0 flexBasis48p">
+                        <small><span>前后 (Z)</span></small>
+                        <input class="neo-range-slider" type="range" id="sfx_posZ" min="-10" max="10" value="0" step="0.1">
+                        <input class="neo-range-input" type="number" id="sfx_posZ_value" data-for="sfx_posZ" min="-10" max="10" step="0.1" value="0">
+                    </div>
+                    <div class="flexBasis48p"></div>
+                </div>
+            </details>
+            <hr class="sysHR" />
+            <details open>
+                <summary>音频缓存管理</summary>
+                <div class="example-extension_block flex-container" style="gap: 5px; flex-wrap: wrap;">
+                    <input id="load_world_audio_button" class="menu_button" type="submit" value="从世界书加载音频" />
+                    <input id="cache_all_world_audio_button" class="menu_button" type="submit" value="缓存世界书所有音频" />
+                    <input id="reload_audio_list_button" class="menu_button" type="submit" value="刷新音频列表" />
+                    <input id="delete_all_cache_button" class="menu_button danger_button" type="submit" value="删除所有缓存" />
+                </div>
+                <div id="cache_progress_container" style="display: none; margin-top: 10px;">
+                    <label for="cache_progress_bar">缓存进度:</label>
+                    <progress id="cache_progress_bar" value="0" max="100"></progress>
+                    <span id="cache_progress_label">0%</span>
+                </div>
+                <div id="audio_list_container" style="margin-top: 10px; max-height: 300px; overflow-y: auto;">
+                    <!-- Audio items will be dynamically inserted here -->
+                </div>
+            </details>
+            <template id="audio-list-table-template">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>状态</th>
+                            <th>上传者</th>
+                            <th>播放</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </template>
         </div>
     </div>
 </div>
