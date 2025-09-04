@@ -92,8 +92,6 @@ async function playList(currentGlobalCharIndex, musicList, marker) {
 
             const gainNode = getAudioContext().createGain();
 
-
-
             let typeGainNode;
             let pannerNode;
             let fadeIn;
@@ -144,8 +142,8 @@ async function playList(currentGlobalCharIndex, musicList, marker) {
             } else {
               //  typeGainNode.gain.value=typeGainNode.gain.value*music.volume/100;
               gainNode.gain.value =Number( music.volume)/100*masterGainNode.gain.value*typeGainNode.gain.value;
-              source.connect(gainNode)
-              source.connect(getAudioContext().destination);
+              source.connect(gainNode);
+              gainNode.connect(getAudioContext().destination);
             }
 
             const cursrc = music.src;

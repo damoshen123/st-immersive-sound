@@ -664,32 +664,18 @@ export async function initUI() {
                     const [source, gainNode, pannerNode, volume, regex_end, regex, audioType] = playingList[src];
                     
                     if (audioType.toLowerCase() === type) {
+                        // Disconnect everything after the individual gainNode
                         gainNode.disconnect();
-                        if (pannerNode.numberOfOutputs > 0) pannerNode.disconnect();
-
-                        let typeGainNode;
-                        switch (audioType) {
-                            case "Music":
-                                typeGainNode = musicGainNode;
-                                break;
-                            case "Ambiance":
-                                typeGainNode = ambianceGainNode;
-                                break;
-                            case "SFX":
-                                typeGainNode = sfxGainNode;
-                                break;
-                            case "SFX_WAIT":
-                                typeGainNode = sfx_waitGainNode;
-                                break;
+                        if (pannerNode) {
+                            pannerNode.disconnect();
                         }
 
-                        if (typeGainNode) {
-                            if (isEnabled) {
-                                gainNode.connect(pannerNode);
-                                pannerNode.connect(typeGainNode);
-                            } else {
-                                gainNode.connect(typeGainNode);
-                            }
+                        // Reconnect based on the new 3D setting
+                        if (isEnabled) {
+                            gainNode.connect(pannerNode);
+                            pannerNode.connect(getAudioContext().destination);
+                        } else {
+                            gainNode.connect(getAudioContext().destination);
                         }
                     }
                 }
