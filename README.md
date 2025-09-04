@@ -150,6 +150,11 @@
 ---
 享受你的沉浸式阅读体验吧！
 
+## 帮助
+
+[飞书](https://gxcgf4l6b2y.feishu.cn/wiki/IS3xwfqG7ii78pkwqkkcE8donUb?from=from_copylink)
+
+
 ## 许可证
 
 - [Aladdin](LICENSE)
