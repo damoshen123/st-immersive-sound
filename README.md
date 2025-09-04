@@ -1,33 +1,151 @@
-# SillyTavern Extension Example
+# SillyTavern 声临其境 (Immersive Sound)
 
-*Provide a brief description of how your extension works, what problem it aims to solve.*
+**作者:** 从前跟你一样
+**版本:** 1.0.3
 
-## Features
+这是一个为 [SillyTavern](https://github.com/SillyTavern/SillyTavern) 设计的第三方扩展，旨在通过同步的背景音乐（BGM）、环境音（Ambiance）和音效（SFX），为用户的阅读体验带来“声临其境”的感觉。
 
-*Describe some of the main selling points of your extension.*
+当用户双击一条消息时，此插件会像卡拉OK一样逐字高亮文本，并根据预设的音频标签在特定位置播放相应的声音。
 
-## Installation and Usage
+## ✨ 功能
 
-### Installation
+- **双击触发阅读**: 双击任意消息即可开始高亮阅读。
+- **逐字高亮**: 模仿卡拉OK字幕效果，逐字高亮正在“朗读”的文本。
+- **同步音频播放**:
+    - **背景音乐 (Music)**: 在指定段落之间循环播放音乐。
+    - **环境音 (Ambiance)**: 类似于背景音乐，但通常用于持续的环境声音。
+    - **音效 (SFX)**: 在读到特定词语时触发一次性音效。
+    - **延迟音效 (SFX_WAIT)**: 在读到特定词语时触发，但会等待音效播放完毕后才继续阅读。
+- **音频缓存**: 自动缓存音频文件，提升后续播放的加载速度。
+- **高度可配置**:
+    - 通过世界信息（World Info）集中管理音频资源。
+    - 支持为每个角色卡独立配置音频。
+    - 提供丰富的设置选项，如阅读速度、高亮颜色等。
+- **无缝音乐**: 支持背景音乐之间的无缝衔接。
 
-*In most cases, this should just be using ST's inbuilt extension installer.* 
+## 🚀 安装
 
-### Usage
+1.  将此扩展文件夹 `st-immersive-sound` 放入 SillyTavern 的 `public/scripts/extensions/third-party` 目录下。
+2.  重启 SillyTavern。
+3.  在扩展菜单中启用 "st-immersive-sound"。
 
-*Explain how to use this extension.*
+## 📖 使用方法
 
-## Prerequisites
+核心使用方法分为两步：**1. 配置音频资源** 和 **2. 在角色卡或聊天中插入音频标签**。
 
-*Specify the version of ST necessary here.*
+### 1. 配置音频资源 (World Info)
 
-## Support and Contributions
+插件通过 SillyTavern 的 **世界信息 (World Info)** 来管理所有音频文件。
 
-*Where should someone ask for support?*
+1.  进入 **世界信息** 面板。
+2.  创建一个新的世界信息条目，其名称必须包含 **"声临其境"** (例如，`声临其境-我的音效库`)。
+3.  在该世界信息中，创建一个新的条目 (Entry)。
+4.  将该条目的 **Comment** 设置为 **"音效资源"**。
+5.  在 **Content** 区域，按照以下格式添加你的音频资源，每行一个：
+    ```
+    key=url=uploader=volume
+    ```
+    - `key`: 音频的唯一标识符（用于在音频标签中引用）。
+    - `url`: 音频文件的直接链接（如 `http://example.com/sound.mp3`）。
+    - `uploader`: (可选) 上传者或来源信息。
+    - `volume`: (可选, 0-100) 音量，默认为 `100`。
 
-*Consider including your own contact info for help/questions.*
+**示例:**
+```
+战斗音乐=http://path/to/battle.mp3=网络=80
+开门声=http://path/to/door_open.wav=自制=100
+森林环境=http://path/to/forest.ogg=网络
+```
 
-*How can people help add to this extension?*
+**角色专属音频**: 你也可以在角色卡的 **世界信息 (World Info)** 设置中指定一个包含“音效资源”的世界，这样该角色就会使用专属的音频库。
 
-## License
+### 2. 插入音频标签
 
-*Be cool, use an open source license.*
+在角色卡的第一人称描述、场景描述或任何聊天消息中，你可以插入XML格式的标签来指定何时播放哪个音频。
+
+**标签结构:**
+
+```xml
+<Music>
+  [src=战斗音乐, loop=true, regex_start=/^开始战斗/, regex_end=/战斗结束$/]
+</Music>
+
+<Ambiance>
+  [src=森林环境, loop=true, regex_start=/^走进森林/, regex_end=/离开森林$/]
+</Ambiance>
+
+<SFX>
+  [src=开门声, regex=/推开门/]
+</SFX>
+
+<SFX_WAIT>
+  [src=爆炸声, regex=/一声巨响/]
+</SFX_WAIT>
+```
+
+#### 标签类型
+
+-   `<Music>`: 背景音乐。通常是循环播放的。
+-   `<Ambiance>`: 环境音。和 Music 类似，但概念上用于氛围营造。
+-   `<SFX>`: 普通音效。在读到 `regex` 匹配的文本时触发，不会打断阅读。
+-   `<SFX_WAIT>`: 延迟音效。触发后会暂停阅读，直到音效播放完毕。
+
+#### 参数说明
+
+-   `src`: **(必需)** 音频的 `key`，对应你在世界信息中配置的名字。
+-   `loop`:
+    - `true`: 音频会循环播放。通常用于 `Music` 和 `Ambiance`。
+    - `false` 或不填: 音频只播放一次。
+-   `regex_start`: **(仅用于 `loop=true`)** 一个正则表达式，用于标记循环音频的 **开始位置**。阅读器会从匹配到的文本开始播放此音频。
+-   `regex_end`: **(仅用于 `loop=true`)** 一个正则表达式，用于标记循环音频的 **结束位置**。音频会在此处停止。
+-   `regex`: **(仅用于非循环音频)** 一个正则表达式，当阅读器读到匹配的文本时，触发此音效。
+
+**重要提示:**
+- 正则表达式需要写在两个斜杠 `/` 之间。
+- `regex_start` 和 `regex_end` 必须成对出现，用于定义一个播放区间。
+
+## ⚙️ 设置选项
+
+你可以在 `扩展 -> 声临其境` 面板中找到以下设置：
+
+- **启用插件**: 总开关。
+- **阅读速度 (CPM)**: 每分钟阅读的字符数。数值越大，阅读速度越快。
+- **高亮颜色**: 设置高亮文本的颜色。
+- **高亮透明度**: 设置高亮背景的透明度。
+- **高亮文字颜色**: 设置高亮文本的前景颜色。
+- **音乐起始于段落开头**: 如果启用，第一首背景音乐将从消息的开头立即播放，而不是等待 `regex_start`。
+- **无缝音乐衔接**: 如果启用，当一首背景音乐结束时，下一首背景音乐会立即从上一首结束的位置开始，而不是等待其 `regex_start`。
+
+## 💡 完整示例
+
+**1. 世界信息配置 (`声临其境-我的音效库`)**
+
+*   **Entry 1**
+    *   **Comment**: `音效资源`
+    *   **Content**:
+        ```
+        史诗音乐=http://example.com/epic.mp3
+        挥剑声=http://example.com/sword.wav
+        ```
+
+**2. 角色卡或聊天消息**
+
+```
+<Music>
+  [src=史诗音乐, loop=true, regex_start=/^你拔出长剑/, regex_end=/收剑入鞘/]
+</Music>
+<SFX>
+  [src=挥剑声, regex=/挥动了手中的武器/]
+</SFX>
+
+你拔出长剑，决心面对前方的巨龙。你深吸一口气，然后挥动了手中的武器，发起了进攻！战斗持续了很久，最终你成功击败了巨龙，疲惫地收剑入鞘。
+```
+
+**效果**:
+- 当用户双击这条消息时：
+    1.  阅读器读到“你拔出长剑”时，`史诗音乐` 开始循环播放。
+    2.  当读到“挥动了手中的武器”时，会播放一次 `挥剑声` 音效，同时阅读继续。
+    3.  当读到“收剑入鞘”时，`史诗音乐` 停止播放。
+
+---
+享受你的沉浸式阅读体验吧！
