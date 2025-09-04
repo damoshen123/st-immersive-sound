@@ -25,7 +25,7 @@
 
 ## 🚀 安装
 
-1.  将此扩展文件夹 `st-immersive-sound` 放入 SillyTavern 的 `public/scripts/extensions/third-party` 目录下。
+1.  SillyTavern中安装https://github.com/damoshen123/st-immersive-sound
 2.  重启 SillyTavern。
 3.  在扩展菜单中启用 "st-immersive-sound"。
 
@@ -149,3 +149,4 @@
 
 ---
 享受你的沉浸式阅读体验吧！
+
