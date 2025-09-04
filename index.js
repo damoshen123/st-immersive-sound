@@ -66,10 +66,9 @@ jQuery(async () => {
         throw new Error('Initialization failed');
     }
 
-    $("#update_plugin_button").on("click", check_update);
-
     initAudio();
-    initUI();
+    await initUI();
+    $("#update_plugin_button").on("click", check_update);
 });
 
 const intervalId = setInterval(() => p_addEventListener(), 2000);
