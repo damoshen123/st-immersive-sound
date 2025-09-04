@@ -150,3 +150,9 @@
 ---
 享受你的沉浸式阅读体验吧！
 
+## 许可证
+
+- [Aladdin](LICENSE)
+
+参考
+[酒馆助手](https://github.com/N0VI028/JS-Slash-Runner/tree/main)
