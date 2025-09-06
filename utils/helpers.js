@@ -41,6 +41,10 @@ function getParagraphOffsetsRange(fullText, paragraph1, paragraph2, src, isFirst
                 return [-1,`音频《${src}》未在文本中找到起始段落: "${paragraph1}"`]
             };
         }
+    }else{
+        if(lastMusicEnd !==-1 && isMusic && settings.seamlessMusic&&!isFirstMusic){
+            startOffset = lastMusicEnd;
+        }
     }
 
     // 从段落1结束位置之后开始查找段落2

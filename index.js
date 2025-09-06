@@ -143,6 +143,22 @@ function p_addEventListener() {
                                 const bgmCategory = bgmlist[key];
                                 for (let i = 0; i < bgmCategory.length; i++) {
                                     let bgm = bgmCategory[i];
+
+
+                                    if (bgm.regex_start) {
+                                        bgm.regex_start = bgm.regex_start.replace("‘", "“");
+                                        bgm.regex_start = bgm.regex_start.replace("’", "”");
+                                    }
+                                    if (bgm.regex_end) {
+                                        bgm.regex_end = bgm.regex_end.replace("‘", "“");
+                                        bgm.regex_end = bgm.regex_end.replace("’", "”");
+                                    }
+                                    if (bgm.regex) {
+                                        bgm.regex = bgm.regex.replace("‘", "“");
+                                        bgm.regex = bgm.regex.replace("’", "”");
+                                    }
+
+                                    
                                     for (let j = 0; j < RegexExtensionSettings.length; j++) {
                                         if (bgm.regex_start) {
                                             bgm.regex_start = bgm.regex_start.replace(RegexExtensionSettings[j].findRegex, RegexExtensionSettings[j].replaceString);

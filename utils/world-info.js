@@ -50,10 +50,10 @@ async function get_yin_xiao_world_info() {
             const chat_yin_xiao_zi_yuan_string = chat_yin_xiao_zi_yuan.content;
             const lines2 = chat_yin_xiao_zi_yuan_string.split('\n');
             lines2.forEach(line => {
-                const [key, url, uploader] = line.split('=');
+                const [key, url,uploader,volume] = line.split('=');
                 // 创建对象并推入数组
                 if (key && url) {
-                    audioArray.push({ key: key.trim(), url: url.trim(), uploader: uploader ? uploader.trim() : 'N/A' });
+                    audioArray.push({ key: key.trim(), url: url.trim(), volume: volume ? volume.trim() : 100,uploader: uploader ? uploader.trim() : 'N/A' });
                 }
             });
         }
