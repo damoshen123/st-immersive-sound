@@ -138,12 +138,13 @@ function p_addEventListener() {
                         const mestest = context.chat[thisMesid].mes;
                         let bgmlist = parseBGMContent(mestest);
 
+                        if (extension_settings[extensionName].regexReplace) { 
+                       
                         for (const key in bgmlist) {
                             if (Object.hasOwnProperty.call(bgmlist, key)) {
                                 const bgmCategory = bgmlist[key];
                                 for (let i = 0; i < bgmCategory.length; i++) {
                                     let bgm = bgmCategory[i];
-
 
                                     if (bgm.regex_start) {
                                         bgm.regex_start = bgm.regex_start.replace("‘", "“");
@@ -173,6 +174,7 @@ function p_addEventListener() {
                                 }
                             }
                         }
+                    }
 
                         console.log("bgmlist:", bgmlist);
                         await get_yin_xiao_world_info();

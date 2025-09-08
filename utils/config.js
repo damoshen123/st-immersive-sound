@@ -9,6 +9,7 @@ export const defaultSettings = {
     readingSpeed: 450,
     musicStartsWithParagraph: true,
     seamlessMusic: true,
+    regexReplace:false,
     enable3dAudio_music: false,
     enable3dAudio_ambiance: false,
     enable3dAudio_sfx: false,

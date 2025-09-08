@@ -446,6 +446,7 @@ async function loadSettings(apply = true) {
     // Load auxiliary settings
     $("#musicStartsWithParagraph").prop("checked", settings.musicStartsWithParagraph);
     $("#seamlessMusic").prop("checked", settings.seamlessMusic);
+    $("#regexReplace").prop("checked", settings.regexReplace);
 
     // Load 3D audio settings
     $("#enable3dAudio_music").prop("checked", settings.enable3dAudio_music);
@@ -645,6 +646,11 @@ export async function initUI() {
 
     $('#seamlessMusic').on('input', (event) => {
         extension_settings[immersiveSoundExtensionName].seamlessMusic = $(event.target).prop('checked');
+        saveSettingsDebounced();
+    });
+
+    $('#regexReplace').on('input', (event) => {
+        extension_settings[immersiveSoundExtensionName].regexReplace = $(event.target).prop('checked');
         saveSettingsDebounced();
     });
 
