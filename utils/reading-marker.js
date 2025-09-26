@@ -1,4 +1,4 @@
-import { playList } from './playback.js';
+import { playList, stopAllAudio } from './playback.js';
 
 class CharacterReadingMarker {
   constructor(element, options = {}) {
@@ -98,7 +98,7 @@ class CharacterReadingMarker {
     const expectedCharArrIndex = this.startingIndex + Math.floor(elapsedTime / this.delay);
 
     if (expectedCharArrIndex >= this.charPositions.length) {
-        this.stop();
+        stopAllAudio(this);
         if (this.options.onComplete) {
             this.options.onComplete();
         }
@@ -120,12 +120,10 @@ class CharacterReadingMarker {
                 playList(currentCharData.globalIndex, this.options.musicList, this);
             }
         }
-        
     }
 
     this.animationFrameId = requestAnimationFrame(this.animationLoop.bind(this));
   }
-
 
   getCharacterPosition(index) {
     if (index < 0 || index >= this.charPositions.length) return null;
@@ -218,6 +216,41 @@ class CharacterReadingMarker {
     }
   }
 
+  fastForward(charactersToSkip) {
+    if (charactersToSkip <= 0) return;
+
+    if (!this.charPositions.length) {
+      // Not started yet, nothing to skip
+      return;
+    }
+
+    const newIndex = Math.min(this.charPositions.length - 1, this.currentIndex + charactersToSkip);
+    const actualSkipped = newIndex - this.currentIndex;
+
+    if (actualSkipped <= 0) return;
+
+    this.currentIndex = newIndex;
+
+    // Adjust start time to reflect the jump forward in time
+    const timeSkipped = actualSkipped * this.delay;
+    this.startTime -= timeSkipped;
+
+    // Immediately update the highlight to the new position,
+    // so the user sees the jump instantly.
+    if (this.isSupported) {
+        this.highlight.clear();
+        const currentCharData = this.charPositions[this.currentIndex];
+        if (currentCharData) {
+            const { node, offset } = currentCharData;
+            const range = document.createRange();
+            range.setStart(node, offset);
+            range.setEnd(node, offset + 1);
+            this.highlight.add(range);
+            playList(currentCharData.globalIndex, this.options.musicList, this);
+        }
+    }
+  }
+
   stop() {
     if (this.animationFrameId) {
         cancelAnimationFrame(this.animationFrameId);
@@ -233,13 +266,24 @@ class CharacterReadingMarker {
   }
 
   setSpeed(charactersPerMinute) {
-    this.options.charactersPerMinute = charactersPerMinute;
-    this.delay = 60000 / charactersPerMinute;
-    
+    if (charactersPerMinute <= 0) return;
+
+    const newDelay = 60000 / charactersPerMinute;
+
     if (this.isPlaying) {
-      this.pause();
-      this.resume();
+        const charactersProcessed = this.currentIndex - this.startingIndex;
+        // Adjust startTime to ensure smooth transition without jumping characters
+        this.startTime = performance.now() - charactersProcessed * newDelay;
     }
+
+    this.options.charactersPerMinute = charactersPerMinute;
+    this.delay = newDelay;
+  }
+
+  setSpeedByDuration(charLength, seconds) {
+    if (charLength <= 0 || seconds <= 0) return;
+    const charactersPerMinute = (charLength / seconds) * 60;
+    this.setSpeed(charactersPerMinute);
   }
 
   destroy() {

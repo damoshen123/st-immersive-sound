@@ -3,12 +3,14 @@ let pannerNode_Music;
 let pannerNode_Ambiance;
 let pannerNode_SFX;
 let pannerNode_SFX_WAIT;
+let pannerNode_VOICE;
 
 let masterGainNode;
 let musicGainNode;
 let ambianceGainNode;
 let sfxGainNode;
 let sfx_waitGainNode;
+let voiceGainNode;
 
 function initAudio() {
     if (!audioCtx) {
@@ -42,6 +44,13 @@ function initAudio() {
         pannerNode_SFX_WAIT.maxDistance = 20;
         pannerNode_SFX_WAIT.rolloffFactor = 0.3;
 
+        pannerNode_VOICE = audioCtx.createPanner();
+        pannerNode_VOICE.panningModel = 'HRTF'; // 使用头部相关传输函数
+        pannerNode_VOICE.distanceModel = 'inverse';
+        pannerNode_VOICE.refDistance = 0.6;
+        pannerNode_VOICE.maxDistance = 20;
+        pannerNode_VOICE.rolloffFactor = 0.3;
+
         // Explicitly set listener orientation to default (facing forward)
         const listener = audioCtx.listener;
         if (listener.forwardX) { // Modern API
@@ -60,6 +69,7 @@ function initAudio() {
         ambianceGainNode = audioCtx.createGain();
         sfxGainNode = audioCtx.createGain();
         sfx_waitGainNode = audioCtx.createGain();
+        voiceGainNode = audioCtx.createGain();
 
         // musicGainNode.connect(masterGainNode);
         // ambianceGainNode.connect(masterGainNode);
@@ -84,9 +94,11 @@ export {
     pannerNode_Ambiance,
     pannerNode_SFX,
     pannerNode_SFX_WAIT,
+    pannerNode_VOICE,
     masterGainNode,
     musicGainNode,
     ambianceGainNode,
     sfxGainNode,
     sfx_waitGainNode,
+    voiceGainNode,
 };

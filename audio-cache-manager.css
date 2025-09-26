@@ -1,0 +1,187 @@
+/* audio-cache-manager.css */
+.audio-cache-modal-backdrop {
+    display: none;
+    position: fixed;
+    z-index: 1002;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.audio-cache-modal-content {
+    background-color: #f0f8ff; /* AliceBlue */
+    color: #333;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 90%;
+    max-width: 800px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+}
+
+.audio-cache-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #add8e6; /* LightBlue */
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.audio-cache-modal-header h2 {
+    margin: 0;
+    color: #005a9c; /* Darker Blue */
+    font-size: 1.5em;
+}
+
+.audio-cache-modal-close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.audio-cache-modal-close:hover,
+.audio-cache-modal-close:focus {
+    color: #005a9c;
+    text-decoration: none;
+}
+
+.audio-cache-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ddeeff;
+}
+
+.audio-cache-button {
+    background-color: #007bff; /* Bright Blue */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.audio-cache-button:hover {
+    background-color: #0056b3; /* Darker Blue */
+}
+
+.audio-cache-button.danger {
+    background-color: #dc3545;
+}
+
+.audio-cache-button.danger:hover {
+    background-color: #c82333;
+}
+
+.audio-cache-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.audio-cache-progress-container {
+    margin-bottom: 15px;
+}
+
+.audio-cache-progress-container progress {
+    width: 100%;
+    height: 20px;
+    border-radius: 5px;
+}
+
+.audio-cache-progress-container progress::-webkit-progress-bar {
+    background-color: #ddeeff;
+    border-radius: 5px;
+}
+
+.audio-cache-progress-container progress::-webkit-progress-value {
+    background-color: #007bff;
+    border-radius: 5px;
+    transition: width 0.3s;
+}
+
+.audio-cache-list-container {
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.audio-cache-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.audio-cache-table th,
+.audio-cache-table td {
+    border: 1px solid #ddeeff; /* Lightest Blue */
+    padding: 8px;
+    text-align: left;
+}
+
+.audio-cache-table th {
+    background-color: #add8e6; /* LightBlue */
+    color: #005a9c;
+    position: sticky;
+    top: 0;
+}
+
+.audio-cache-table tbody tr:nth-child(even) {
+    background-color: #e7f5ff;
+}
+
+.audio-cache-table tbody tr:hover {
+    background-color: #d0eaff;
+}
+
+.audio-cache-table .status-cached {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.audio-cache-table .status-uncached {
+    color: #fd7e14;
+}
+
+.audio-cache-table .action-button {
+     background-color: transparent;
+     border: 1px solid #007bff;
+     color: #007bff;
+     padding: 5px 8px;
+     border-radius: 4px;
+     cursor: pointer;
+     margin: 0 2px;
+     transition: all 0.2s;
+}
+
+.audio-cache-table .action-button:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.audio-cache-table .action-button.danger {
+    border-color: #dc3545;
+    color: #dc3545;
+}
+
+.audio-cache-table .action-button.danger:hover {
+    background-color: #dc3545;
+    color: white;
+}

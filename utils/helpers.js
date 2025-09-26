@@ -9,8 +9,8 @@ function getRequestHeaders(token) {
 
 function getParagraphOffsetsRange(fullText, paragraph1, paragraph2, src, isFirstMusic = false, settings = {},lastMusicEnd,isMusic) {
     console.log("src", src);
-
-    console.log("settings.seamlessMusic",settings.seamlessMusic)
+    
+    //console.log("fullText",fullText)
     // 检查输入是否有效，不允许空字符串
     if (!paragraph1 || !paragraph2) {
         
@@ -24,6 +24,13 @@ function getParagraphOffsetsRange(fullText, paragraph1, paragraph2, src, isFirst
         startOffset = 0;
     } else {
         startOffset = fullText.indexOf(paragraph1);
+
+       // console.log("startOffset",startOffset,paragraph1+"-----------",fullText);
+    }
+
+    if(lastMusicEnd !==-1 && isMusic && settings.seamlessMusic&&!isFirstMusic){
+    //   console.log("lastMusicEnd",lastMusicEnd);
+        startOffset = lastMusicEnd;
     }
 
     // 如果找不到，尝试修改后再次查找
@@ -38,17 +45,15 @@ function getParagraphOffsetsRange(fullText, paragraph1, paragraph2, src, isFirst
             if(lastMusicEnd !==-1 && isMusic && settings.seamlessMusic){
                 startOffset = lastMusicEnd;
             }else{
+
+                console.log(`未在文本中找到起始段落 for ${src}`,paragraph1,fullText.indexOf(paragraph1),fullText);
                 return [-1,`音频《${src}》未在文本中找到起始段落: "${paragraph1}"`]
             };
-        }
-    }else{
-        if(lastMusicEnd !==-1 && isMusic && settings.seamlessMusic&&!isFirstMusic){
-            startOffset = lastMusicEnd;
         }
     }
 
     // 从段落1结束位置之后开始查找段落2
-    const searchStartPosition = startOffset + paragraph1.length;
+    const searchStartPosition = startOffset; //;
     let paragraph2StartOffset = fullText.indexOf(paragraph2, searchStartPosition);
 
     // 如果找不到，尝试修改后再次查找
@@ -58,16 +63,17 @@ function getParagraphOffsetsRange(fullText, paragraph1, paragraph2, src, isFirst
         // 如果找到了，更新 paragraph2 的值，以便后续计算 endOffset
         if (paragraph2StartOffset !== -1) {
             paragraph2 = modifiedParagraph2;
-            toastr.success(`音频《${src}》在文本中去除头尾后找到结束段落: "${paragraph2}"`);
+           // toastr.success(`音频《${src}》在文本中去除头尾后找到结束段落: "${paragraph2}"`);
         } else {
-           
-            console.log(`未在起始段落后找到结束段落 for ${src}`, paragraph1, paragraph2, searchStartPosition, startOffset, fullText);
+            console.log(`未在起始段落后找到结束段落 for ${src}`,searchStartPosition,fullText.slice(searchStartPosition),fullText.indexOf(paragraph2));
             return [-1,`音频《${src}》未在起始段落后找到结束段落: "${paragraph2}"`];
         }
     }
 
     // 计算段落2的结束位置（开始位置 + 段落长度）
     const endOffset = paragraph2StartOffset + paragraph2.length;
+
+  //  console.log(`音频《${src}》的结束位置: ${paragraph2StartOffset}长度${paragraph2.length}文本时${paragraph2}`);
 
     // 返回范围偏移量
     return [startOffset, endOffset];
@@ -79,7 +85,7 @@ function parseBGMContent(bgmText) {
     const ambianceMatch = bgmText.match(/<Ambiance>([\s\S]*?)<\/Ambiance>/);
     const sfxMatch = bgmText.match(/<SFX>([\s\S]*?)<\/SFX>/);
     const sfxWaitMatch = bgmText.match(/<SFX_WAIT>([\s\S]*?)<\/SFX_WAIT>/);
-
+    const VOICEMatch = bgmText.match(/<VOICE>([\s\S]*?)<\/VOICE>/);
     // 解析单个音频项的函数
     function parseAudioItem(itemText) {
         const params = {};
@@ -87,6 +93,8 @@ function parseBGMContent(bgmText) {
         // 提取 src
         const srcMatch = itemText.match(/src=([^,\s\]]+)/);
         if (srcMatch) params.src = srcMatch[1].replaceAll('-', '');
+
+        console.log("srcMatch[1]",srcMatch[1]);
 
         // // 提取 volume
         // const volumeMatch = itemText.match(/volume=(\d+)/);
@@ -127,7 +135,8 @@ function parseBGMContent(bgmText) {
         Music: [],
         Ambiance: [],
         SFX: [],
-        SFX_WAIT: []
+        SFX_WAIT: [],
+        VOICE:[],
     };
 
     // 解析各部分
@@ -145,6 +154,9 @@ function parseBGMContent(bgmText) {
 
     if (sfxWaitMatch) {
         result.SFX_WAIT = parseMultipleItems(sfxWaitMatch[1]);
+    }
+    if (VOICEMatch) {
+        result.VOICE = parseMultipleItems(VOICEMatch[1]);
     }
 
     return result;

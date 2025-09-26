@@ -6,8 +6,8 @@ const storeName = 'audioCache';
 
 async function initDB() {
     return new Promise((resolve, reject) => {
-        // Bump the version to 3 to trigger onupgradeneeded for adding uploader
-        const request = indexedDB.open(dbName, 3);
+        // Bump the version to 4 to trigger onupgradeneeded for adding volume and vibration
+        const request = indexedDB.open(dbName, 4);
 
         request.onerror = () => reject(request.error);
         request.onsuccess = () => resolve(request.result);
@@ -32,6 +32,13 @@ async function initDB() {
             if (!store.indexNames.contains('uploader')) {
                 store.createIndex('uploader', 'uploader', { unique: false });
             }
+            // Add new indexes for volume and vibration
+            if (!store.indexNames.contains('volume')) {
+                store.createIndex('volume', 'volume', { unique: false });
+            }
+            if (!store.indexNames.contains('vibration')) {
+                store.createIndex('vibration', 'vibration', { unique: false });
+            }
         };
     });
 }
@@ -48,7 +55,7 @@ async function getFromDB(url) {
   });
 }
 
-async function saveToDB(url, name, uploader, arrayBuffer) {
+async function saveToDB(url, name, uploader, arrayBuffer, volume, vibration) {
     const db = await initDB();
     const transaction = db.transaction([storeName], 'readwrite');
     const store = transaction.objectStore(storeName);
@@ -59,88 +66,73 @@ async function saveToDB(url, name, uploader, arrayBuffer) {
             name: name,
             uploader: uploader,
             arrayBuffer: arrayBuffer,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            volume: volume,
+            vibration: vibration
         });
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error);
     });
 }
 
-async function loadAudio(url, name, uploader = 'N/A', options = {}) {
+async function loadAudio(url, name, uploader = 'N/A', volume = 100, vibration = 'N/A', options = {}) {
     const { forceRefresh = false, maxAge = 7 * 24 * 60 * 60 * 1000 } = options;
+    const audioContext = getAudioContext();
 
-    // Helper to create the audio source node from a URL or a Blob
-    function createSourceNode(audioData) {
-        const audio = new Audio();
-        audio.crossOrigin = "anonymous"; // Good practice for cross-origin resources
-        const context = getAudioContext();
-        const source = context.createMediaElementSource(audio);
-
-        if (audioData instanceof Blob) {
-            const blobUrl = URL.createObjectURL(audioData);
-            audio.src = blobUrl;
-            // Store the blob URL on the element itself so we can revoke it later
-            audio.blobUrl = blobUrl;
-        } else {
-            // It's a regular URL string
-            audio.src = audioData;
-            audio.blobUrl = null;
-        }
-        
-        return source;
+    // 1. Check memory cache (fastest: holds decoded AudioBuffers)
+    if (!forceRefresh && memoryCache.has(url)) {
+        console.log(`Returning from memory cache: ${url}`);
+        return memoryCache.get(url);
     }
 
-    // Helper to cache the audio in the background
-    async function cacheInBackground(url, name, uploader) {
-        // Avoid re-caching if it's already in memory
-        if (memoryCache.has(url)) return;
-
-        try {
-            console.log(`Background caching started for: ${url}`);
-            const response = await fetch(url);
-            const arrayBuffer = await response.arrayBuffer();
-            // Save to both caches
-            await saveToDB(url, name, uploader, arrayBuffer.slice(0));
-            memoryCache.set(url, arrayBuffer.slice(0));
-            console.log(`Successfully cached in background: ${url}`);
-        } catch (error) {
-            console.error(`Background caching failed for ${url}:`, error);
-        }
-    }
-
-    // 1. Check caches first for offline/repeat playback.
+    // 2. Check IndexedDB (slower: holds raw ArrayBuffers)
     if (!forceRefresh) {
-        // Check memory cache (fastest)
-        if (memoryCache.has(url)) {
-            console.log(`Playing from memory cache: ${url}`);
-            const arrayBuffer = memoryCache.get(url);
-            const blob = new Blob([arrayBuffer], { type: 'audio/mp3' });
-            return createSourceNode(blob);
-        }
-
-        // Check IndexedDB (slower, but persistent)
         try {
             const cached = await getFromDB(url);
-            if (cached && (Date.now() - cached.timestamp < maxAge)) {
-                console.log(`Playing from IndexedDB cache: ${url}`);
-                const arrayBuffer = cached.arrayBuffer;
-                memoryCache.set(url, arrayBuffer.slice(0)); // Promote to memory cache
-                const blob = new Blob([arrayBuffer], { type: 'audio/mp3' });
-                return createSourceNode(blob);
+            if (cached && cached.arrayBuffer && (Date.now() - cached.timestamp < maxAge)) {
+                console.log(`Decoding from IndexedDB cache: ${url}`);
+                // Decode the ArrayBuffer into an AudioBuffer
+                const audioBuffer = await audioContext.decodeAudioData(cached.arrayBuffer.slice(0));
+                // Promote to memory cache for next time
+                memoryCache.set(url, audioBuffer);
+                return audioBuffer;
             }
         } catch (error) {
-            console.error(`Failed to get from IndexedDB, will stream from network: ${url}`, error);
+            console.error(`Failed to get/decode from IndexedDB, will fetch from network: ${url}`, error);
+            // If decoding fails, we should clear the bad entry from the DB
+            try {
+                const db = await initDB();
+                await db.transaction(storeName, 'readwrite').objectStore(storeName).delete(url);
+                console.log(`Removed corrupted audio from IndexedDB: ${url}`);
+            } catch (dbError) {
+                console.error(`Failed to remove corrupted audio from DB:`, dbError);
+            }
         }
     }
 
-    // 2. If not in cache (or forced refresh), stream from network for immediate playback.
-    console.log(`Streaming from network and caching in background: ${url}`);
-    
-    // Start caching in the background, but don't wait for it to finish.
-    cacheInBackground(url, name, uploader);
+    // 3. Fetch from network (last resort)
+    try {
+        console.log(`Fetching from network: ${url}`);
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const arrayBuffer = await response.arrayBuffer();
 
-    // Immediately return a source node that streams directly from the original URL.
-    return createSourceNode(url);
+        // Save the raw buffer to IndexedDB for persistence
+        await saveToDB(url, name, uploader, arrayBuffer.slice(0), volume, vibration);
+
+        // Decode for immediate use
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+        // Store the decoded buffer in memory cache
+        memoryCache.set(url, audioBuffer);
+
+        return audioBuffer;
+    } catch (error) {
+        console.error(`Failed to fetch or decode audio from ${url}:`, error);
+        return null;
+    }
 }
 
 // 清理过期缓存
@@ -198,17 +190,17 @@ async function getAllCachedAudio() {
 
 async function ensureAudiosAreCached(musicList) {
     const uncachedAudios = [];
+    // Check against IndexedDB directly to see if the raw data is stored
     const checkPromises = musicList.map(async (music) => {
-        if (memoryCache.has(music.url)) return;
         const cached = await getFromDB(music.url);
-        if (!cached) {
+        if (!cached || !cached.arrayBuffer) {
             uncachedAudios.push(music);
         }
     });
     await Promise.all(checkPromises);
 
     if (uncachedAudios.length === 0) {
-        console.log("All required audio is already cached.");
+        console.log("All required audio is already in persistent cache.");
         return;
     }
 
@@ -218,14 +210,14 @@ async function ensureAudiosAreCached(musicList) {
 
     const toastrInfo = toastr.info(`开始下载 ${totalCount} 个音频... (0/${totalCount})`, "缓存音频", { timeOut: 0, extendedTimeOut: 0, "progressBar": true });
 
-    const downloadPromises = uncachedAudios.map(music => 
+    const downloadPromises = uncachedAudios.map(music =>
         (async () => {
             try {
                 const response = await fetch(music.url);
                 if (!response.ok) throw new Error(`HTTP 错误! status: ${response.status}`);
                 const arrayBuffer = await response.arrayBuffer();
-                await saveToDB(music.url, music.src, music.uploader || 'N/A', arrayBuffer.slice(0));
-                memoryCache.set(music.url, arrayBuffer.slice(0));
+                // Save raw ArrayBuffer to DB. Decoding and memory caching will happen in loadAudio.
+                await saveToDB(music.url, music.src, music.uploader || 'N/A', arrayBuffer, music.volume, music.vibration);
             } catch (error) {
                 allSucceeded = false;
                 console.error(`缓存失败 ${music.src} from ${music.url}:`, error);
