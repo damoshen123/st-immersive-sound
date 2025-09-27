@@ -28,26 +28,52 @@ eventSource.on(event_types.GENERATION_STARTED, async (/** @type {any} */ mesid1)
     
 });
 
-eventSource.on(event_types.GENERATION_ENDED, async (/** @type {any} */ mesid1) => {
+eventSource.on(event_types.MESSAGE_RECEIVED, async (/** @type {any} */ mesid1) => {
 
-    console.log("声临其境插件：检测到生成事件开始！");
-    messageend=true;
+    console.log("声临其境插件：检测到生成事件结束！");
+    if(!messageend){
+
+        messageend=true;
+    }else{
+
+        if (extension_settings[extensionName].autoPlay !== true) {
+            return;
+        }
+        setTimeout(() => {
+            console.log("声临其境插件：检测到生成事件结束！MESSAGE_RECEIVED");
+            console.log("生成消息id:", mesid1);
+            const mesTextElement = document.querySelector(`.mes_text[data-mesid="${mesid1}"]`);
+           
+            if (mesTextElement) {
+                 startImmersiveSound(mesTextElement, mesid1);
+            }
+        }, 1000);
+
+    }
+   
     
 });
 
 
-
-
-eventSource.on(event_types.MESSAGE_RECEIVED, async (/** @type {any} */ mesid) => {
-    if (extension_settings[extensionName].autoPlay !== true) {
-        return;
-    }
+eventSource.on(event_types.GENERATION_ENDED, async (/** @type {any} */ mesid) => {
     console.log("声临其境插件：检测到生成事件结束！");
-    console.log("生成消息id:", mesid);
-    const mesTextElement = document.querySelector(`.mes_text[data-mesid="${mesid}"]`);
-    console.log("生成消息id:", mesid);
-    if (mesTextElement&&messageend) {
-        await startImmersiveSound(mesTextElement, mesid);
+    if(!messageend){
+
+        messageend=true;
+    }else{
+
+        if (extension_settings[extensionName].autoPlay !== true) {
+            return;
+        }
+        setTimeout(() => {
+            console.log("声临其境插件：检测到生成事件结束！GENERATION_ENDED");
+            console.log("生成消息id:", mesid-1);
+            const mesTextElement = document.querySelector(`.mes_text[data-mesid="${mesid-1}"]`);
+           
+            if (mesTextElement) {
+                 startImmersiveSound(mesTextElement, mesid-1);
+            }
+        }, 1000);
     }
     
 });
