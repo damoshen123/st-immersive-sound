@@ -1,0 +1,100 @@
+/* Styles for the new TTS Preview Card Layout */
+
+.st-is-tts-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.st-is-tts-card {
+    background-color: var(--st-is-bg-primary);
+    border-radius: var(--st-is-border-radius);
+    border: 1px solid var(--st-is-border-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: box-shadow 0.2s, border-color 0.2s;
+    overflow: hidden;
+}
+
+.st-is-tts-card:hover {
+    border-color: var(--st-is-accent-primary);
+    box-shadow: var(--st-is-box-shadow);
+}
+
+.st-is-tts-card.is-expanded {
+    border-color: var(--st-is-accent-secondary);
+}
+
+.st-is-tts-card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    cursor: pointer;
+}
+
+.st-is-tts-card-status {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.st-is-tts-card-info {
+    flex-grow: 1;
+    min-width: 0; /* Prevents text overflow issues in flexbox */
+}
+
+.st-is-tts-card-text {
+    font-weight: 600;
+    color: var(--st-is-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.st-is-tts-card-sub-info {
+    display: flex;
+    gap: 16px;
+    font-size: 0.85em;
+    color: var(--st-is-text-secondary);
+    margin-top: 4px;
+    flex-wrap: wrap;
+}
+
+.st-is-tts-card-sub-info span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.st-is-tts-card-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.st-is-tts-details-content {
+    padding: 16px;
+    background-color: var(--st-is-bg-secondary);
+    border-top: 1px solid var(--st-is-border-color);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.st-is-tts-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.st-is-form-group.st-is-form-group-full-width {
+    grid-column: 1 / -1;
+}
+
+.st-is-tts-details-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--st-is-border-color);
+}

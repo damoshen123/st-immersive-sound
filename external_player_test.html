@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>外部音频播放器测试</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f0f0f0; color: #333; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1, h2 { color: #0056b3; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px; }
+        button:hover { background-color: #0056b3; }
+        button.stop { background-color: #dc3545; }
+        button.stop:hover { background-color: #c82333; }
+        #results { margin-top: 20px; padding: 10px; background-color: #e9ecef; border-left: 4px solid #007bff; min-height: 50px; white-space: pre-wrap; word-wrap: break-word; }
+        .hidden { display: none; }
+
+        /* --- Player Styles --- */
+        #players-list {
+            margin-top: 30px;
+        }
+        .player-instance {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            margin-bottom: 15px;
+        }
+        .player-instance h2 {
+            margin-top: 0;
+        }
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .player-controls .player-time-display {
+            font-family: monospace;
+            font-size: 14px;
+            min-width: 110px;
+        }
+        .player-controls .player-progress-bar, .player-controls .player-volume-bar {
+            flex-grow: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #ddd;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .2s;
+            border-radius: 4px;
+        }
+        .player-controls .player-progress-bar:hover, .player-controls .player-volume-bar:hover {
+            opacity: 1;
+        }
+        .player-controls .player-progress-bar::-webkit-slider-thumb, .player-controls .player-volume-bar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #007bff;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .player-controls .player-volume-bar {
+            max-width: 150px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>外部音频播放器测试</h1>
+    <p>本页面用于测试 `st-immersive-sound` 插件的外部音频播放接口。</p>
+    <p><b>注意:</b> 请在 SillyTavern 环境中通过一个 iframe 或新标签页打开此文件，以确保 `eventSource` 可用。</p>
+
+    <div class="form-group">
+        <label for="type">音频类型 (Type)</label>
+        <select id="type">
+            <option value="Music">Music</option>
+            <option value="Ambiance">Ambiance</option>
+            <option value="SFX">SFX</option>
+            <option value="VOICE">VOICE</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="id">唯一ID (id)</label>
+        <input type="text" id="id" value="test-audio-1">
+    </div>
+
+    <!-- Fields for non-VOICE types -->
+    <div id="src-group" class="form-group">
+        <label for="src">资源名 (src)</label>
+        <select id="src"></select>
+        <small>资源列表从配置中动态加载。</small>
+    </div>
+
+    <!-- Fields for VOICE type -->
+    <div id="voice-group" class="form-group hidden">
+        <div class="form-group">
+            <label for="speaker">音色 (speaker)</label>
+            <select id="speaker"></select>
+        </div>
+        <div class="form-group">
+            <label for="context">合成文本 (context)</label>
+            <textarea id="context" rows="3">你好，这是一个来自外部接口的语音测试。</textarea>
+        </div>
+        <div class="form-group">
+            <label for="context_texts">语气参考 (context_texts)</label>
+            <textarea id="context_texts" rows="2" placeholder="可选，用于提供TTS情感/语气参考的上下文"></textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="time">播放时长 (time) (秒)</label>
+        <input type="number" id="time" placeholder="可选, 0或空代表播放一次">
+        <small>如果设置，音频将循环播放直到指定时间结束。</small>
+    </div>
+    
+    <div class="form-group">
+        <label for="volume">音量 (volume)</label>
+        <input type="number" id="volume" value="100" min="0" max="100">
+    </div>
+
+    <!-- Fields for SFX and VOICE -->
+    <div id="effects-group" class="form-group hidden">
+        <div class="form-group">
+            <label for="ir_description">环境混响 (ir_description)</label>
+            <select id="ir_description"></select>
+        </div>
+        <div class="form-group">
+            <label for="spatial">空间音频 (spatial)</label>
+            <select id="spatial"></select>
+        </div>
+        <div class="form-group">
+            <label for="special_effects">特殊音效 (special_effects)</label>
+            <select id="special_effects"></select>
+        </div>
+    </div>
+
+    <button id="play-btn">发送播放请求</button>
+    <button id="stop-btn" class="stop">发送停止请求</button>
+
+    <hr style="margin: 20px 0;">
+    <h2>配置信息</h2>
+    <p>点击下面的按钮从插件后端获取当前的配置信息，例如音效、音色、特效列表等。</p>
+    <button id="get-config-btn">获取配置信息</button>
+    <div id="config-results" style="margin-top: 10px; padding: 10px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; max-height: 400px; overflow-y: auto;">
+        <pre>点击按钮以获取配置...</pre>
+    </div>
+
+    <h2>结果</h2>
+    <div id="results">等待事件...</div>
+
+    <!-- Player Section -->
+    <h2>播放器列表</h2>
+    <div id="players-list"></div>
+</div>
+
+<template id="player-template">
+    <div class="player-instance">
+        <div class="form-group">
+            <label>轨道ID: <span class="player-track-id">N/A</span></label>
+        </div>
+        <div class="player-controls">
+            <input type="range" class="player-progress-bar" value="0" min="0" max="100" step="0.1">
+            <span class="player-time-display">00:00 / 00:00</span>
+        </div>
+        <div class="player-controls" style="margin-top: 10px;">
+            <label>音量:</label>
+            <input type="range" class="player-volume-bar" value="100" min="0" max="100">
+            <button class="player-stop-btn stop">停止</button>
+        </div>
+    </div>
+</template>
+
+<script>
+    // Mock functions if not in SillyTavern environment
+    if (typeof eventEmit === 'undefined') {
+        console.warn('eventEmit is not defined. Using a mock function for testing.');
+        window.eventEmit = (eventName, data) => {
+            console.log(`Mock eventEmit: ${eventName}`, data);
+            // Simulate events for local testing
+            if (eventName === 'st-immersive-sound:play-external') {
+                setTimeout(() => window.eventOn('st-immersive-sound:external-audio-playing', { id: data.id, duration: 185, volume: data.volume }), 100);
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 1;
+                    if (progress > 185) {
+                        clearInterval(interval);
+                        window.eventOn('st-immersive-sound:external-audio-stopped', { id: data.id });
+                        return;
+                    }
+                    window.eventOn('st-immersive-sound:external-audio-progress', { id: data.id, currentTime: progress, duration: 185 });
+                }, 1000);
+            }
+        };
+    }
+    if (typeof eventOn === 'undefined') {
+        console.warn('eventOn is not defined. Using a mock function for testing.');
+        const listeners = {};
+        window.eventOn = (eventName, callback) => {
+            if (!listeners[eventName]) listeners[eventName] = [];
+            listeners[eventName].push(callback);
+            console.log(`Mock eventOn: Registered listener for ${eventName}`);
+        };
+        // Allow mock emit to trigger mock listeners
+        const originalEmit = window.eventEmit;
+        window.eventEmit = (eventName, data) => {
+            originalEmit(eventName, data);
+            if (listeners[eventName]) {
+                listeners[eventName].forEach(cb => cb(data));
+            }
+        };
+    }
+
+
+    // UI 元素
+    const typeSelect = document.getElementById('type');
+    const idInput = document.getElementById('id');
+    const srcInput = document.getElementById('src');
+    const speakerInput = document.getElementById('speaker');
+    const contextTextarea = document.getElementById('context');
+    const contextTextsTextarea = document.getElementById('context_texts');
+    const timeInput = document.getElementById('time');
+    const volumeInput = document.getElementById('volume');
+    const irInput = document.getElementById('ir_description');
+    const spatialInput = document.getElementById('spatial');
+    const effectsInput = document.getElementById('special_effects');
+    
+    const srcGroup = document.getElementById('src-group');
+    const voiceGroup = document.getElementById('voice-group');
+    const effectsGroup = document.getElementById('effects-group');
+
+    const playBtn = document.getElementById('play-btn');
+    const stopBtn = document.getElementById('stop-btn');
+    const resultsDiv = document.getElementById('results');
+    const playersListDiv = document.getElementById('players-list');
+    const playerTemplate = document.getElementById('player-template');
+
+    // Config elements
+    const getConfigBtn = document.getElementById('get-config-btn');
+    const configResultsDiv = document.getElementById('config-results');
+
+    // Player State
+    const activePlayers = {}; // Key: audio ID, Value: { element, duration, isSeeking, progressBar, timeDisplay, startTime, startOffset, animationFrameId }
+
+    // Helper to format time
+    function formatTime(seconds) {
+        const min = Math.floor(seconds / 60);
+        const sec = Math.floor(seconds % 60);
+        return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+    }
+
+    // 根据类型切换UI
+    typeSelect.addEventListener('change', () => {
+        const selectedType = typeSelect.value;
+        if (selectedType === 'VOICE') {
+            srcGroup.classList.add('hidden');
+            voiceGroup.classList.remove('hidden');
+            effectsGroup.classList.remove('hidden');
+        } else {
+            srcGroup.classList.remove('hidden');
+            voiceGroup.classList.add('hidden');
+            if (selectedType === 'SFX') {
+                effectsGroup.classList.remove('hidden');
+            } else {
+                effectsGroup.classList.add('hidden');
+            }
+        }
+    });
+    // 初始化UI
+    typeSelect.dispatchEvent(new Event('change'));
+
+
+    // 播放按钮点击事件
+    playBtn.addEventListener('click', () => {
+        const requestData = {
+            type: typeSelect.value,
+            id: idInput.value,
+            time: timeInput.value ? Number(timeInput.value) : undefined,
+            volume: volumeInput.value ? Number(volumeInput.value) : 100,
+        };
+
+        if (requestData.type === 'VOICE') {
+            requestData.speaker = speakerInput.value;
+            requestData.context = contextTextarea.value;
+            requestData.context_texts = contextTextsTextarea.value || undefined;
+        } else {
+            requestData.src = srcInput.value;
+        }
+
+        if (requestData.type === 'VOICE' || requestData.type === 'SFX') {
+            requestData.ir_description = irInput.value || undefined;
+            requestData.spatial = spatialInput.value || undefined;
+            requestData.special_effects = effectsInput.value || undefined;
+        }
+        
+        if (!requestData.id) {
+            alert('ID是必需的！');
+            return;
+        }
+
+        resultsDiv.textContent = `发送播放请求: \n${JSON.stringify(requestData, null, 2)}`;
+        eventEmit('st-immersive-sound:play-external', requestData);
+    });
+
+    // 停止按钮点击事件
+    stopBtn.addEventListener('click', () => {
+        const id = idInput.value;
+        if (!id) {
+            alert('请输入要停止的ID！');
+            return;
+        }
+        const requestData = { id };
+        resultsDiv.textContent = `发送停止请求: \n${JSON.stringify(requestData, null, 2)}`;
+        eventEmit('st-immersive-sound:stop-external', requestData);
+    });
+
+    // --- Player Logic ---
+
+    function startProgressLoop(id) {
+        const playerState = activePlayers[id];
+        if (!playerState) return;
+
+        const update = () => {
+            // Stop loop if player is gone or user is seeking
+            if (!activePlayers[id] || playerState.isSeeking) {
+                return;
+            }
+
+            const elapsedTime = (performance.now() - playerState.startTime) / 1000 + playerState.startOffset;
+            
+            if (elapsedTime < playerState.duration) {
+                playerState.progressBar.value = elapsedTime;
+                playerState.timeDisplay.textContent = `${formatTime(elapsedTime)} / ${formatTime(playerState.duration)}`;
+                playerState.animationFrameId = requestAnimationFrame(update);
+            } else {
+                // Ensure the bar reaches the end and stop the loop
+                playerState.progressBar.value = playerState.duration;
+                playerState.timeDisplay.textContent = `${formatTime(playerState.duration)} / ${formatTime(playerState.duration)}`;
+            }
+        };
+
+        // Cancel any existing loop before starting a new one
+        if (playerState.animationFrameId) {
+            cancelAnimationFrame(playerState.animationFrameId);
+        }
+        playerState.animationFrameId = requestAnimationFrame(update);
+    }
+
+    function createPlayerUI(data) {
+        if (activePlayers[data.id]) {
+            console.warn(`Player UI for ID ${data.id} already exists.`);
+            return;
+        }
+
+        const clone = playerTemplate.content.cloneNode(true);
+        const playerInstance = clone.querySelector('.player-instance');
+        playerInstance.id = `player-instance-${data.id}`;
+
+        const trackIdSpan = playerInstance.querySelector('.player-track-id');
+        const progressBar = playerInstance.querySelector('.player-progress-bar');
+        const timeDisplay = playerInstance.querySelector('.player-time-display');
+        const volumeBar = playerInstance.querySelector('.player-volume-bar');
+        const stopBtn = playerInstance.querySelector('.player-stop-btn');
+
+        trackIdSpan.textContent = data.id;
+        progressBar.max = data.duration;
+        progressBar.value = 0;
+        volumeBar.value = data.volume;
+        timeDisplay.textContent = `00:00 / ${formatTime(data.duration)}`;
+
+        playersListDiv.appendChild(playerInstance);
+
+        const playerState = {
+            element: playerInstance,
+            duration: data.duration,
+            isSeeking: false,
+            progressBar,
+            timeDisplay,
+            startTime: performance.now(),
+            startOffset: 0,
+            animationFrameId: null,
+        };
+        activePlayers[data.id] = playerState;
+
+        // Add event listeners
+        progressBar.addEventListener('mousedown', () => {
+            playerState.isSeeking = true;
+        });
+        progressBar.addEventListener('input', () => {
+            const seekTime = Number(progressBar.value);
+            timeDisplay.textContent = `${formatTime(seekTime)} / ${formatTime(playerState.duration)}`;
+        });
+        progressBar.addEventListener('mouseup', () => {
+            const seekTime = Number(progressBar.value);
+            // The seek event will trigger a progress event, which will resync the timer
+            eventEmit('st-immersive-sound:external-audio-control', {
+                id: data.id,
+                command: 'seek',
+                value: seekTime,
+            });
+            // We set isSeeking to false after the backend confirms the seek
+        });
+
+        volumeBar.addEventListener('input', () => {
+            const newVolume = Number(volumeBar.value);
+            eventEmit('st-immersive-sound:external-audio-control', {
+                id: data.id,
+                command: 'set_volume',
+                value: newVolume,
+            });
+        });
+
+        stopBtn.addEventListener('click', () => {
+            eventEmit('st-immersive-sound:stop-external', { id: data.id });
+        });
+
+        startProgressLoop(data.id);
+    }
+
+    // 监听播放开始
+    eventOn('st-immersive-sound:external-audio-playing', (data) => {
+        console.log('Player received playing event:', data);
+        resultsDiv.textContent = `收到音频播放事件: \n${JSON.stringify(data, null, 2)}`;
+        createPlayerUI(data);
+    });
+
+    // 监听播放进度 (现在只用于跳转后同步)
+    eventOn('st-immersive-sound:external-audio-progress', (data) => {
+        const player = activePlayers[data.id];
+        if (!player) return;
+
+        // Resync timer after seek
+        player.startOffset = data.currentTime;
+        player.startTime = performance.now();
+        player.isSeeking = false; // Allow progress loop to resume
+        
+        // Update UI immediately
+        player.progressBar.value = data.currentTime;
+        player.timeDisplay.textContent = `${formatTime(data.currentTime)} / ${formatTime(data.duration)}`;
+
+        // Restart the loop from the new position
+        startProgressLoop(data.id);
+    });
+
+    // 监听停止事件
+    eventOn('st-immersive-sound:external-audio-stopped', (data) => {
+        const player = activePlayers[data.id];
+        if (!player) {
+            return;
+        }
+        console.log('Player received stop event:', data);
+        resultsDiv.textContent = `收到音频停止事件: \n${JSON.stringify(data, null, 2)}`;
+        
+        if (player.animationFrameId) {
+            cancelAnimationFrame(player.animationFrameId);
+        }
+        
+        player.element.remove();
+        delete activePlayers[data.id];
+    });
+
+    // 监听播放失败事件
+    eventOn('st-immersive-sound:external-audio-failed', (data) => {
+        const player = activePlayers[data.id];
+        if (player) {
+            if (player.animationFrameId) {
+                cancelAnimationFrame(player.animationFrameId);
+            }
+            player.element.remove();
+            delete activePlayers[data.id];
+        }
+        console.error('Player received error event:', data);
+        resultsDiv.textContent = `收到音频播放失败事件: \n${JSON.stringify(data, null, 2)}`;
+    });
+
+
+    // 初始日志
+    resultsDiv.textContent = '测试页面已就绪。请确保 eventOn 和 eventEmit 函数在当前环境中可用。';
+
+
+    // --- Config Logic ---
+
+    // Helper to populate a select element
+    function populateSelect(selectElement, options, isObjectList = false, keyField = 'key', valueField = 'key') {
+        selectElement.innerHTML = '';
+        if (isObjectList) {
+            options.forEach(option => {
+                const opt = document.createElement('option');
+                opt.value = option[valueField];
+                opt.textContent = option[keyField];
+                selectElement.appendChild(opt);
+            });
+        } else {
+            options.forEach(option => {
+                const opt = document.createElement('option');
+                opt.value = option;
+                opt.textContent = option;
+                selectElement.appendChild(opt);
+            });
+        }
+    }
+
+    // Get config button click event
+    getConfigBtn.addEventListener('click', () => {
+        const preElement = configResultsDiv.querySelector('pre');
+        if (preElement) {
+            preElement.textContent = '正在请求配置信息...';
+        }
+        eventEmit('st-immersive-sound:get-config-data', {});
+    });
+
+    // Listen for config data response
+    eventOn('st-immersive-sound:config-data', (data) => {
+        console.log('Received config data:', data);
+        const preElement = configResultsDiv.querySelector('pre');
+        if (preElement) {
+            preElement.textContent = JSON.stringify(data, null, 2);
+        }
+
+        // Populate dropdowns
+        if (data.parsedAudioAssets) {
+            populateSelect(srcInput, data.parsedAudioAssets, true, 'key', 'key');
+        }
+        if (data.ttsSpeakers) {
+            populateSelect(speakerInput, data.ttsSpeakers);
+        }
+        if (data.irProfiles) {
+            populateSelect(irInput, data.irProfiles);
+        }
+        if (data.spatialProfiles) {
+            populateSelect(spatialInput, data.spatialProfiles);
+        }
+        if (data.effectsProfiles) {
+            populateSelect(effectsInput, data.effectsProfiles);
+        }
+    });
+
+</script>
+
+</body>
+</html>

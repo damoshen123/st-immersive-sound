@@ -1,7 +1,7 @@
 <div id="st-immersive-sound-settings-modal" class="st-is-modal-backdrop" style="display: none;">
     <div class="st-is-modal-content">
         <div class="st-is-modal-header">
-            <h2>声临其境</h2>
+            <h2>声临其境 <span id="st-is-version-display"></span><span id="st-is-title-update-notification" style="display: none;"> (发现新版本, 请到“关于”中更新)</span></h2>
             <span id="st-immersive-sound-settings-modal-close" class="st-is-modal-close">&times;</span>
         </div>
 
@@ -10,6 +10,7 @@
             <div class="st-is-sidebar">
                 <div class="st-is-sidebar-header">
                     <div class="st-is-sidebar-header-buttons">
+                        <button class="st-is-sidebar-btn" id="toggle_theme_button" title="切换主题"><i class="fa-solid fa-sun"></i></button>
                         <button class="st-is-sidebar-btn" id="stopButton" title="停止所有音频"><i class="fa-solid fa-stop"></i></button>
                         <button class="st-is-sidebar-btn" id="update_plugin_button" title="检查更新"><i class="fa-solid fa-cloud-arrow-down"></i></button>
                         <button class="st-is-sidebar-btn" id="restore_default_settings_button" title="重置设置"><i class="fa-solid fa-arrow-rotate-left"></i></button>
@@ -21,627 +22,1570 @@
                     <a href="#" class="st-is-nav-link active" data-tab="main">主要设置</a>
                     <a href="#" class="st-is-nav-link" data-tab="highlight">高亮设置</a>
                     <a href="#" class="st-is-nav-link" data-tab="volume">音量设置</a>
-                    <a href="#" class="st-is-nav-link" data-tab="fade">淡入淡出</a>
-                    <a href="#" class="st-is-nav-link" data-tab="3d-music">3D 音效 (Music)</a>
-                    <a href="#" class="st-is-nav-link" data-tab="3d-ambiance">3D 音效 (Ambiance)</a>
-                    <a href="#" class="st-is-nav-link" data-tab="3d-sfx">3D 音效 (SFX)</a>
-                    <a href="#" class="st-is-nav-link" data-tab="3d-sfx-wait">3D 音效 (SFX_WAIT)</a>
-                    <a href="#" class="st-is-nav-link" data-tab="3d-voice">3D 音效 (VOICE)</a>
+                    <a href="#" class="st-is-nav-link" data-tab="regex">正则设置</a>
+                    <a href="#" class="st-is-nav-link" data-tab="llm">模型设置</a>
+                    <a href="#" class="st-is-nav-link" data-tab="tts">TTS 设置</a>
+                    <a href="#" class="st-is-nav-link" data-tab="tts-preview">音频预览</a>
+                    <a href="#" class="st-is-nav-link" data-tab="effects-processor">效果器</a>
+                    <a href="#" class="st-is-nav-link" data-tab="3d-sound">3D 音效</a>
                     <a href="#" class="st-is-nav-link" data-tab="vibration">震动设置</a>
                     <a href="#" class="st-is-nav-link" data-tab="cache">缓存管理</a>
+                    <a href="#" class="st-is-nav-link" data-tab="audio-resources">音效资源</a>
                     <a href="#" class="st-is-nav-link" data-tab="float-ball">悬浮球</a>
-                    <a href="#" class="st-is-nav-link" data-tab="about">关于</a>
+                    <a href="#" class="st-is-nav-link" data-tab="theme">主题设置</a>
+                    <a href="#" class="st-is-nav-link" data-tab="log">日志</a>
+                    <a href="#" class="st-is-nav-link" data-tab="about">关于 <span id="st-is-update-indicator" class="st-is-update-indicator" style="display: none;"></span></a>
                 </nav>
             </div>
 
             <!-- Content Area -->
             <div class="st-is-content">
                 <div class="st-is-tab-content active" id="st-is-tab-main">
-                    <h3>主要设置</h3>
-                    <div class="st-is-field">
-                        <label for="enable_plugin">启用插件</label>
-                        <div class="st-is-toggle">
-                            <input id="enable_plugin" type="checkbox" />
-                            <span class="st-is-slider"></span>
+                    <div class="st-is-settings-section">
+                        <h3>主要设置</h3>
+                        <div class="st-is-field">
+                            <label for="enable_plugin">启用插件</label>
+                            <div class="st-is-toggle">
+                                <input id="enable_plugin" type="checkbox" />
+                                <span class="st-is-slider"></span>
+                            </div>
+                        </div>
+                        <div class="st-is-field">
+                            <label for="readingSpeed">阅读速度 (CPM)</label>
+                            <div class="st-is-range-container">
+                                <input class="st-is-range-slider" type="range" id="readingSpeed" min="100" max="2000" step="50" value="600">
+                                <input class="st-is-range-input" type="number" id="readingSpeed_value" data-for="readingSpeed" min="100" max="2000" step="50" value="600">
+                            </div>
                         </div>
                     </div>
-                    <div class="st-is-field">
-                        <label for="readingSpeed">阅读速度 (CPM)</label>
-                        <div class="st-is-range-container">
-                            <input class="st-is-range-slider" type="range" id="readingSpeed" min="100" max="2000" step="50" value="600">
-                            <input class="st-is-range-input" type="number" id="readingSpeed_value" data-for="readingSpeed" min="100" max="2000" step="50" value="600">
+                    <div class="st-is-settings-section">
+                        <h3>辅助设置</h3>
+                        <div class="st-is-field">
+                            <label for="musicStartsWithParagraph">Music以段落开头</label>
+                            <div class="st-is-toggle">
+                                <input id="musicStartsWithParagraph" type="checkbox" />
+                                <span class="st-is-slider"></span>
+                            </div>
+                        </div>
+                        <div class="st-is-field">
+                            <label for="seamlessMusic">Music无缝衔接</label>
+                            <div class="st-is-toggle">
+                                <input id="seamlessMusic" type="checkbox" />
+                                <span class="st-is-slider"></span>
+                            </div>
+                        </div>
+                        <div class="st-is-field">
+                            <label for="tts_request_balancing">TTS请求均衡</label>
+                            <div class="st-is-toggle">
+                                <input id="tts_request_balancing" type="checkbox" />
+                                <span class="st-is-slider"></span>
+                            </div>
+                        </div>
+                        <div class="st-is-field">
+                            <label for="offline_rendering_enabled">离线渲染</label>
+                            <div class="st-is-toggle">
+                                <input id="offline_rendering_enabled" type="checkbox" />
+                                <span class="st-is-slider"></span>
+                            </div>
+                        </div>
+                        <div class="st-is-field">
+                            <label for="enable_tts_voice">TTS语音</label>
+                            <div class="st-is-toggle">
+                                <input id="enable_tts_voice" type="checkbox" />
+                                <span class="st-is-slider"></span>
+                            </div>
                         </div>
                     </div>
-                    <hr class="st-is-hr">
-                    <h3>辅助设置</h3>
-                    <div class="st-is-field">
-                        <label for="autoPlay">自动播放</label>
-                        <div class="st-is-toggle">
-                            <input id="autoPlay" type="checkbox" />
-                            <span class="st-is-slider"></span>
+                    <div class="st-is-settings-section">
+                        <h3>语音优先设置</h3>
+                        <div class="st-is-field">
+                            <label for="voiceDuckingEnabled">启用语音优先 (自动降低背景音乐)</label>
+                            <div class="st-is-toggle">
+                                <input id="voiceDuckingEnabled" type="checkbox" />
+                                <span class="st-is-slider"></span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="st-is-field">
-                        <label for="musicStartsWithParagraph">Music以段落开头</label>
-                        <div class="st-is-toggle">
-                            <input id="musicStartsWithParagraph" type="checkbox" />
-                            <span class="st-is-slider"></span>
+                        <div class="st-is-field">
+                            <label for="voiceDuckingPercentage">背景音乐降低幅度 (%)</label>
+                            <div class="st-is-range-container">
+                                <input class="st-is-range-slider" type="range" id="voiceDuckingPercentage" min="0" max="100" step="1" value="50">
+                                <input class="st-is-range-input" type="number" id="voiceDuckingPercentage_value" data-for="voiceDuckingPercentage" min="0" max="100" step="1" value="50">
+                            </div>
                         </div>
-                    </div>
-                    <div class="st-is-field">
-                        <label for="seamlessMusic">Music无缝衔接</label>
-                        <div class="st-is-toggle">
-                            <input id="seamlessMusic" type="checkbox" />
-                            <span class="st-is-slider"></span>
-                        </div>
-                    </div>
-                    <div class="st-is-field">
-                        <label for="regexReplace">自动正则替换</label>
-                        <div class="st-is-toggle">
-                            <input id="regexReplace" type="checkbox" />
-                            <span class="st-is-slider"></span>
+                        <div class="st-is-field">
+                            <label for="voiceDuckingFadeTime">语音优先淡入淡出时间 (秒)</label>
+                            <div class="st-is-range-container">
+                                <input class="st-is-range-slider" type="range" id="voiceDuckingFadeTime" min="0" max="5" step="0.1" value="0.5">
+                                <input class="st-is-range-input" type="number" id="voiceDuckingFadeTime_value" data-for="voiceDuckingFadeTime" min="0" max="5" step="0.1" value="0.5">
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="st-is-tab-content" id="st-is-tab-highlight">
-                    <h3>阅读高亮设置</h3>
-                    <div class="st-is-field">
-                        <label for="highlightColor">高亮颜色</label>
-                        <input type="color" id="highlightColor" value="#007BFF" class="st-is-color-picker">
-                    </div>
-                    <div class="st-is-field">
-                        <label for="textColor">字体颜色</label>
-                        <input type="color" id="textColor" value="#FFFFFF" class="st-is-color-picker">
-                    </div>
-                    <div class="st-is-field">
-                        <label for="highlightOpacity">高亮不透明度</label>
-                        <div class="st-is-range-container">
-                            <input class="st-is-range-slider" type="range" id="highlightOpacity" min="0" max="1" step="0.1" value="0.4">
-                            <input class="st-is-range-input" type="number" id="highlightOpacity_value" data-for="highlightOpacity" min="0" max="1" step="0.1" value="0.4">
+                    <div class="st-is-settings-section">
+                        <h3>阅读高亮设置</h3>
+                        <div class="st-is-field">
+                            <label for="highlightColor">高亮颜色</label>
+                            <input type="color" id="highlightColor" value="#007BFF" class="st-is-color-picker">
+                        </div>
+                        <div class="st-is-field">
+                            <label for="textColor">字体颜色</label>
+                            <input type="color" id="textColor" value="#FFFFFF" class="st-is-color-picker">
+                        </div>
+                        <div class="st-is-field">
+                            <label for="highlightOpacity">高亮不透明度</label>
+                            <div class="st-is-range-container">
+                                <input class="st-is-range-slider" type="range" id="highlightOpacity" min="0" max="1" step="0.1" value="0.4">
+                                <input class="st-is-range-input" type="number" id="highlightOpacity_value" data-for="highlightOpacity" min="0" max="1" step="0.1" value="0.4">
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="st-is-tab-content" id="st-is-tab-volume">
-                    <h3>音量设置</h3>
-                    <div class="st-is-grid">
-                        <div class="st-is-field">
-                            <label for="masterVolume">整体音量</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="masterVolume" min="0" max="2" step="0.01" value="1">
-                                <input class="st-is-range-input" type="number" id="masterVolume_value" data-for="masterVolume" min="0" max="2" step="0.01" value="1">
+                    <div class="st-is-settings-section">
+                        <h3>音量设置</h3>
+                        <div class="st-is-grid">
+                            <div class="st-is-field">
+                                <label for="masterVolume">整体音量</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="masterVolume" min="0" max="2" step="0.01" value="1">
+                                    <input class="st-is-range-input" type="number" id="masterVolume_value" data-for="masterVolume" min="0" max="2" step="0.01" value="1">
+                                </div>
+                            </div>
+                            <div class="st-is-field">
+                                <label for="musicVolume">Music 音量</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="musicVolume" min="0" max="2" step="0.01" value="1">
+                                    <input class="st-is-range-input" type="number" id="musicVolume_value" data-for="musicVolume" min="0" max="2" step="0.01" value="1">
+                                </div>
+                            </div>
+                            <div class="st-is-field">
+                                <label for="ambianceVolume">Ambiance 音量</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="ambianceVolume" min="0" max="2" step="0.01" value="1">
+                                    <input class="st-is-range-input" type="number" id="ambianceVolume_value" data-for="ambianceVolume" min="0" max="2" step="0.01" value="1">
+                                </div>
+                            </div>
+                            <div class="st-is-field">
+                                <label for="sfxVolume">SFX 音量</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="sfxVolume" min="0" max="2" step="0.01" value="1">
+                                    <input class="st-is-range-input" type="number" id="sfxVolume_value" data-for="sfxVolume" min="0" max="2" step="0.01" value="1">
+                                </div>
+                            </div>
+                            <div class="st-is-field">
+                                <label for="sfx_waitVolume">SFX_WAIT 音量</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="sfx_waitVolume" min="0" max="2" step="0.01" value="1">
+                                    <input class="st-is-range-input" type="number" id="sfx_waitVolume_value" data-for="sfx_waitVolume" min="0" max="2" step="0.01" value="1">
+                                </div>
+                            </div>
+                            <div class="st-is-field">
+                                <label for="voiceVolume">VOICE 音量</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="voiceVolume" min="0" max="2" step="0.01" value="1">
+                                    <input class="st-is-range-input" type="number" id="voiceVolume_value" data-for="voiceVolume" min="0" max="2" step="0.01" value="1">
+                                </div>
                             </div>
                         </div>
-                        <div class="st-is-field">
-                            <label for="musicVolume">Music 音量</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="musicVolume" min="0" max="2" step="0.01" value="1">
-                                <input class="st-is-range-input" type="number" id="musicVolume_value" data-for="musicVolume" min="0" max="2" step="0.01" value="1">
+                    </div>
+                    <div class="st-is-settings-section">
+                        <h3>淡入淡出设置 (秒)</h3>
+                        <div class="st-is-grid">
+                            <div class="st-is-field">
+                                <label for="musicFadeIn">Music 淡入</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="musicFadeIn" min="0" max="10" step="0.1" value="3">
+                                    <input class="st-is-range-input" type="number" id="musicFadeIn_value" data-for="musicFadeIn" min="0" max="10" step="0.1" value="3">
+                                </div>
                             </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label for="ambianceVolume">Ambiance 音量</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="ambianceVolume" min="0" max="2" step="0.01" value="1">
-                                <input class="st-is-range-input" type="number" id="ambianceVolume_value" data-for="ambianceVolume" min="0" max="2" step="0.01" value="1">
+                            <div class="st-is-field">
+                                <label for="musicFadeOut">Music 淡出</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="musicFadeOut" min="0" max="10" step="0.1" value="2">
+                                    <input class="st-is-range-input" type="number" id="musicFadeOut_value" data-for="musicFadeOut" min="0" max="10" step="0.1" value="2">
+                                </div>
                             </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label for="sfxVolume">SFX 音量</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="sfxVolume" min="0" max="2" step="0.01" value="1">
-                                <input class="st-is-range-input" type="number" id="sfxVolume_value" data-for="sfxVolume" min="0" max="2" step="0.01" value="1">
+                            <div class="st-is-field">
+                                <label for="ambianceFadeIn">Ambiance 淡入</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="ambianceFadeIn" min="0" max="10" step="0.1" value="3">
+                                    <input class="st-is-range-input" type="number" id="ambianceFadeIn_value" data-for="ambianceFadeIn" min="0" max="10" step="0.1" value="3">
+                                </div>
                             </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label for="sfx_waitVolume">SFX_WAIT 音量</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="sfx_waitVolume" min="0" max="2" step="0.01" value="1">
-                                <input class="st-is-range-input" type="number" id="sfx_waitVolume_value" data-for="sfx_waitVolume" min="0" max="2" step="0.01" value="1">
+                            <div class="st-is-field">
+                                <label for="ambianceFadeOut">Ambiance 淡出</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="ambianceFadeOut" min="0" max="10" step="0.1" value="2">
+                                    <input class="st-is-range-input" type="number" id="ambianceFadeOut_value" data-for="ambianceFadeOut" min="0" max="10" step="0.1" value="2">
+                                </div>
                             </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label for="voiceVolume">VOICE 音量</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="voiceVolume" min="0" max="2" step="0.01" value="1">
-                                <input class="st-is-range-input" type="number" id="voiceVolume_value" data-for="voiceVolume" min="0" max="2" step="0.01" value="1">
+                            <div class="st-is-field">
+                                <label for="sfxFadeIn">SFX 淡入</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="sfxFadeIn" min="0" max="5" step="0.1" value="0.1">
+                                    <input class="st-is-range-input" type="number" id="sfxFadeIn_value" data-for="sfxFadeIn" min="0" max="5" step="0.1" value="0.1">
+                                </div>
+                            </div>
+                            <div class="st-is-field">
+                                <label for="sfxFadeOut">SFX 淡出</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="sfxFadeOut" min="0" max="5" step="0.1" value="0.1">
+                                    <input class="st-is-range-input" type="number" id="sfxFadeOut_value" data-for="sfxFadeOut" min="0" max="5" step="0.1" value="0.1">
+                                </div>
+                            </div>
+                            <div class="st-is-field">
+                                <label for="sfx_waitFadeIn">SFX_WAIT 淡入</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="sfx_waitFadeIn" min="0" max="5" step="0.1" value="0.1">
+                                    <input class="st-is-range-input" type="number" id="sfx_waitFadeIn_value" data-for="sfx_waitFadeIn" min="0" max="5" step="0.1" value="0.1">
+                                </div>
+                            </div>
+                            <div class="st-is-field">
+                                <label for="sfx_waitFadeOut">SFX_WAIT 淡出</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="sfx_waitFadeOut" min="0" max="5" step="0.1" value="0.1">
+                                    <input class="st-is-range-input" type="number" id="sfx_waitFadeOut_value" data-for="sfx_waitFadeOut" min="0" max="5" step="0.1" value="0.1">
+                                </div>
+                            </div>
+                            <div class="st-is-field">
+                                <label for="voiceFadeIn">VOICE 淡入</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="voiceFadeIn" min="0" max="5" step="0.1" value="0.1">
+                                    <input class="st-is-range-input" type="number" id="voiceFadeIn_value" data-for="voiceFadeIn" min="0" max="5" step="0.1" value="0.1">
+                                </div>
+                            </div>
+                            <div class="st-is-field">
+                                <label for="voiceFadeOut">VOICE 淡出</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="voiceFadeOut" min="0" max="5" step="0.1" value="0.1">
+                                    <input class="st-is-range-input" type="number" id="voiceFadeOut_value" data-for="voiceFadeOut" min="0" max="5" step="0.1" value="0.1">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="st-is-tab-content" id="st-is-tab-fade">
-                    <h3>淡入淡出设置 (秒)</h3>
-                    <div class="st-is-grid">
+                <div class="st-is-tab-content" id="st-is-tab-3d-sound">
+                    <div class="st-is-settings-section">
+                        <h3>Music 3D 音效设置</h3>
                         <div class="st-is-field">
-                            <label for="musicFadeIn">Music 淡入</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="musicFadeIn" min="0" max="10" step="0.1" value="3">
-                                <input class="st-is-range-input" type="number" id="musicFadeIn_value" data-for="musicFadeIn" min="0" max="10" step="0.1" value="3">
+                            <label for="enable3dAudio_music">开启 Music 3D</label>
+                            <div class="st-is-toggle">
+                                <input type="checkbox" id="enable3dAudio_music" />
+                                <span class="st-is-slider"></span>
                             </div>
                         </div>
-                        <div class="st-is-field">
-                            <label for="musicFadeOut">Music 淡出</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="musicFadeOut" min="0" max="10" step="0.1" value="2">
-                                <input class="st-is-range-input" type="number" id="musicFadeOut_value" data-for="musicFadeOut" min="0" max="10" step="0.1" value="2">
+                        <div class="st-is-grid">
+                            <div class="st-is-field">
+                                <label>近距离不衰减</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="music_refDistance" min="0" max="20" step="0.1" value="0.6">
+                                    <input class="st-is-range-input" type="number" id="music_refDistance_value" data-for="music_refDistance" min="0" max="20" step="0.1" value="0.6">
+                                </div>
+                            </div>
+                            <div class="st-is-field">
+                                <label>远距离不衰减</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="music_maxDistance" min="1" max="100" step="1" value="20">
+                                    <input class="st-is-range-input" type="number" id="music_maxDistance_value" data-for="music_maxDistance" min="1" max="100" step="1" value="20">
+                                </div>
+                            </div>
+                            <div class="st-is-field">
+                                <label>衰减速度</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="music_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
+                                    <input class="st-is-range-input" type="number" id="music_rolloffFactor_value" data-for="music_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
+                                </div>
                             </div>
                         </div>
-                        <div class="st-is-field">
-                            <label for="ambianceFadeIn">Ambiance 淡入</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="ambianceFadeIn" min="0" max="10" step="0.1" value="3">
-                                <input class="st-is-range-input" type="number" id="ambianceFadeIn_value" data-for="ambianceFadeIn" min="0" max="10" step="0.1" value="3">
+                        <h4>位置 (X, Y, Z)</h4>
+                        <div class="st-is-grid">
+                            <div class="st-is-field">
+                                <label>左右 (X)</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="music_posX" min="-10" max="10" value="0" step="0.1">
+                                    <input class="st-is-range-input" type="number" id="music_posX_value" data-for="music_posX" min="-10" max="10" step="0.1" value="0">
+                                </div>
                             </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label for="ambianceFadeOut">Ambiance 淡出</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="ambianceFadeOut" min="0" max="10" step="0.1" value="2">
-                                <input class="st-is-range-input" type="number" id="ambianceFadeOut_value" data-for="ambianceFadeOut" min="0" max="10" step="0.1" value="2">
+                            <div class="st-is-field">
+                                <label>上下 (Y)</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="music_posY" min="-10" max="10" value="0" step="0.1">
+                                    <input class="st-is-range-input" type="number" id="music_posY_value" data-for="music_posY" min="-10" max="10" step="0.1" value="0">
+                                </div>
                             </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label for="sfxFadeIn">SFX 淡入</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="sfxFadeIn" min="0" max="5" step="0.1" value="0.1">
-                                <input class="st-is-range-input" type="number" id="sfxFadeIn_value" data-for="sfxFadeIn" min="0" max="5" step="0.1" value="0.1">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label for="sfxFadeOut">SFX 淡出</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="sfxFadeOut" min="0" max="5" step="0.1" value="0.1">
-                                <input class="st-is-range-input" type="number" id="sfxFadeOut_value" data-for="sfxFadeOut" min="0" max="5" step="0.1" value="0.1">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label for="sfx_waitFadeIn">SFX_WAIT 淡入</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="sfx_waitFadeIn" min="0" max="5" step="0.1" value="0.1">
-                                <input class="st-is-range-input" type="number" id="sfx_waitFadeIn_value" data-for="sfx_waitFadeIn" min="0" max="5" step="0.1" value="0.1">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label for="sfx_waitFadeOut">SFX_WAIT 淡出</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="sfx_waitFadeOut" min="0" max="5" step="0.1" value="0.1">
-                                <input class="st-is-range-input" type="number" id="sfx_waitFadeOut_value" data-for="sfx_waitFadeOut" min="0" max="5" step="0.1" value="0.1">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label for="voiceFadeIn">VOICE 淡入</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="voiceFadeIn" min="0" max="5" step="0.1" value="0.1">
-                                <input class="st-is-range-input" type="number" id="voiceFadeIn_value" data-for="voiceFadeIn" min="0" max="5" step="0.1" value="0.1">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label for="voiceFadeOut">VOICE 淡出</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="voiceFadeOut" min="0" max="5" step="0.1" value="0.1">
-                                <input class="st-is-range-input" type="number" id="voiceFadeOut_value" data-for="voiceFadeOut" min="0" max="5" step="0.1" value="0.1">
+                            <div class="st-is-field">
+                                <label>前后 (Z)</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="music_posZ" min="-10" max="10" value="0" step="0.1">
+                                    <input class="st-is-range-input" type="number" id="music_posZ_value" data-for="music_posZ" min="-10" max="10" step="0.1" value="0">
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="st-is-tab-content" id="st-is-tab-3d-music">
-                    <h3>Music 3D 音效设置</h3>
-                    <div class="st-is-field">
-                        <label for="enable3dAudio_music">开启 Music 3D</label>
-                        <div class="st-is-toggle">
-                            <input type="checkbox" id="enable3dAudio_music" />
-                            <span class="st-is-slider"></span>
-                        </div>
-                    </div>
-                    <hr class="st-is-hr">
-                    <div class="st-is-grid">
+                    <div class="st-is-settings-section">
+                        <h3>Ambiance 3D 音效设置</h3>
                         <div class="st-is-field">
-                            <label>近距离不衰减</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="music_refDistance" min="0" max="20" step="0.1" value="0.6">
-                                <input class="st-is-range-input" type="number" id="music_refDistance_value" data-for="music_refDistance" min="0" max="20" step="0.1" value="0.6">
+                            <label for="enable3dAudio_ambiance">开启 Ambiance 3D</label>
+                            <div class="st-is-toggle">
+                                <input type="checkbox" id="enable3dAudio_ambiance" />
+                                <span class="st-is-slider"></span>
                             </div>
                         </div>
-                        <div class="st-is-field">
-                            <label>远距离不衰减</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="music_maxDistance" min="1" max="100" step="1" value="20">
-                                <input class="st-is-range-input" type="number" id="music_maxDistance_value" data-for="music_maxDistance" min="1" max="100" step="1" value="20">
+                        <div class="st-is-grid">
+                            <div class="st-is-field">
+                                <label>近距离不衰减</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="ambiance_refDistance" min="0" max="20" step="0.1" value="0.6">
+                                    <input class="st-is-range-input" type="number" id="ambiance_refDistance_value" data-for="ambiance_refDistance" min="0" max="20" step="0.1" value="0.6">
+                                </div>
+                            </div>
+                            <div class="st-is-field">
+                                <label>远距离不衰减</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="ambiance_maxDistance" min="1" max="100" step="1" value="20">
+                                    <input class="st-is-range-input" type="number" id="ambiance_maxDistance_value" data-for="ambiance_maxDistance" min="1" max="100" step="1" value="20">
+                                </div>
+                            </div>
+                            <div class="st-is-field">
+                                <label>衰减速度</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="ambiance_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
+                                    <input class="st-is-range-input" type="number" id="ambiance_rolloffFactor_value" data-for="ambiance_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
+                                </div>
                             </div>
                         </div>
-                        <div class="st-is-field">
-                            <label>衰减速度</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="music_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
-                                <input class="st-is-range-input" type="number" id="music_rolloffFactor_value" data-for="music_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
+                        <h4>位置 (X, Y, Z)</h4>
+                        <div class="st-is-grid">
+                            <div class="st-is-field">
+                                <label>左右 (X)</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="ambiance_posX" min="-10" max="10" value="0" step="0.1">
+                                    <input class="st-is-range-input" type="number" id="ambiance_posX_value" data-for="ambiance_posX" min="-10" max="10" step="0.1" value="0">
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                     <hr class="st-is-hr">
-                    <h4>位置 (X, Y, Z)</h4>
-                    <div class="st-is-grid">
-                        <div class="st-is-field">
-                            <label>左右 (X)</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="music_posX" min="-10" max="10" value="0" step="0.1">
-                                <input class="st-is-range-input" type="number" id="music_posX_value" data-for="music_posX" min="-10" max="10" step="0.1" value="0">
+                            <div class="st-is-field">
+                                <label>上下 (Y)</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="ambiance_posY" min="-10" max="10" value="0" step="0.1">
+                                    <input class="st-is-range-input" type="number" id="ambiance_posY_value" data-for="ambiance_posY" min="-10" max="10" step="0.1" value="0">
+                                </div>
                             </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label>上下 (Y)</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="music_posY" min="-10" max="10" value="0" step="0.1">
-                                <input class="st-is-range-input" type="number" id="music_posY_value" data-for="music_posY" min="-10" max="10" step="0.1" value="0">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label>前后 (Z)</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="music_posZ" min="-10" max="10" value="0" step="0.1">
-                                <input class="st-is-range-input" type="number" id="music_posZ_value" data-for="music_posZ" min="-10" max="10" step="0.1" value="0">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="st-is-tab-content" id="st-is-tab-3d-ambiance">
-                    <h3>Ambiance 3D 音效设置</h3>
-                    <div class="st-is-field">
-                        <label for="enable3dAudio_ambiance">开启 Ambiance 3D</label>
-                        <div class="st-is-toggle">
-                            <input type="checkbox" id="enable3dAudio_ambiance" />
-                            <span class="st-is-slider"></span>
-                        </div>
-                    </div>
-                    <hr class="st-is-hr">
-                    <div class="st-is-grid">
-                        <div class="st-is-field">
-                            <label>近距离不衰减</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="ambiance_refDistance" min="0" max="20" step="0.1" value="0.6">
-                                <input class="st-is-range-input" type="number" id="ambiance_refDistance_value" data-for="ambiance_refDistance" min="0" max="20" step="0.1" value="0.6">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label>远距离不衰减</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="ambiance_maxDistance" min="1" max="100" step="1" value="20">
-                                <input class="st-is-range-input" type="number" id="ambiance_maxDistance_value" data-for="ambiance_maxDistance" min="1" max="100" step="1" value="20">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label>衰减速度</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="ambiance_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
-                                <input class="st-is-range-input" type="number" id="ambiance_rolloffFactor_value" data-for="ambiance_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
-                            </div>
-                        </div>
-                    </div>
-                     <hr class="st-is-hr">
-                    <h4>位置 (X, Y, Z)</h4>
-                    <div class="st-is-grid">
-                        <div class="st-is-field">
-                            <label>左右 (X)</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="ambiance_posX" min="-10" max="10" value="0" step="0.1">
-                                <input class="st-is-range-input" type="number" id="ambiance_posX_value" data-for="ambiance_posX" min="-10" max="10" step="0.1" value="0">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label>上下 (Y)</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="ambiance_posY" min="-10" max="10" value="0" step="0.1">
-                                <input class="st-is-range-input" type="number" id="ambiance_posY_value" data-for="ambiance_posY" min="-10" max="10" step="0.1" value="0">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label>前后 (Z)</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="ambiance_posZ" min="-10" max="10" value="0" step="0.1">
-                                <input class="st-is-range-input" type="number" id="ambiance_posZ_value" data-for="ambiance_posZ" min="-10" max="10" step="0.1" value="0">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="st-is-tab-content" id="st-is-tab-3d-sfx">
-                    <h3>SFX 3D 音效设置</h3>
-                    <div class="st-is-field">
-                        <label for="enable3dAudio_sfx">开启 SFX 3D</label>
-                        <div class="st-is-toggle">
-                            <input type="checkbox" id="enable3dAudio_sfx" />
-                            <span class="st-is-slider"></span>
-                        </div>
-                    </div>
-                    <hr class="st-is-hr">
-                    <div class="st-is-grid">
-                        <div class="st-is-field">
-                            <label>近距离不衰减</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="sfx_refDistance" min="0" max="20" step="0.1" value="0.6">
-                                <input class="st-is-range-input" type="number" id="sfx_refDistance_value" data-for="sfx_refDistance" min="0" max="20" step="0.1" value="0.6">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label>远距离不衰减</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="sfx_maxDistance" min="1" max="100" step="1" value="20">
-                                <input class="st-is-range-input" type="number" id="sfx_maxDistance_value" data-for="sfx_maxDistance" min="1" max="100" step="1" value="20">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label>衰减速度</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="sfx_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
-                                <input class="st-is-range-input" type="number" id="sfx_rolloffFactor_value" data-for="sfx_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
-                            </div>
-                        </div>
-                    </div>
-                     <hr class="st-is-hr">
-                    <h4>位置 (X, Y, Z)</h4>
-                    <div class="st-is-grid">
-                        <div class="st-is-field">
-                            <label>左右 (X)</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="sfx_posX" min="-10" max="10" value="0" step="0.1">
-                                <input class="st-is-range-input" type="number" id="sfx_posX_value" data-for="sfx_posX" min="-10" max="10" step="0.1" value="0">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label>上下 (Y)</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="sfx_posY" min="-10" max="10" value="0" step="0.1">
-                                <input class="st-is-range-input" type="number" id="sfx_posY_value" data-for="sfx_posY" min="-10" max="10" step="0.1" value="0">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label>前后 (Z)</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="sfx_posZ" min="-10" max="10" value="0" step="0.1">
-                                <input class="st-is-range-input" type="number" id="sfx_posZ_value" data-for="sfx_posZ" min="-10" max="10" step="0.1" value="0">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="st-is-tab-content" id="st-is-tab-3d-sfx-wait">
-                    <h3>SFX_WAIT 3D 音效设置</h3>
-                    <div class="st-is-field">
-                        <label for="enable3dAudio_sfx_wait">开启 SFX_WAIT 3D</label>
-                        <div class="st-is-toggle">
-                            <input type="checkbox" id="enable3dAudio_sfx_wait" />
-                            <span class="st-is-slider"></span>
-                        </div>
-                    </div>
-                    <hr class="st-is-hr">
-                    <div class="st-is-grid">
-                        <div class="st-is-field">
-                            <label>近距离不衰减</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="sfx_wait_refDistance" min="0" max="20" step="0.1" value="0.6">
-                                <input class="st-is-range-input" type="number" id="sfx_wait_refDistance_value" data-for="sfx_wait_refDistance" min="0" max="20" step="0.1" value="0.6">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label>远距离不衰减</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="sfx_wait_maxDistance" min="1" max="100" step="1" value="20">
-                                <input class="st-is-range-input" type="number" id="sfx_wait_maxDistance_value" data-for="sfx_wait_maxDistance" min="1" max="100" step="1" value="20">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label>衰减速度</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="sfx_wait_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
-                                <input class="st-is-range-input" type="number" id="sfx_wait_rolloffFactor_value" data-for="sfx_wait_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
-                            </div>
-                        </div>
-                    </div>
-                     <hr class="st-is-hr">
-                    <h4>位置 (X, Y, Z)</h4>
-                    <div class="st-is-grid">
-                        <div class="st-is-field">
-                            <label>左右 (X)</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="sfx_wait_posX" min="-10" max="10" value="0" step="0.1">
-                                <input class="st-is-range-input" type="number" id="sfx_wait_posX_value" data-for="sfx_wait_posX" min="-10" max="10" step="0.1" value="0">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label>上下 (Y)</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="sfx_wait_posY" min="-10" max="10" value="0" step="0.1">
-                                <input class="st-is-range-input" type="number" id="sfx_wait_posY_value" data-for="sfx_wait_posY" min="-10" max="10" step="0.1" value="0">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label>前后 (Z)</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="sfx_wait_posZ" min="-10" max="10" value="0" step="0.1">
-                                <input class="st-is-range-input" type="number" id="sfx_wait_posZ_value" data-for="sfx_wait_posZ" min="-10" max="10" step="0.1" value="0">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="st-is-tab-content" id="st-is-tab-3d-voice">
-                    <h3>VOICE 3D 音效设置</h3>
-                    <div class="st-is-field">
-                        <label for="enable3dAudio_voice">开启 VOICE 3D</label>
-                        <div class="st-is-toggle">
-                            <input type="checkbox" id="enable3dAudio_voice" />
-                            <span class="st-is-slider"></span>
-                        </div>
-                    </div>
-                    <hr class="st-is-hr">
-                    <div class="st-is-grid">
-                        <div class="st-is-field">
-                            <label>近距离不衰减</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="voice_refDistance" min="0" max="20" step="0.1" value="0.6">
-                                <input class="st-is-range-input" type="number" id="voice_refDistance_value" data-for="voice_refDistance" min="0" max="20" step="0.1" value="0.6">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label>远距离不衰减</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="voice_maxDistance" min="1" max="100" step="1" value="20">
-                                <input class="st-is-range-input" type="number" id="voice_maxDistance_value" data-for="voice_maxDistance" min="1" max="100" step="1" value="20">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label>衰减速度</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="voice_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
-                                <input class="st-is-range-input" type="number" id="voice_rolloffFactor_value" data-for="voice_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
-                            </div>
-                        </div>
-                    </div>
-                     <hr class="st-is-hr">
-                    <h4>位置 (X, Y, Z)</h4>
-                    <div class="st-is-grid">
-                        <div class="st-is-field">
-                            <label>左右 (X)</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="voice_posX" min="-10" max="10" value="0" step="0.1">
-                                <input class="st-is-range-input" type="number" id="voice_posX_value" data-for="voice_posX" min="-10" max="10" step="0.1" value="0">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label>上下 (Y)</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="voice_posY" min="-10" max="10" value="0" step="0.1">
-                                <input class="st-is-range-input" type="number" id="voice_posY_value" data-for="voice_posY" min="-10" max="10" step="0.1" value="0">
-                            </div>
-                        </div>
-                        <div class="st-is-field">
-                            <label>前后 (Z)</label>
-                            <div class="st-is-range-container">
-                                <input class="st-is-range-slider" type="range" id="voice_posZ" min="-10" max="10" value="0" step="0.1">
-                                <input class="st-is-range-input" type="number" id="voice_posZ_value" data-for="voice_posZ" min="-10" max="10" step="0.1" value="0">
+                            <div class="st-is-field">
+                                <label>前后 (Z)</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="ambiance_posZ" min="-10" max="10" value="0" step="0.1">
+                                    <input class="st-is-range-input" type="number" id="ambiance_posZ_value" data-for="ambiance_posZ" min="-10" max="10" step="0.1" value="0">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="st-is-tab-content" id="st-is-tab-vibration">
-                    <h3>震动设置</h3>
-                    <div class="st-is-field">
-                        <label for="enable_vibration">启用震动</label>
-                        <div class="st-is-toggle">
-                            <input id="enable_vibration" type="checkbox" />
-                            <span class="st-is-slider"></span>
+                    <div class="st-is-settings-section">
+                        <h3>震动设置</h3>
+                        <div class="st-is-field">
+                            <label for="enable_vibration">启用震动</label>
+                            <div class="st-is-toggle">
+                                <input id="enable_vibration" type="checkbox" />
+                                <span class="st-is-slider"></span>
+                            </div>
                         </div>
                     </div>
-                    <hr class="st-is-hr">
-                    <h4>自定义震动模式</h4>
-                    <div class="st-is-field">
-                        <label for="vibration_profile_select">震动配置</label>
-                        <div class="st-is-profile-controls">
-                            <select id="vibration_profile_select" class="st-is-select"></select>
-                            <button class="st-is-icon-btn" id="new_vibration_profile_button" title="新建"><i class="fa-solid fa-plus"></i></button>
-                            <button class="st-is-icon-btn" id="save_vibration_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
-                            <button class="st-is-icon-btn" id="rename_vibration_profile_button" title="重命名"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button class="st-is-icon-btn danger" id="delete_vibration_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                    <div class="st-is-settings-section">
+                        <h4>自定义震动模式</h4>
+                        <div class="st-is-field">
+                            <label for="vibration_profile_select">震动配置</label>
+                            <div class="st-is-profile-controls">
+                                <select id="vibration_profile_select" class="st-is-select"></select>
+                                <button class="st-is-icon-btn" id="new_vibration_profile_button" title="新建"><i class="fa-solid fa-plus"></i></button>
+                                <button class="st-is-icon-btn" id="save_vibration_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                                <button class="st-is-icon-btn" id="rename_vibration_profile_button" title="重命名"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button class="st-is-icon-btn danger" id="delete_vibration_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="st-is-field-col">
-                        <label for="vibration_pattern_editor">震动模式 (0=单次, 1=循环. 例: [0,100,50,100])</label>
-                        <textarea id="vibration_pattern_editor" class="st-is-textarea" rows="3"></textarea>
-                        <div style="text-align: right; margin-top: 10px;">
-                            <button class="st-is-btn" id="test_vibration_button">测试震动</button>
+                        <div class="st-is-field-col">
+                            <label for="vibration_pattern_editor">震动模式 (0=单次, 1=循环. 例: [0,100,50,100])</label>
+                            <textarea id="vibration_pattern_editor" class="st-is-textarea" rows="3"></textarea>
+                            <div style="text-align: right; margin-top: 10px;">
+                                <button class="st-is-btn" id="test_vibration_button">测试震动</button>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="st-is-tab-content" id="st-is-tab-cache">
-                    <h3>缓存管理</h3>
-<div class="st-is-field">
-                        <input type="text" id="ac-search-input" placeholder="搜索音频名称...">
+                    <div class="st-is-settings-section">
+                        <h3>缓存管理</h3>
+                        <div class="st-is-field">
+                            <input type="text" id="ac-search-input" placeholder="搜索音频名称...">
+                        </div>
+                        <div class="st-is-cache-controls">
+                            <button id="ac-load-world-audio-button" class="st-is-btn"><i class="fa-solid fa-book"></i> 从世界书加载音频</button>
+                            <button id="ac-new-audio-button" class="st-is-btn" style="display: none;"><i class="fa-solid fa-plus"></i> 新建</button>
+                            <button id="ac-cache-all-world-audio-button" class="st-is-btn"><i class="fa-solid fa-download"></i> 缓存所有</button>
+                            <button id="ac-reload-audio-list-button" class="st-is-btn"><i class="fa-solid fa-sync"></i> 显示已缓存音频</button>
+                            <button id="ac-delete-all-cache-button" class="st-is-btn danger"><i class="fa-solid fa-trash"></i> 删除所有缓存</button>
+                            <button id="ac-refresh-page-button" class="st-is-btn"><i class="fa-solid fa-sync"></i> 刷新页面</button>
+                        </div>
+                        <div id="st-is-world-book-warning" class="st-is-warning-message" style="display: none;">
+                            <strong>注意:</strong> 对世界书的修改需要刷新页面后才能生效。在刷新之前，请不要在其他地方修改世界书，否则您的更改可能会被覆盖。
+                        </div>
+                        <div id="st-is-world-book-selector" class="st-is-field" style="display: none;">
+                            <label for="st-is-world-book-select">选择世界书:</label>
+                            <select id="st-is-world-book-select" class="st-is-select"></select>
+                        </div>
+                        <div id="ac-cache-progress-container" class="st-is-progress-container" style="display: none;">
+                            <label for="ac-cache-progress-bar">缓存进度:</label>
+                            <progress id="ac-cache-progress-bar" value="0" max="100"></progress>
+                            <span id="ac-cache-progress-label">0%</span>
+                        </div>
+                        <div id="ac-audio-list-container" class="st-is-cache-list-container">
+                            <!-- Audio items table will be dynamically inserted here -->
+                        </div>
                     </div>
-                    <div class="st-is-cache-controls">
-                        <button id="ac-load-world-audio-button" class="st-is-btn"><i class="fa-solid fa-book"></i> 从世界书加载音频</button>
-                        <button id="ac-new-audio-button" class="st-is-btn" style="display: none;"><i class="fa-solid fa-plus"></i> 新建</button>
-                        <button id="ac-cache-all-world-audio-button" class="st-is-btn"><i class="fa-solid fa-download"></i> 缓存所有</button>
-                        <button id="ac-reload-audio-list-button" class="st-is-btn"><i class="fa-solid fa-sync"></i> 显示已缓存音频</button>
-                        <button id="ac-delete-all-cache-button" class="st-is-btn danger"><i class="fa-solid fa-trash"></i> 删除所有缓存</button>
-                        <button id="ac-refresh-page-button" class="st-is-btn"><i class="fa-solid fa-sync"></i> 刷新页面</button>
+                </div>
+
+                <div class="st-is-tab-content" id="st-is-tab-audio-resources">
+                    <div class="st-is-settings-section">
+                        <h3>音效设定</h3>
+                        <div class="st-is-field">
+                            <label for="audio_resources_profile_select">音效设定预设</label>
+                            <div class="st-is-profile-controls">
+                                <select id="audio_resources_profile_select" class="st-is-select"></select>
+                                <button class="st-is-icon-btn" id="new_audio_resources_profile_button" title="新建"><i class="fa-solid fa-plus"></i></button>
+                                <button class="st-is-icon-btn" id="save_audio_resources_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                                <button class="st-is-icon-btn" id="import_audio_resources_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                                <button class="st-is-icon-btn" id="export_audio_resources_profile_button" title="导出当前"><i class="fa-solid fa-file-export"></i></button>
+                                <button class="st-is-icon-btn" id="export_all_audio_resources_profile_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                                <button class="st-is-icon-btn" id="rename_audio_resources_profile_button" title="重命名"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button class="st-is-icon-btn danger" id="delete_audio_resources_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div id="st-is-audio-resources-container" class="st-is-tile-container">
+                            <!-- Audio resources tiles will be dynamically inserted here -->
+                        </div>
                     </div>
-                    <div id="st-is-world-book-warning" class="st-is-warning-message" style="display: none;">
-                        <strong>注意:</strong> 对世界书的修改需要刷新页面后才能生效。在刷新之前，请不要在其他地方修改世界书，否则您的更改可能会被覆盖。
+                    <div class="st-is-settings-section">
+                        <h3>资源预设</h3>
+                        <div class="st-is-field">
+                            <label for="audio_asset_profile_select">资源预设</label>
+                            <div class="st-is-profile-controls">
+                                <select id="audio_asset_profile_select" class="st-is-select"></select>
+                                <button class="st-is-icon-btn" id="new_audio_asset_profile_button" title="新建"><i class="fa-solid fa-plus"></i></button>
+                                <button class="st-is-icon-btn" id="save_audio_asset_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                                <button class="st-is-icon-btn" id="import_audio_asset_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                                <button class="st-is-icon-btn" id="export_audio_asset_profile_button" title="导出当前"><i class="fa-solid fa-file-export"></i></button>
+                                <button class="st-is-icon-btn" id="export_all_audio_asset_profile_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                                <button class="st-is-icon-btn" id="rename_audio_asset_profile_button" title="重命名"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button class="st-is-icon-btn danger" id="delete_audio_asset_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div id="st-is-audio-assets-editor">
+                            <div class="st-is-settings-section" style="padding: 16px; margin-top: 16px; background-color: var(--st-is-bg-tertiary);">
+                                <h4 style="margin-top: 0; margin-bottom: 16px;">添加新资源</h4>
+                                <div class="st-is-grid" id="st-is-add-asset-form" style="gap: 12px;">
+                                    <div class="st-is-field-col" style="margin-bottom: 0;">
+                                        <label>名称 (Key)</label>
+                                        <input type="text" class="st-is-text-input" id="st-is-new-asset-key">
+                                    </div>
+                                    <div class="st-is-field-col" style="margin-bottom: 0;">
+                                        <label>链接 (URL)</label>
+                                        <input type="text" class="st-is-text-input" id="st-is-new-asset-url">
+                                    </div>
+                                    <div class="st-is-field-col" style="margin-bottom: 0;">
+                                        <label>上传者</label>
+                                        <input type="text" class="st-is-text-input" id="st-is-new-asset-uploader" placeholder="N/A">
+                                    </div>
+                                    <div class="st-is-field-col" style="margin-bottom: 0;">
+                                        <label>音量 (%)</label>
+                                        <input type="number" class="st-is-text-input" id="st-is-new-asset-volume" value="100">
+                                    </div>
+                                    <div class="st-is-field-col" style="margin-bottom: 0;">
+                                        <label>震动</label>
+                                        <input type="text" class="st-is-text-input" id="st-is-new-asset-vibration" placeholder="N/A">
+                                    </div>
+                                </div>
+                                <div style="text-align: right; margin-top: 16px;">
+                                    <button class="st-is-btn" id="st-is-add-asset-button"><i class="fa-solid fa-plus"></i> 添加到列表</button>
+                                </div>
+                            </div>
+                        
+                            <div class="st-is-field-col" style="margin-top: 24px;">
+                                <label for="st-is-audio-assets-textarea">资源列表 (格式: 名称=链接=上传者=音量=震动)</label>
+                                <textarea id="st-is-audio-assets-textarea" class="st-is-textarea" rows="15"></textarea>
+                            </div>
+                        </div>
                     </div>
-                    <div id="st-is-world-book-selector" class="st-is-field" style="display: none;">
-                        <label for="st-is-world-book-select">选择世界书:</label>
-                        <select id="st-is-world-book-select" class="st-is-select"></select>
+                </div>
+
+                <div class="st-is-tab-content" id="st-is-tab-regex">
+                    <div class="st-is-settings-section">
+                        <h3>正则设置</h3>
+                        <div class="st-is-field">
+                            <label for="regex_profile_select">正则配置</label>
+                            <div class="st-is-profile-controls">
+                                <select id="regex_profile_select" class="st-is-select"></select>
+                                <button class="st-is-icon-btn" id="new_regex_profile_button" title="新建"><i class="fa-solid fa-plus"></i></button>
+                                <button class="st-is-icon-btn" id="save_regex_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                                <button class="st-is-icon-btn" id="save_as_regex_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                                <button class="st-is-icon-btn" id="import_regex_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                                <button class="st-is-icon-btn" id="export_regex_profile_button" title="导出"><i class="fa-solid fa-file-export"></i></button>
+                                <button class="st-is-icon-btn danger" id="delete_regex_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="st-is-field-col">
+                            <label for="regex_before_after_editor">前后正则 (用于切掉前后文)</label>
+                            <textarea id="regex_before_after_editor" class="st-is-textarea" rows="3" placeholder="输入正则表达式..."></textarea>
+                        </div>
+                        <div class="st-is-field-col">
+                            <label for="regex_text_editor">文字正则 (用于替换内容)</label>
+                            <textarea id="regex_text_editor" class="st-is-textarea" rows="5" placeholder="输入正则表达式..."></textarea>
+                        </div>
                     </div>
-                    <div id="ac-cache-progress-container" class="st-is-progress-container" style="display: none;">
-                        <label for="ac-cache-progress-bar">缓存进度:</label>
-                        <progress id="ac-cache-progress-bar" value="0" max="100"></progress>
-                        <span id="ac-cache-progress-label">0%</span>
-                    </div>
-                    <div id="ac-audio-list-container" class="st-is-cache-list-container">
-                        <!-- Audio items table will be dynamically inserted here -->
+                    <div class="st-is-settings-section">
+                        <h4>测试工具</h4>
+                        <div class="st-is-field">
+                            <label for="regexTestMode">测试模式</label>
+                            <div class="st-is-toggle">
+                                <input id="regexTestMode" type="checkbox" />
+                                <span class="st-is-slider"></span>
+                            </div>
+                        </div>
+                        <div class="st-is-field-col">
+                            <label for="regex_test_original_text">原文</label>
+                            <textarea id="regex_test_original_text" class="st-is-textarea" rows="6"></textarea>
+                        </div>
+                        <div style="text-align: center; margin: 10px 0;">
+                            <button class="st-is-btn" id="test_regex_button">
+                                <i class="fa-solid fa-arrow-down"></i>
+                                应用正则并测试
+                                <i class="fa-solid fa-arrow-down"></i>
+                            </button>
+                        </div>
+                        <div class="st-is-field-col">
+                            <label for="regex_test_result_text">正则后文本</label>
+                            <textarea id="regex_test_result_text" class="st-is-textarea" rows="6" readonly></textarea>
+                        </div>
                     </div>
                 </div>
 
                 <div class="st-is-tab-content" id="st-is-tab-float-ball">
-                    <h3>悬浮球设置</h3>
-                    <div class="st-is-field">
-                        <label for="enable_float_ball">启用悬浮球</label>
-                        <div class="st-is-toggle">
-                            <input id="enable_float_ball" type="checkbox" />
-                            <span class="st-is-slider"></span>
+                    <div class="st-is-settings-section">
+                        <h3>悬浮球设置</h3>
+                        <div class="st-is-field">
+                            <label for="enable_float_ball">启用悬浮球</label>
+                            <div class="st-is-toggle">
+                                <input id="enable_float_ball" type="checkbox" />
+                                <span class="st-is-slider"></span>
+                            </div>
+                        </div>
+                        <div class="st-is-field">
+                            <label for="float_ball_bg_color">悬浮球底色</label>
+                            <input type="color" id="float_ball_bg_color" value="#ADD8E6" class="st-is-color-picker">
+                        </div>
+                        <div class="st-is-field">
+                            <label for="float_ball_icon_color">耳机图标颜色</label>
+                            <input type="color" id="float_ball_icon_color" value="#FFFFFF" class="st-is-color-picker">
+                        </div>
+                        <div class="st-is-field">
+                            <label for="float_ball_opacity">悬浮球不透明度</label>
+                            <div class="st-is-range-container">
+                                <input class="st-is-range-slider" type="range" id="float_ball_opacity" min="0" max="1" step="0.1" value="1">
+                                <input class="st-is-range-input" type="number" id="float_ball_opacity_value" data-for="float_ball_opacity" min="0" max="1" step="0.1" value="1">
+                            </div>
+                        </div>
+                        <div class="st-is-field">
+                            <label for="float_ball_size">悬浮球大小</label>
+                            <div class="st-is-range-container">
+                                <input class="st-is-range-slider" type="range" id="float_ball_size" min="30" max="100" step="1" value="50">
+                                <input class="st-is-range-input" type="number" id="float_ball_size_value" data-for="float_ball_size" min="30" max="100" step="1" value="50">
+                            </div>
                         </div>
                     </div>
-                    <div class="st-is-field">
-                        <label for="float_ball_bg_color">悬浮球底色</label>
-                        <input type="color" id="float_ball_bg_color" value="#ADD8E6" class="st-is-color-picker">
-                    </div>
-                    <div class="st-is-field">
-                        <label for="float_ball_icon_color">耳机图标颜色</label>
-                        <input type="color" id="float_ball_icon_color" value="#FFFFFF" class="st-is-color-picker">
-                    </div>
-                    <div class="st-is-field">
-                        <label for="float_ball_opacity">悬浮球不透明度</label>
-                        <div class="st-is-range-container">
-                            <input class="st-is-range-slider" type="range" id="float_ball_opacity" min="0" max="1" step="0.1" value="1">
-                            <input class="st-is-range-input" type="number" id="float_ball_opacity_value" data-for="float_ball_opacity" min="0" max="1" step="0.1" value="1">
+                </div>
+
+                <div class="st-is-tab-content" id="st-is-tab-log">
+                    <div class="st-is-settings-section">
+                        <h3>日志</h3>
+                        <div class="st-is-field">
+                            <label>操作</label>
+                            <div>
+                                <button id="st-is-export-log" class="st-is-btn">导出日志</button>
+                                <button id="st-is-clear-log" class="st-is-btn danger">清空日志</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="st-is-field">
-                        <label for="float_ball_size">悬浮球大小</label>
-                        <div class="st-is-range-container">
-                            <input class="st-is-range-slider" type="range" id="float_ball_size" min="30" max="100" step="1" value="50">
-                            <input class="st-is-range-input" type="number" id="float_ball_size_value" data-for="float_ball_size" min="30" max="100" step="1" value="50">
+                        <div class="st-is-settings-section">
+                            <h4>正在播放</h4>
+                            <div id="st-is-playing-list-container" class="st-is-playing-list-container">
+                                <!-- Playing items will be dynamically inserted here -->
+                            </div>
+                        </div>
+                        <div class="st-is-field-col">
+                            <label for="st-is-log-textarea">日志输出</label>
+                            <textarea id="st-is-log-textarea" class="st-is-textarea" rows="15" readonly style="font-family: monospace; font-size: 12px;"></textarea>
                         </div>
                     </div>
                 </div>
 
                 <div class="st-is-tab-content" id="st-is-tab-about">
-                    <h3>关于 声临其境 🎶</h3>
-                    <p>插件作者: 从前跟你一样</p>
-                    <div class="st-is-about-links">
-                        <a href="https://afdian.com/a/cqgnyy" target="_blank" class="st-is-about-link support">
-                            <i class="fa-solid fa-heart"></i>
-                            <span>支持作者</span>
-                            <span class="st-is-cute-emoji">💖</span>
-                        </a>
-                        <a href="https://gxcgf4l6b2y.feishu.cn/wiki/IS3xwfqG7ii78pkwqkkcE8donUb?from=from_copylink" target="_blank" class="st-is-about-link help">
-                            <i class="fa-solid fa-circle-question"></i>
-                            <span>查看帮助</span>
-                            <span class="st-is-cute-emoji">❓</span>
-                        </a>
+                    <div class="st-is-settings-section">
+                        <h3>关于 声临其境 🎶</h3>
+                        <p>插件作者: 从前跟你一样</p>
+                        <div class="st-is-about-links">
+                            <a href="https://afdian.com/a/cqgnyy" target="_blank" class="st-is-about-link support">
+                                <i class="fa-solid fa-heart"></i>
+                                <span>支持作者</span>
+                                <span class="st-is-cute-emoji">💖</span>
+                            </a>
+                            <a href="https://ai.feishu.cn/wiki/NfY5wVyrEihsuGkZmHJczKKanDh?from=from_copylink" target="_blank" class="st-is-about-link help">
+                                <i class="fa-solid fa-circle-question"></i>
+                                <span>查看帮助</span>
+                                <span class="st-is-cute-emoji">❓</span>
+                            </a>
+                        </div>
                     </div>
-                    <hr class="st-is-hr">
-                    <h4>免责声明:</h4>
-                    <ul style="list-style-type: disc; padding-left: 20px;">
-                        <li>本插件仅供学习和交流使用，禁止用于任何商业用途。</li>
-                        <li>禁止以任何形式转载、分发或二次创作本插件。</li>
-                        <li>使用本插件所产生的任何风险和后果由使用者自行承担。</li>
-                    </ul>
+                    <div class="st-is-settings-section">
+                        <h3>检查更新</h3>
+                        <p>当前版本: <span id="st-is-local-version">v0.0.0</span> / 最新版本: <span id="st-is-remote-version">v0.0.0</span></p>
+                        <button id="st-is-check-update" class="st-is-btn">检查更新</button>
+                        <div class="st-is-field-col" style="margin-top: 10px;">
+                            <label for="st-is-update-notes">更新说明</label>
+                            <textarea id="st-is-update-notes" class="st-is-textarea" rows="5" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="st-is-settings-section">
+                        <h4>免责声明:</h4>
+                        <ul style="list-style-type: disc; padding-left: 20px;">
+                            <li>本插件仅供学习和交流使用，禁止用于任何商业用途。</li>
+                            <li>禁止以任何形式转载、分发或二次创作本插件。</li>
+                            <li>使用本插件所产生的任何风险和后果由使用者自行承担。</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="st-is-tab-content" id="st-is-tab-llm">
+                    <div class="st-is-settings-section">
+                        <h3>大模型设置</h3>
+                        <!-- 预设管理 -->
+                        <div class="st-is-field">
+                            <label for="llm_profile_select">LLM 配置</label>
+                            <div class="st-is-profile-controls">
+                                <select id="llm_profile_select" class="st-is-select"></select>
+                                <button class="st-is-icon-btn" id="new_llm_profile_button" title="新建"><i class="fa-solid fa-plus"></i></button>
+                                <button class="st-is-icon-btn" id="save_llm_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                                <button class="st-is-icon-btn" id="import_llm_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                                <button class="st-is-icon-btn" id="export_llm_profile_button" title="导出"><i class="fa-solid fa-file-export"></i></button>
+                                <button class="st-is-icon-btn danger" id="delete_llm_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="st-is-settings-section">
+                        <!-- API 配置 (V3 更新) -->
+                        <h4>API 配置</h4>
+                        <div class="st-is-field-col">
+                            <label for="llm_api_url">API Base URL</label>
+                            <textarea id="llm_api_url" class="st-is-textarea" rows="2" placeholder="例如: https://api.openai.com/v1"></textarea>
+                        </div>
+                        <div class="st-is-field-col">
+                            <label for="llm_api_key">API Key</label>
+                            <textarea id="llm_api_key" class="st-is-textarea" rows="3" placeholder="请输入你的 API Key"></textarea>
+                        </div>
+                        <div class="st-is-field">
+                            <label for="llm_model_select">模型选择</label>
+                            <div class="st-is-profile-controls">
+                                <select id="llm_model_select" class="st-is-select"></select>
+                                <button class="st-is-btn" id="llm_fetch_models_button" title="获取模型列表">
+                                    <i class="fa-solid fa-plug-circle-bolt"></i>
+                                    连接并获取模型
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="st-is-settings-section">
+                        <!-- OpenAI 模型参数 -->
+                        <h4>模型参数</h4>
+                        <div class="st-is-grid">
+                            <div class="st-is-field">
+                                <label for="llm_temperature">Temperature</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="llm_temperature" min="0" max="2" step="0.1" value="0.7">
+                                    <input class="st-is-range-input" type="number" id="llm_temperature_value" data-for="llm_temperature" min="0" max="2" step="0.1" value="0.7">
+                                </div>
+                            </div>
+                            <div class="st-is-field">
+                                <label for="llm_top_p">Top P</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="llm_top_p" min="0" max="1" step="0.1" value="1">
+                                    <input class="st-is-range-input" type="number" id="llm_top_p_value" data-for="llm_top_p" min="0" max="1" step="0.1" value="1">
+                                </div>
+                            </div>
+                            <div class="st-is-field">
+                                <label for="llm_max_tokens">Max Tokens</label>
+                                <div class="st-is-range-container">
+                                    <input class="st-is-range-slider" type="range" id="llm_max_tokens" min="1" max="900000" step="1" value="60000">
+                                    <input class="st-is-range-input" type="number" id="llm_max_tokens_value" data-for="llm_max_tokens" min="1" max="4096" step="1" value="512">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="st-is-settings-section">
+                        <!-- 对话历史 -->
+                        <h4>测试上下文</h4>
+                        <div id="llm-test-history">
+                            <!-- 历史记录将由 JS 动态生成 -->
+                        </div>
+                    </div>
+
+                    <div class="st-is-settings-section">
+                        <!-- 测试工具 -->
+                        <h4>测试工具</h4>
+                        <div class="st-is-field">
+                            <label for="llmTestMode">测试模式</label>
+                            <div class="st-is-toggle">
+                                <input id="llmTestMode" type="checkbox" />
+                                <span class="st-is-slider"></span>
+                            </div>
+                        </div>
+
+                        <!-- 测试按钮和结果 -->
+                        <div style="text-align: center; margin: 20px 0;">
+                            <button class="st-is-btn" id="llm_test_button">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                发送测试请求
+                            </button>
+                        </div>
+                        <div class="st-is-field-col">
+                            <label for="llm_combined_prompt">组合提示词</label>
+                            <textarea id="llm_combined_prompt" class="st-is-textarea" rows="4" readonly placeholder="这里是根据上下文和外部请求组合的最终提示词..."></textarea>
+                        </div>
+                        <div class="st-is-field-col">
+                            <label for="llm_test_result">AI 回复</label>
+                            <textarea id="llm_test_result" class="st-is-textarea" rows="8" readonly placeholder="点击上方按钮后，AI 的回复将显示在这里..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="st-is-tab-content" id="st-is-tab-tts">
+                    <div class="st-is-settings-section">
+                        <h3>TTS 设置</h3>
+                        <!-- API 密钥配置 -->
+                        <h4>API 配置</h4>
+                        <div class="st-is-field">
+                            <label for="tts_api_config_profile_select">API 配置</label>
+                            <div class="st-is-profile-controls">
+                                <select id="tts_api_config_profile_select" class="st-is-select"></select>
+                                <button class="st-is-icon-btn" id="new_api_config_profile_button" title="新建"><i class="fa-solid fa-plus"></i></button>
+                                <button class="st-is-icon-btn" id="save_api_config_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                                <button class="st-is-icon-btn" id="import_api_config_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                                <button class="st-is-icon-btn" id="export_api_config_profile_button" title="导出"><i class="fa-solid fa-file-export"></i></button>
+                                <button class="st-is-icon-btn" id="export_all_api_config_profiles_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                                <button class="st-is-icon-btn danger" id="delete_api_config_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="st-is-field-col">
+                            <label for="tts_api_config_profile_name">API 配置名称</label>
+                            <textarea id="tts_api_config_profile_name" class="st-is-textarea" rows="1" placeholder="输入配置名称..."></textarea>
+                        </div>
+                        <div class="st-is-field-col">
+                            <label for="tts_app_id">APP_ID</label>
+                            <textarea id="tts_app_id" class="st-is-textarea" rows="2" placeholder="请输入你的 APP_ID"></textarea>
+                        </div>
+                        <div class="st-is-field-col">
+                            <label for="tts_access_key">ACCESS_KEY</label>
+                            <textarea id="tts_access_key" class="st-is-textarea" rows="3" placeholder="请输入你的 ACCESS_KEY"></textarea>
+                        </div>
+                        <div class="st-is-grid">
+                            <div class="st-is-field-col">
+                                <label for="tts_synthesis_quota">合成语音额度 (-1为无限)</label>
+                                <input type="number" id="tts_synthesis_quota" class="st-is-text-input" placeholder="-1">
+                            </div>
+                            <div class="st-is-field-col">
+                                <label for="tts_clone_quota">复刻语音额度 (-1为无限)</label>
+                                <input type="number" id="tts_clone_quota" class="st-is-text-input" placeholder="-1">
+                            </div>
+                        </div>
+
+                        <hr class="st-is-hr">
+
+                        <!-- 音色配置管理 (Moved inside API config) -->
+                        <h4>音色配置 (属于当前API)</h4>
+                        <div class="st-is-field">
+                            <label for="tts_speaker_profile_select">音色配置</label>
+                            <div class="st-is-profile-controls">
+                                <select id="tts_speaker_profile_select" class="st-is-select"></select>
+                                <button class="st-is-icon-btn" id="new_speaker_profile_button" title="新建"><i class="fa-solid fa-plus"></i></button>
+                                <button class="st-is-icon-btn" id="save_speaker_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                                <button class="st-is-icon-btn" id="import_speaker_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                                <button class="st-is-icon-btn" id="export_speaker_profile_button" title="导出"><i class="fa-solid fa-file-export"></i></button>
+                                <button class="st-is-icon-btn" id="export_all_speaker_profiles_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                                <button class="st-is-icon-btn danger" id="delete_speaker_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="st-is-field-col">
+                            <label for="tts_speaker_profile_name">音色名称</label>
+                            <textarea id="tts_speaker_profile_name" class="st-is-textarea" rows="2" placeholder="输入音色名称..."></textarea>
+                        </div>
+                        <div class="st-is-field-col">
+                            <label for="tts_speaker_id">音色 Speaker ID</label>
+                            <textarea id="tts_speaker_id" class="st-is-textarea" rows="4" placeholder="输入 Speaker ID..."></textarea>
+                        </div>
+                        <div class="st-is-field">
+                            <label for="tts_resource_id_select">音频类型</label>
+                            <select id="tts_resource_id_select" class="st-is-select">
+                                <option value="seed-tts-2.0">合成音频</option>
+                                <option value="seed-icl-2.0">复刻音频</option>
+                            </select>
+                        </div>
+                        <div class="st-is-field-col">
+                            <label for="tts_speaker_description">音色简介</label>
+                            <textarea id="tts_speaker_description" class="st-is-textarea" rows="3" placeholder="输入音色简介..."></textarea>
+                        </div>
+                    </div>
+
+
+
+                    <div class="st-is-settings-section">
+                        <!-- 音色与角色匹配设定 -->
+                        <h4>音色与角色匹配设定</h4>
+                        <div class="st-is-field">
+                            <label for="tts_char_match_profile_select">匹配设定</label>
+                            <div class="st-is-profile-controls">
+                                <select id="tts_char_match_profile_select" class="st-is-select"></select>
+                                <button class="st-is-icon-btn" id="save_char_match_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                                <button class="st-is-icon-btn" id="save_as_char_match_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                                <button class="st-is-icon-btn" id="import_char_match_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                                <button class="st-is-icon-btn" id="export_char_match_profile_button" title="导出"><i class="fa-solid fa-file-export"></i></button>
+                                <button class="st-is-icon-btn" id="export_all_char_match_profiles_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                                <button class="st-is-icon-btn danger" id="delete_char_match_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="st-is-field-col">
+                            <label for="tts_char_match_rules_editor">规则设定</label>
+                            <textarea id="tts_char_match_rules_editor" class="st-is-textarea" rows="5" placeholder="输入格式为: 使用自然语言描述音色名称和角色名称的匹配的关系"></textarea>
+                        </div>
+                    </div>
+            
+                    <div class="st-is-settings-section">
+                        <!-- 测试区域 -->
+                        <h4>测试工具</h4>
+                        <div class="st-is-field-col">
+                            <label for="tts_test_text">测试文本</label>
+                            <textarea id="tts_test_text" class="st-is-textarea" rows="4" placeholder="输入要合成语音的文本..."></textarea>
+                        </div>
+                        <div class="st-is-field-col">
+                            <label for="tts_context_texts">语气控制</label>
+                            <textarea id="tts_context_texts" class="st-is-textarea" rows="2" placeholder="输入语气设定，以优化语气..."></textarea>
+                        </div>
+                        <div style="text-align: center; margin: 20px 0;">
+                            <button class="st-is-btn" id="tts_test_button">
+                                <i class="fa-solid fa-microphone-lines"></i>
+                                测试当前音色
+                            </button>
+                        </div>
+                        <div class="st-is-field-col">
+                            <label>测试结果</label>
+                            <audio id="tts_test_result_audio" controls style="width: 100%; display: none;"></audio>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="st-is-tab-content" id="st-is-tab-tts-preview">
+                    <div class="st-is-settings-section">
+                        <h3>音频预览</h3>
+                        <p>这里将显示最近生成或缓存的 TTS 音频列表。</p>
+                        <div id="st-is-tts-preview-list-container" class="st-is-cache-list-container">
+                            <!-- TTS preview items will be dynamically inserted here -->
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="st-is-tab-content" id="st-is-tab-theme">
+                    <div class="st-is-settings-section">
+                        <h3>主题设置</h3>
+                        <div class="st-is-field">
+                            <label for="st-is-theme-id">主题预设</label>
+                            <div class="st-is-profile-controls">
+                                <select id="st-is-theme-id" class="st-is-select"></select>
+                                <button class="st-is-icon-btn" id="st-is-theme-save-style" title="保存"><i class="fa-solid fa-save"></i></button>
+                                <button class="st-is-icon-btn" id="st-is-theme-export-current" title="导出当前"><i class="fa-solid fa-upload"></i></button>
+                                <button class="st-is-icon-btn" id="st-is-theme-export-all" title="导出全部"><i class="fa-solid fa-file-export"></i></button>
+                                <button class="st-is-icon-btn" id="st-is-theme-import" title="导入"><i class="fa-solid fa-download"></i></button>
+                                <button class="st-is-icon-btn danger" id="st-is-theme-delete-style" title="删除"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div id="st-is-theme-color-pickers" class="st-is-grid">
+                            <!-- Color pickers will be dynamically inserted here -->
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="st-is-tab-content" id="st-is-tab-effects-processor">
+                    <div class="container">
+                        <header>
+                            <h1>🎧 音频处理工具</h1>
+                            <button class="reset-btn" id="epResetAllBtn">重置全部参数</button>
+                        </header>
+                
+                        <!-- 区块一：文件输入 -->
+                        <div class="section">
+                            <div class="section-header">
+                                <h2>📁 文件输入</h2>
+                            </div>
+                            <div class="file-input-group">
+                                <div class="file-input-box" id="audioInputBox" onclick="document.getElementById('audioFile').click()">
+                                    <input type="file" id="audioFile" accept="audio/*">
+                                    <div class="icon">🎵</div>
+                                    <div class="label">点击或拖拽选择音频文件</div>
+                                    <div class="filename" id="audioFileName"></div>
+                                    <div class="audio-preview" id="audioPreview" style="display: none;">
+                                        <button class="preview-btn" id="previewOriginalBtn">▶ 预览原始音频</button>
+                                        <span id="audioDuration"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <!-- 区块二：动态压缩 -->
+                        <div class="section">
+                            <div class="section-header">
+                                <h2>🎚️ 动态压缩</h2>
+                                <div class="section-header-controls">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="compressorEnabled" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="st-is-field">
+                                <label for="ep_compressor_profile_select">压缩预设</label>
+                                <div class="st-is-profile-controls">
+                                    <select id="ep_compressor_profile_select" class="st-is-select"></select>
+                                    <button class="st-is-icon-btn" id="ep_save_compressor_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_save_as_compressor_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_import_compressor_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_export_compressor_profile_button" title="导出单个"><i class="fa-solid fa-file-export"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_export_all_compressor_profile_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                                    <button class="st-is-icon-btn danger" id="ep_delete_compressor_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="slider-group">
+                                <div class="slider-item">
+                                    <div class="slider-label">
+                                        <span class="name">阈值 (Threshold)</span>
+                                        <span class="value" id="thresholdValue">-24 dB</span>
+                                    </div>
+                                    <input type="range" class="slider" id="threshold" min="-60" max="0" value="-24">
+                                </div>
+                                <div class="slider-item">
+                                    <div class="slider-label">
+                                        <span class="name">压缩比 (Ratio)</span>
+                                        <span class="value" id="ratioValue">4:1</span>
+                                    </div>
+                                    <input type="range" class="slider" id="ratio" min="1" max="20" value="4">
+                                </div>
+                                <div class="slider-item">
+                                    <div class="slider-label">
+                                        <span class="name">启动时间 (Attack)</span>
+                                        <span class="value" id="attackValue">10 ms</span>
+                                    </div>
+                                    <input type="range" class="slider" id="attack" min="0" max="100" value="10">
+                                </div>
+                                <div class="slider-item">
+                                    <div class="slider-label">
+                                        <span class="name">释放时间 (Release)</span>
+                                        <span class="value" id="releaseValue">250 ms</span>
+                                    </div>
+                                    <input type="range" class="slider" id="release" min="50" max="1000" value="250">
+                                </div>
+                                <div class="slider-item">
+                                    <div class="slider-label">
+                                        <span class="name">增益补偿 (Makeup)</span>
+                                        <span class="value" id="makeupValue">6 dB</span>
+                                    </div>
+                                    <input type="range" class="slider" id="makeup" min="0" max="24" value="6">
+                                </div>
+                            </div>
+                            <div class="section-footer">
+                                <button class="listen-btn" id="listenCompressorBtn" disabled>🎧 试听压缩效果</button>
+                            </div>
+                        </div>
+                
+                        <!-- 区块三：声音特效 -->
+                        <div class="section">
+                            <div class="section-header">
+                                <h2>✨ 声音特效</h2>
+                                <div class="section-header-controls">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="effectsEnabled" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                
+                            <div class="st-is-field">
+                                <label for="ep_effects_profile_select">声音特效预设</label>
+                                <div class="st-is-profile-controls">
+                                    <select id="ep_effects_profile_select" class="st-is-select"></select>
+                                    <button class="st-is-icon-btn" id="ep_save_effects_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_save_as_effects_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_import_effects_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_export_effects_profile_button" title="导出单个"><i class="fa-solid fa-file-export"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_export_all_effects_profile_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                                    <button class="st-is-icon-btn danger" id="ep_delete_effects_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                
+                            <!-- 音高控制 -->
+                            <div class="effect-module">
+                                <div class="effect-header">
+                                    <h3>🎹 音高控制 (Pitch)</h3>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="pitchEnabled">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="slider-group">
+                                    <div class="slider-item">
+                                        <div class="slider-label">
+                                            <span class="name">音高偏移</span>
+                                            <span class="value" id="pitchShiftValue">0 半音</span>
+                                        </div>
+                                        <input type="range" class="slider" id="pitchShift" min="-12" max="12" value="0">
+                                    </div>
+                                </div>
+                                <div class="radio-group">
+                                    <label class="radio-item">
+                                        <input type="radio" name="grainSize" value="small"> 小颗粒
+                                    </label>
+                                    <label class="radio-item">
+                                        <input type="radio" name="grainSize" value="medium" checked> 中颗粒
+                                    </label>
+                                    <label class="radio-item">
+                                        <input type="radio" name="grainSize" value="large"> 大颗粒
+                                    </label>
+                                </div>
+                            </div>
+                
+                            <!-- 滤波器 -->
+                            <div class="effect-module">
+                                <div class="effect-header">
+                                    <h3>🌊 滤波器 (Filter)</h3>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="filterEnabled">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <!-- 高通滤波器（低频截止） -->
+                                <div class="filter-sub-module">
+                                    <div class="filter-sub-header">
+                                        <div class="filter-title">
+                                            高通滤波器（低频截止）
+                                            <span class="freq-badge">削弱低频</span>
+                                        </div>
+                                        <label class="toggle-switch-small">
+                                            <input type="checkbox" id="highpassEnabled" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="slider-group">
+                                        <div class="slider-item">
+                                            <div class="slider-label">
+                                                <span class="name">截止频率</span>
+                                                <span class="value" id="highpassFreqValue">80 Hz</span>
+                                            </div>
+                                            <input type="range" class="slider" id="highpassFreq" min="20" max="2000" value="80">
+                                        </div>
+                                        <div class="slider-item">
+                                            <div class="slider-label">
+                                                <span class="name">Q值</span>
+                                                <span class="value" id="highpassQValue">0.7</span>
+                                            </div>
+                                            <input type="range" class="slider" id="highpassQ" min="0.1" max="10" step="0.1" value="0.7">
+                                        </div>
+                                    </div>
+                                    <div class="filter-description">低于此频率的声音将被削弱（去除低频噪音、隆隆声）</div>
+                                </div>
+                
+                                <!-- 低通滤波器（高频截止） -->
+                                <div class="filter-sub-module">
+                                    <div class="filter-sub-header">
+                                        <div class="filter-title">
+                                            低通滤波器（高频截止）
+                                            <span class="freq-badge">削弱高频</span>
+                                        </div>
+                                        <label class="toggle-switch-small">
+                                            <input type="checkbox" id="lowpassEnabled" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="slider-group">
+                                        <div class="slider-item">
+                                            <div class="slider-label">
+                                                <span class="name">截止频率</span>
+                                                <span class="value" id="lowpassFreqValue">8000 Hz</span>
+                                            </div>
+                                            <input type="range" class="slider" id="lowpassFreq" min="500" max="20000" value="8000">
+                                        </div>
+                                        <div class="slider-item">
+                                            <div class="slider-label">
+                                                <span class="name">Q值</span>
+                                                <span class="value" id="lowpassQValue">0.7</span>
+                                            </div>
+                                            <input type="range" class="slider" id="lowpassQ" min="0.1" max="10" step="0.1" value="0.7">
+                                        </div>
+                                    </div>
+                                    <div class="filter-description">高于此频率的声音将被削弱（模拟隔墙、电话效果）</div>
+                                </div>
+                            </div>
+                
+                            <!-- 失真 -->
+                            <div class="effect-module">
+                                <div class="effect-header">
+                                    <h3>🔥 失真 (Distortion)</h3>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="distortionEnabled">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="slider-group">
+                                    <div class="slider-item">
+                                        <div class="slider-label">
+                                            <span class="name">失真量</span>
+                                            <span class="value" id="distortionAmountValue">0%</span>
+                                        </div>
+                                        <input type="range" class="slider" id="distortionAmount" min="0" max="100" value="0">
+                                    </div>
+                                </div>
+                                <div class="radio-group">
+                                    <label class="radio-item">
+                                        <input type="radio" name="distortionType" value="soft" checked> 软削峰
+                                    </label>
+                                    <label class="radio-item">
+                                        <input type="radio" name="distortionType" value="hard"> 硬削峰
+                                    </label>
+                                </div>
+                            </div>
+                
+                            <!-- 合唱 -->
+                            <div class="effect-module">
+                                <div class="effect-header">
+                                    <h3>🎭 合唱 (Chorus)</h3>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="chorusEnabled">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="slider-group">
+                                    <div class="slider-item">
+                                        <div class="slider-label">
+                                            <span class="name">深度</span>
+                                            <span class="value" id="chorusDepthValue">50%</span>
+                                        </div>
+                                        <input type="range" class="slider" id="chorusDepth" min="0" max="100" value="50">
+                                    </div>
+                                    <div class="slider-item">
+                                        <div class="slider-label">
+                                            <span class="name">速率</span>
+                                            <span class="value" id="chorusRateValue">1.5 Hz</span>
+                                        </div>
+                                        <input type="range" class="slider" id="chorusRate" min="0.1" max="10" step="0.1" value="1.5">
+                                    </div>
+                                    <div class="slider-item">
+                                        <div class="slider-label">
+                                            <span class="name">混合量</span>
+                                            <span class="value" id="chorusWetValue">50%</span>
+                                        </div>
+                                        <input type="range" class="slider" id="chorusWet" min="0" max="100" value="50">
+                                    </div>
+                                </div>
+                            </div>
+                
+                            <!-- 延迟 -->
+                            <div class="effect-module">
+                                <div class="effect-header">
+                                    <h3>📢 延迟 (Delay)</h3>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="delayEnabled">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="slider-group">
+                                    <div class="slider-item">
+                                        <div class="slider-label">
+                                            <span class="name">延迟时间</span>
+                                            <span class="value" id="delayTimeValue">200 ms</span>
+                                        </div>
+                                        <input type="range" class="slider" id="delayTime" min="0" max="1000" value="200">
+                                    </div>
+                                    <div class="slider-item">
+                                        <div class="slider-label">
+                                            <span class="name">反馈量</span>
+                                            <span class="value" id="delayFeedbackValue">30%</span>
+                                        </div>
+                                        <input type="range" class="slider" id="delayFeedback" min="0" max="90" value="30">
+                                    </div>
+                                    <div class="slider-item">
+                                        <div class="slider-label">
+                                            <span class="name">混合量</span>
+                                            <span class="value" id="delayWetValue">30%</span>
+                                        </div>
+                                        <input type="range" class="slider" id="delayWet" min="0" max="100" value="30">
+                                    </div>
+                                </div>
+                            </div>
+                
+                            <!-- 特效混响 -->
+                            <div class="effect-module">
+                                <div class="effect-header">
+                                    <h3>🌌 特效混响 (Effect Reverb)</h3>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="effectReverbEnabled">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="slider-group">
+                                    <div class="slider-item">
+                                        <div class="slider-label">
+                                            <span class="name">衰减时间</span>
+                                            <span class="value" id="reverbDecayValue">2.0 s</span>
+                                        </div>
+                                        <input type="range" class="slider" id="reverbDecay" min="0.1" max="10" step="0.1" value="2">
+                                    </div>
+                                    <div class="slider-item">
+                                        <div class="slider-label">
+                                            <span class="name">预延迟</span>
+                                            <span class="value" id="reverbPredelayValue">20 ms</span>
+                                        </div>
+                                        <input type="range" class="slider" id="reverbPredelay" min="0" max="100" value="20">
+                                    </div>
+                                    <div class="slider-item">
+                                        <div class="slider-label">
+                                            <span class="name">干湿比</span>
+                                            <span class="value" id="reverbWetValue">30%</span>
+                                        </div>
+                                        <input type="range" class="slider" id="reverbWet" min="0" max="100" value="30">
+                                    </div>
+                                </div>
+                            </div>
+                
+                            <div class="section-footer">
+                                <button class="listen-btn" id="listenEffectsBtn" disabled>🎧 试听效果</button>
+                            </div>
+
+                            <hr class="st-is-hr">
+
+                            <div class="st-is-field">
+                                <label for="ep_effects_description_profile_select">预设介绍</label>
+                                <div class="st-is-profile-controls">
+                                    <select id="ep_effects_description_profile_select" class="st-is-select"></select>
+                                    <button class="st-is-icon-btn" id="ep_save_effects_description_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_save_as_effects_description_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_import_effects_description_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_export_effects_description_profile_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                                    <button class="st-is-icon-btn danger" id="ep_delete_effects_description_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="st-is-field-col">
+                                <textarea id="ep_effects_description_editor" class="st-is-textarea" rows="4" placeholder="此处是对当前类别下所有预设的介绍和说明..."></textarea>
+                            </div>
+                        </div>
+                
+                        <!-- 区块四：环境混响 -->
+                        <div class="section">
+                            <div class="section-header">
+                                <h2>🏛️ 环境混响 (IR Convolution)</h2>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="irReverbEnabled" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="st-is-field ep-toggle-field">
+                                <label for="irApplyToVoiceOnly">只对语音生效</label>
+                                <label class="st-is-toggle">
+                                    <input id="irApplyToVoiceOnly" type="checkbox">
+                                    <span class="st-is-slider"></span>
+                                </label>
+                                </div>
+                            </div>
+
+                            <div class="st-is-field">
+                                <label for="ep_ir_profile_select">IR 预设</label>
+                                <div class="st-is-profile-controls">
+                                    <select id="ep_ir_profile_select" class="st-is-select"></select>
+                                    <button class="st-is-icon-btn" id="ep_save_ir_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_save_as_ir_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_import_ir_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_export_ir_profile_button" title="导出单个"><i class="fa-solid fa-file-export"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_export_all_ir_profile_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                                    <button class="st-is-icon-btn danger" id="ep_delete_ir_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                            
+                            <div class="file-input-box" id="irInputBox" onclick="document.getElementById('irFile').click()" style="margin-bottom: 20px;">
+                                <input type="file" id="irFile" accept="audio/*">
+                                <div class="icon">🎚️</div>
+                                <div class="label">点击或拖拽上传 IR 脉冲响应文件 (WAV格式)</div>
+                                <div class="filename" id="irFileName"></div>
+                            </div>
+                
+                            <div class="ir-status no-file" id="irStatus">
+                                ⚠️ 尚未加载 IR 文件，环境混响将被跳过
+                            </div>
+                
+                            <div class="slider-group" style="margin-top: 20px;">
+                                <div class="slider-item">
+                                    <div class="slider-label">
+                                        <span class="name">干湿比</span>
+                                        <span class="value" id="irWetValue">50%</span>
+                                    </div>
+                                    <input type="range" class="slider" id="irWet" min="0" max="100" value="50">
+                                </div>
+                                <div class="slider-item">
+                                    <div class="slider-label">
+                                        <span class="name">输出增益</span>
+                                        <span class="value" id="irGainValue">0 dB</span>
+                                    </div>
+                                    <input type="range" class="slider" id="irGain" min="-12" max="12" value="0">
+                                </div>
+                            </div>
+                            <div class="section-footer">
+                                <button class="listen-btn" id="listenIRBtn" disabled>🎧 试听环境混响效果</button>
+                                <span class="status-hint" id="irListenHint" style="display: none;">请先上传 IR 文件</span>
+                            </div>
+
+                            <hr class="st-is-hr">
+
+                            <div class="st-is-field">
+                                <label for="ep_ir_description_profile_select">预设介绍</label>
+                                <div class="st-is-profile-controls">
+                                    <select id="ep_ir_description_profile_select" class="st-is-select"></select>
+                                    <button class="st-is-icon-btn" id="ep_save_ir_description_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_save_as_ir_description_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_import_ir_description_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_export_ir_description_profile_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                                    <button class="st-is-icon-btn danger" id="ep_delete_ir_description_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="st-is-field-col">
+                                <textarea id="ep_ir_description_editor" class="st-is-textarea" rows="4" placeholder="此处是对当前类别下所有预设的介绍和说明..."></textarea>
+                            </div>
+                        </div>
+                
+                        <!-- 区块五：空间音频 -->
+                        <div class="section">
+                            <div class="section-header">
+                                <h2>🌍 空间音频</h2>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="spatialEnabled" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="spatial-controls">
+                                <div class="spatial-preset-control">
+                                    <div class="st-is-field">
+                                        <label for="ep_spatial_profile_select">移动预设</label>
+                                        <div class="st-is-profile-controls">
+                                            <select id="ep_spatial_profile_select" class="st-is-select"></select>
+                                            <button class="st-is-icon-btn" id="ep_save_spatial_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                                            <button class="st-is-icon-btn" id="ep_save_as_spatial_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                                            <button class="st-is-icon-btn" id="ep_import_spatial_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_export_spatial_profile_button" title="导出单个"><i class="fa-solid fa-file-export"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_export_all_spatial_profile_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                                    <button class="st-is-icon-btn danger" id="ep_delete_spatial_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="speed-control">
+                                    <div class="slider-label">
+                                        <span class="name">默认速度（新建点使用）</span>
+                                        <span class="value" id="defaultSpeedValue">1.0 米/秒</span>
+                                    </div>
+                                    <input type="range" class="slider" id="defaultSpeed" min="0.1" max="10" step="0.1" value="1">
+                                </div>
+                            </div>
+                
+                            <div class="path-controls" style="margin-bottom: 20px;">
+                                <button class="path-btn" id="addPathPointBtn">➕ 新建点</button>
+                                <button class="path-btn delete" id="deleteSelectedPointBtn">🗑️ 删除点</button>
+                                <button class="path-btn clear" id="clearAllPointsBtn">🔄 清空路径</button>
+                                <button class="path-btn apply-all" id="applyDefaultSpeedToAllBtn">📋 应用默认速度到全部</button>
+                            </div>
+                
+                            <!-- 选中点编辑面板 -->
+                            <div class="selected-point-panel hidden" id="selectedPointPanel">
+                                <h4>📍 选中点 #<span id="selectedPointNumber">1</span></h4>
+                                <div class="point-info-row">
+                                    <div class="point-info-item">X: <span id="selectedPointX">0.00</span> 米</div>
+                                    <div class="point-info-item">Y: <span id="selectedPointY">0.00</span> 米</div>
+                                    <div class="point-info-item">Z: <span id="selectedPointZ">0.00</span> 米</div>
+                                </div>
+                                <div class="segment-speed-control" id="segmentSpeedControl">
+                                    <div class="label">到下一点 (#<span id="nextPointNumber">2</span>) 的移动速度：</div>
+                                    <div class="speed-input-group">
+                                        <input type="range" class="slider" id="segmentSpeed" min="0.1" max="10" step="0.1" value="1">
+                                        <span class="speed-value" id="segmentSpeedValue">1.0 米/秒</span>
+                                    </div>
+                                    <div class="point-info-row" style="margin-top: 10px; margin-bottom: 0;">
+                                        <div class="point-info-item">段距离: <span id="segmentDistance">0.00</span> 米</div>
+                                        <div class="point-info-item">段时长: <span id="segmentDuration">0.00</span> 秒</div>
+                                    </div>
+                                </div>
+                                <!-- 新增：驻留时间控制 -->
+                                <div class="segment-speed-control" id="pointDwellControl" style="margin-top: 10px;">
+                                    <div class="label">在该点驻留的时间：</div>
+                                    <div class="speed-input-group">
+                                        <input type="range" class="slider" id="pointDwellTime" min="0" max="10" step="0.1" value="0">
+                                        <span class="speed-value" id="pointDwellTimeValue">0.0 秒</span>
+                                    </div>
+                                </div>
+                                <div class="no-next-point" id="noNextPointHint" style="display: none;">
+                                    这是最后一个点，没有下一段路径
+                                </div>
+                            </div>
+                
+                            <!-- 空间音频参数 -->
+                            <div class="spatial-params">
+                                <h4>🔧 空间参数</h4>
+                                <div class="slider-group">
+                                    <div class="slider-item">
+                                        <div class="slider-label">
+                                            <span class="name">距离模型</span>
+                                            <span class="value" id="distanceModelValue">inverse</span>
+                                        </div>
+                                        <select class="preset-select" id="distanceModel" style="width: 100%; margin-top: 5px;">
+                                            <option value="linear">线性 (linear)</option>
+                                            <option value="inverse" selected>反比 (inverse)</option>
+                                            <option value="exponential">指数 (exponential)</option>
+                                        </select>
+                                    </div>
+                                    <div class="slider-item">
+                                        <div class="slider-label">
+                                            <span class="name">参考距离</span>
+                                            <span class="value" id="refDistanceValue">1.0 米</span>
+                                        </div>
+                                        <input type="range" class="slider" id="refDistance" min="0.1" max="10" step="0.1" value="1">
+                                    </div>
+                                    <div class="slider-item">
+                                        <div class="slider-label">
+                                            <span class="name">最大距离</span>
+                                            <span class="value" id="maxDistanceValue">20 米</span>
+                                        </div>
+                                        <input type="range" class="slider" id="maxDistance" min="1" max="100" value="20">
+                                    </div>
+                                    <div class="slider-item">
+                                        <div class="slider-label">
+                                            <span class="name">衰减因子</span>
+                                            <span class="value" id="rolloffValue">1.0</span>
+                                        </div>
+                                        <input type="range" class="slider" id="rolloff" min="0" max="5" step="0.1" value="1">
+                                    </div>
+                                </div>
+                                <div class="slider-group" style="margin-top: 15px;">
+                                    <div class="slider-item">
+                                        <div class="slider-label">
+                                            <span class="name">内锥角度</span>
+                                            <span class="value" id="coneInnerValue">360°</span>
+                                        </div>
+                                        <input type="range" class="slider" id="coneInner" min="0" max="360" value="360">
+                                    </div>
+                                    <div class="slider-item">
+                                        <div class="slider-label">
+                                            <span class="name">外锥角度</span>
+                                            <span class="value" id="coneOuterValue">360°</span>
+                                        </div>
+                                        <input type="range" class="slider" id="coneOuter" min="0" max="360" value="360">
+                                    </div>
+                                    <div class="slider-item">
+                                        <div class="slider-label">
+                                            <span class="name">外锥增益</span>
+                                            <span class="value" id="coneOuterGainValue">0.0</span>
+                                        </div>
+                                        <input type="range" class="slider" id="coneOuterGain" min="0" max="1" step="0.1" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                
+                            <!-- 网格大小控制 -->
+                            <div class="grid-scale-control">
+                                <label>🔍 网格大小:</label>
+                                <select id="gridSizeSelect">
+                                    <option value="0.5">0.5 米/格（近距离）</option>
+                                    <option value="1" selected>1 米/格（标准）</option>
+                                    <option value="2">2 米/格（中距离）</option>
+                                    <option value="5">5 米/格（远距离）</option>
+                                    <option value="10">10 米/格（超远）</option>
+                                </select>
+                                <span class="current-range" id="currentRangeDisplay">可视范围: ±5 米</span>
+                            </div>
+                
+                            <div class="views-container">
+                                <div class="view-box">
+                                    <h4>俯视图 (XZ 平面) - 拖拽调整水平位置</h4>
+                                    <canvas class="view-canvas" id="topView" width="400" height="400"></canvas>
+                                </div>
+                                <div class="view-box">
+                                    <h4>平视图 (XY 平面) - 拖拽调整高度</h4>
+                                    <canvas class="view-canvas" id="frontView" width="400" height="400"></canvas>
+                                </div>
+                            </div>
+                
+                            <div class="path-info">
+                                路径总长度: <span id="pathLength">0.00</span> 米 | 
+                                预计总时间: <span id="pathTime">0.00</span> 秒 |
+                                路径点数: <span id="pointCount">0</span>
+                            </div>
+                
+                            <div class="section-footer">
+                                <button class="listen-btn" id="listenSpatialBtn" disabled>🎧 试听空间音频效果</button>
+                            </div>
+
+                            <hr class="st-is-hr">
+
+                            <div class="st-is-field">
+                                <label for="ep_spatial_description_profile_select">预设介绍</label>
+                                <div class="st-is-profile-controls">
+                                    <select id="ep_spatial_description_profile_select" class="st-is-select"></select>
+                                    <button class="st-is-icon-btn" id="ep_save_spatial_description_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_save_as_spatial_description_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_import_spatial_description_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                                    <button class="st-is-icon-btn" id="ep_export_spatial_description_profile_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                                    <button class="st-is-icon-btn danger" id="ep_delete_spatial_description_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="st-is-field-col">
+                                <textarea id="ep_spatial_description_editor" class="st-is-textarea" rows="4" placeholder="此处是对当前类别下所有预设的介绍和说明..."></textarea>
+                            </div>
+                        </div>
+                
+                        <!-- 输出区域 -->
+                        <div class="output-section">
+                            <div class="output-buttons">
+                                <button class="final-btn" id="finalPlayBtn" disabled>▶ 最终试听</button>
+                                <button class="final-btn stop" id="epStopBtn">⏹ 停止</button>
+                            </div>
+                            <div class="export-group">
+                                <select class="format-select" id="exportFormat">
+                                    <option value="wav">WAV</option>
+                                    <option value="mp3">MP3</option>
+                                </select>
+                                <button class="export-btn" id="exportBtn" disabled>💾 导出音频</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
