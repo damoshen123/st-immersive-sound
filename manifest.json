@@ -6,10 +6,7 @@
     "js": "index.js",
     "css": "style.css",
     "author": "从前跟你一样",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "homePage": "https://github.com/damoshen123/st-immersive-sound",
-    "updata":"v.2.0 全新版本！"
+    "update_notes":"v2.0.1:优化一些体验\nv.2.0 全新版本！"
 }
-
-
-
