@@ -6,7 +6,7 @@
     "js": "index.js",
     "css": "style.css",
     "author": "从前跟你一样",
-    "version": "2.0.4",
+    "version": "2.0.5",
     "homePage": "https://github.com/damoshen123/st-immersive-sound",
-    "update_notes":"v2.0.4 修复云酒馆报错\nv2.0.3 修复云酒馆报错\n修复震动设置加载错误\n修复检查更新按钮无法自动更新问题\nv2.0.2优化配置加载\nv2.0.1:优化一些体验\nv.2.0 全新版本！"
+    "update_notes":"v2.0.5 优化加载速度\nv2.0.4 修复云酒馆报错\nv2.0.3 修复云酒馆报错\n修复震动设置加载错误\n修复检查更新按钮无法自动更新问题\nv2.0.2优化配置加载\nv2.0.1:优化一些体验\nv.2.0 全新版本！"
 }
