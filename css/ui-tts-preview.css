@@ -1,5 +1,36 @@
 /* Styles for the new TTS Preview Card Layout */
 
+.st-is-tts-preview-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 16px 0 0;
+}
+
+.st-is-tts-preview-filter-btn {
+    border: 1px solid var(--st-is-border-color);
+    background-color: var(--st-is-bg-secondary);
+    color: var(--st-is-text-secondary);
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.st-is-tts-preview-filter-btn:hover {
+    border-color: var(--st-is-accent-primary);
+    color: var(--st-is-text-primary);
+}
+
+.st-is-tts-preview-filter-btn.active {
+    background-color: var(--st-is-accent-primary);
+    border-color: var(--st-is-accent-primary);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
 .st-is-tts-card-list {
     display: flex;
     flex-direction: column;

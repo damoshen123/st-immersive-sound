@@ -1,0 +1,107 @@
+<div class="st-is-tab-content" id="st-is-tab-edge-tts">
+    <div class="st-is-settings-section">
+        <h3>Edge TTS 设置（微软语音）</h3>
+        <p style="opacity:.75; margin-top:-6px;">通过公开代理免费调用 Microsoft Edge 在线 TTS，无需密钥。</p>
+
+        <div class="st-is-field">
+            <label for="edge_tts_narration_voice">旁白音色</label>
+            <select id="edge_tts_narration_voice" class="st-is-select"></select>
+        </div>
+        <p style="opacity:.65; margin-top:-6px; font-size:12px;">
+            该音色用于「旁白 TTS」开关开启时朗读非对话文本。
+        </p>
+
+        <h4 style="margin-top:16px;">测试音色（仅用于下方"测试合成"）</h4>
+        <p style="opacity:.6; margin-top:-6px; font-size:12px;">
+            以下「音色 / 说话风格 / 语速 / 音调 / 音量」仅作为测试合成时使用，
+            不影响旁白和人物 TTS 的实际朗读。
+        </p>
+
+        <div class="st-is-field">
+            <label for="edge_tts_voice">音色</label>
+            <select id="edge_tts_voice" class="st-is-select"></select>
+        </div>
+
+        <div class="st-is-field">
+            <label for="edge_tts_style">说话风格</label>
+            <select id="edge_tts_style" class="st-is-select"></select>
+        </div>
+
+        <div class="st-is-field">
+            <label for="edge_tts_rate">语速 (-50 ~ 50)</label>
+            <div class="st-is-range-container">
+                <input class="st-is-range-slider" type="range" id="edge_tts_rate" min="-50" max="50" step="5" value="0">
+                <input class="st-is-range-input" type="number" id="edge_tts_rate_value" data-for="edge_tts_rate" min="-50" max="50" step="5" value="0">
+            </div>
+        </div>
+
+        <div class="st-is-field">
+            <label for="edge_tts_pitch">音调 (-50 ~ 50)</label>
+            <div class="st-is-range-container">
+                <input class="st-is-range-slider" type="range" id="edge_tts_pitch" min="-50" max="50" step="5" value="0">
+                <input class="st-is-range-input" type="number" id="edge_tts_pitch_value" data-for="edge_tts_pitch" min="-50" max="50" step="5" value="0">
+            </div>
+        </div>
+
+        <div class="st-is-field">
+            <label for="edge_tts_volume">音量 (0 ~ 100)</label>
+            <div class="st-is-range-container">
+                <input class="st-is-range-slider" type="range" id="edge_tts_volume" min="0" max="100" step="5" value="50">
+                <input class="st-is-range-input" type="number" id="edge_tts_volume_value" data-for="edge_tts_volume" min="0" max="100" step="5" value="50">
+            </div>
+        </div>
+    </div>
+
+    <div class="st-is-settings-section">
+        <h4>代理服务器</h4>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+            <button class="st-is-btn" id="edge_tts_ping_button">
+                <i class="fa-solid fa-signal"></i> 检测服务器
+            </button>
+            <span id="edge_tts_ping_status" style="opacity:.75;">未检测</span>
+        </div>
+        <ul id="edge_tts_server_list" style="list-style:none; padding:0; margin:0;"></ul>
+    </div>
+
+    <div class="st-is-settings-section">
+        <h4>测试工具</h4>
+        <div class="st-is-field-col">
+            <label for="edge_tts_test_text">测试文本</label>
+            <textarea id="edge_tts_test_text" class="st-is-textarea" rows="3" placeholder="输入要合成的文本...">你好，这是一段 Edge TTS 测试。</textarea>
+        </div>
+        <div style="text-align:center; margin: 16px 0;">
+            <button class="st-is-btn" id="edge_tts_test_button">
+                <i class="fa-solid fa-microphone-lines"></i> 测试合成
+            </button>
+        </div>
+        <div class="st-is-field-col">
+            <label>测试结果</label>
+            <audio id="edge_tts_test_audio" controls style="width:100%; display:none;"></audio>
+        </div>
+    </div>
+
+    <!-- ─── 角色匹配设定 ─────────────────────────────────────── -->
+    <div class="st-is-settings-section">
+        <h4>音色与角色匹配设定（Edge 专用）</h4>
+        <p style="opacity:.75; margin-top:-6px;">
+            当「人物 TTS 引擎」选择「Edge」时，LLM 在生成 BGM 标签时使用此处的规则把角色匹配到 Edge 音色。
+        </p>
+        <div class="st-is-field">
+            <label for="edge_char_match_profile_select">匹配设定</label>
+            <div class="st-is-profile-controls">
+                <select id="edge_char_match_profile_select" class="st-is-select"></select>
+                <button class="st-is-icon-btn" id="edge_save_char_match_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                <button class="st-is-icon-btn" id="edge_save_as_char_match_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                <button class="st-is-icon-btn" id="edge_import_char_match_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                <button class="st-is-icon-btn" id="edge_export_char_match_profile_button" title="导出"><i class="fa-solid fa-file-export"></i></button>
+                <button class="st-is-icon-btn" id="edge_export_all_char_match_profiles_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                <button class="st-is-icon-btn danger" id="edge_delete_char_match_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+        <div class="st-is-field-col">
+            <label for="edge_char_match_rules_editor">规则设定</label>
+            <textarea id="edge_char_match_rules_editor" class="st-is-textarea" rows="5"
+                placeholder="使用自然语言描述 Edge 音色名称（如 晓晓 / zh-CN-XiaoxiaoNeural）与角色名称的匹配关系"></textarea>
+        </div>
+    </div>
+</div>

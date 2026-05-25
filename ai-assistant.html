@@ -1,0 +1,124 @@
+<!-- AI 助手对话框（独立浮窗） -->
+<div id="st-is-ai-dialog" class="st-is-ai-dialog" style="display: none;">
+    <!-- 头部 -->
+    <div class="st-is-ai-header">
+        <h3>
+            <i class="fa-solid fa-robot"></i>
+            <span class="st-is-ai-title">AI 助手</span>
+            <span id="st-is-ai-history-btn" class="st-is-ai-icon-btn" title="聊天历史"><i class="fa-solid fa-clock-rotate-left"></i></span>
+            <span id="st-is-ai-new-chat" class="st-is-ai-icon-btn" title="新建聊天"><i class="fa-solid fa-broom"></i></span>
+            <span id="st-is-ai-settings-btn" class="st-is-ai-icon-btn" title="设置"><i class="fa-solid fa-gear"></i></span>
+        </h3>
+        <span id="st-is-ai-close" class="st-is-ai-close" title="关闭"><i class="fa-solid fa-xmark"></i></span>
+    </div>
+
+    <!-- 消息区 -->
+    <div id="st-is-ai-chat-body" class="st-is-ai-body">
+        <!-- 消息由 JS 渲染 -->
+    </div>
+
+    <!-- 底部输入区 -->
+    <div class="st-is-ai-footer">
+        <textarea id="st-is-ai-input" placeholder="输入消息... (Enter 发送, Shift+Enter 换行)" rows="1"></textarea>
+        <button id="st-is-ai-send" class="st-is-ai-send-btn" title="发送"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+
+    <!-- 设置面板（默认隐藏） -->
+    <div id="st-is-ai-settings-panel" class="st-is-ai-settings-panel" style="display: none;">
+        <div class="st-is-ai-panel-header">
+            <h4>设置 <small>（自动保存）</small></h4>
+            <span id="st-is-ai-settings-close" class="st-is-ai-icon-btn" title="关闭"><i class="fa-solid fa-xmark"></i></span>
+        </div>
+        <div class="st-is-ai-panel-tabs">
+            <button class="st-is-ai-panel-tab active" data-panel-tab="api"><i class="fa-solid fa-key"></i> API</button>
+            <button class="st-is-ai-panel-tab" data-panel-tab="params"><i class="fa-solid fa-sliders"></i> 参数</button>
+        </div>
+        <div class="st-is-ai-panel-body">
+            <!-- API Tab -->
+            <div class="st-is-ai-panel-content active" data-panel-content="api">
+                <div class="st-is-ai-form-item checkbox">
+                    <input type="checkbox" id="st-is-ai-use-current-profile" checked>
+                    <label for="st-is-ai-use-current-profile">复用「模型设置」当前 LLM 预设</label>
+                </div>
+                <small style="color: var(--st-is-text-secondary);">勾选后将使用 <b>模型设置</b> Tab 当前选中的预设；取消勾选可在下方独立填写。</small>
+                <div id="st-is-ai-api-fields" style="margin-top: 10px;">
+                    <div class="st-is-ai-form-item">
+                        <label for="st-is-ai-api-url">API 地址</label>
+                        <input type="text" id="st-is-ai-api-url" placeholder="https://api.openai.com/v1">
+                    </div>
+                    <div class="st-is-ai-form-item">
+                        <label for="st-is-ai-api-key">API Key</label>
+                        <input type="password" id="st-is-ai-api-key" placeholder="sk-...">
+                    </div>
+                    <div class="st-is-ai-form-item">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <label for="st-is-ai-model" style="margin:0;">模型选择</label>
+                            <button id="st-is-ai-fetch-models" class="st-is-ai-mini-btn" title="连接并获取模型">
+                                <i class="fa-solid fa-rotate"></i> 连接并获取模型
+                            </button>
+                        </div>
+                        <select id="st-is-ai-model-select" class="st-is-ai-select">
+                            <option value="">(请先获取并选择)</option>
+                        </select>
+                        <input type="text" id="st-is-ai-model" placeholder="自定义模型名称（手动输入会覆盖上方选择）">
+                    </div>
+                </div>
+                <hr style="border:0; border-top:1px solid var(--st-is-border); margin:12px 0;">
+                <div class="st-is-ai-form-item checkbox">
+                    <input type="checkbox" id="st-is-ai-stream">
+                    <label for="st-is-ai-stream">流式生成</label>
+                </div>
+                <div class="st-is-ai-form-item checkbox">
+                    <input type="checkbox" id="st-is-ai-bypass-proxy">
+                    <label for="st-is-ai-bypass-proxy">不通过酒馆代理</label>
+                </div>
+                <small style="color: var(--st-is-text-secondary); display:block; margin:-4px 0 8px 0;">
+                    默认通过酒馆后端转发以避免跨域；开启后将由浏览器直连 API。
+                </small>
+                <div class="st-is-ai-form-item checkbox">
+                    <input type="checkbox" id="st-is-ai-merge-system-user" checked>
+                    <label for="st-is-ai-merge-system-user">合并 System 和 User</label>
+                </div>
+                <small style="color: var(--st-is-text-secondary); display:block; margin:-4px 0 8px 0;">
+                    开启后，合并相邻消息时会将 system 和 user 视为同类角色一并合并。
+                </small>
+                <div class="st-is-ai-form-item checkbox">
+                    <input type="checkbox" id="st-is-ai-send-images">
+                    <label for="st-is-ai-send-images">发送图片</label>
+                </div>
+                <small style="color: var(--st-is-text-secondary); display:block; margin:-4px 0 4px 0;">
+                    开启后，请求会保留消息中的图片（多模态）；关闭后图片会被过滤，仅发送文本。默认关闭，请确认所选模型支持多模态。
+                </small>
+            </div>
+            <!-- 参数 Tab -->
+            <div class="st-is-ai-panel-content" data-panel-content="params">
+                <div class="st-is-ai-form-item">
+                    <label for="st-is-ai-max-tokens">Max Tokens</label>
+                    <input type="number" id="st-is-ai-max-tokens" min="1" step="1" placeholder="8000">
+                </div>
+                <div class="st-is-ai-form-item">
+                    <label for="st-is-ai-temperature">Temperature (0-2)</label>
+                    <input type="number" id="st-is-ai-temperature" min="0" max="2" step="0.01" placeholder="0.80">
+                </div>
+                <div class="st-is-ai-form-item">
+                    <label for="st-is-ai-top-p">Top P (0-1)</label>
+                    <input type="number" id="st-is-ai-top-p" min="0" max="1" step="0.01" placeholder="1.00">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 历史面板（默认隐藏） -->
+    <div id="st-is-ai-history-panel" class="st-is-ai-history-panel" style="display: none;">
+        <div class="st-is-ai-panel-header">
+            <h4>聊天历史</h4>
+            <span id="st-is-ai-history-close" class="st-is-ai-icon-btn" title="关闭"><i class="fa-solid fa-xmark"></i></span>
+        </div>
+        <div id="st-is-ai-history-list" class="st-is-ai-history-list">
+            <!-- 由 JS 渲染 -->
+        </div>
+    </div>
+
+    <!-- 缩放手柄 -->
+    <div class="st-is-ai-resize-handle"></div>
+</div>

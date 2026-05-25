@@ -1,0 +1,137 @@
+<div class="st-is-tab-content active" id="st-is-tab-main">
+    <div class="st-is-settings-section">
+        <h3>主要设置</h3>
+        <div class="st-is-field">
+            <label for="enable_plugin">启用插件</label>
+            <div class="st-is-toggle">
+                <input id="enable_plugin" type="checkbox" />
+                <span class="st-is-slider"></span>
+            </div>
+        </div>
+        <div class="st-is-field">
+            <label for="readingSpeed">阅读速度 (CPM)</label>
+            <div class="st-is-range-container">
+                <input class="st-is-range-slider" type="range" id="readingSpeed" min="100" max="2000" step="50" value="600">
+                <input class="st-is-range-input" type="number" id="readingSpeed_value" data-for="readingSpeed" min="100" max="2000" step="50" value="600">
+            </div>
+        </div>
+    </div>
+    <div class="st-is-settings-section">
+        <h3>辅助设置</h3>
+        <div class="st-is-field">
+            <label for="musicStartsWithParagraph">Music以段落开头</label>
+            <div class="st-is-toggle">
+                <input id="musicStartsWithParagraph" type="checkbox" />
+                <span class="st-is-slider"></span>
+            </div>
+        </div>
+        <div class="st-is-field">
+            <label for="seamlessMusic">Music无缝衔接</label>
+            <div class="st-is-toggle">
+                <input id="seamlessMusic" type="checkbox" />
+                <span class="st-is-slider"></span>
+            </div>
+        </div>
+        <div class="st-is-field">
+            <label for="compatibility_edge" title="开启后，大于 600KB 的音频走 HTML5 <audio> 回退，规避移动端 decodeAudioData 对大 PCM 的限制。代价：回退音频不挂效果器/IR/空间化；iOS/WebKit 上 auto 自动震动可能失效。">兼容Edge（大文件 HTML5 回退）</label>
+            <div class="st-is-toggle">
+                <input id="compatibility_edge" type="checkbox" />
+                <span class="st-is-slider"></span>
+            </div>
+        </div>
+        <div class="st-is-field">
+            <label for="tts_request_balancing">TTS请求均衡</label>
+            <div class="st-is-toggle">
+                <input id="tts_request_balancing" type="checkbox" />
+                <span class="st-is-slider"></span>
+            </div>
+        </div>
+        <div class="st-is-field">
+            <label for="offline_rendering_enabled">离线渲染</label>
+            <div class="st-is-toggle">
+                <input id="offline_rendering_enabled" type="checkbox" />
+                <span class="st-is-slider"></span>
+            </div>
+        </div>
+        <div class="st-is-field">
+            <label for="enable_tts_voice">TTS语音</label>
+            <div class="st-is-toggle">
+                <input id="enable_tts_voice" type="checkbox" />
+                <span class="st-is-slider"></span>
+            </div>
+        </div>
+        <div class="st-is-field">
+            <label for="enable_narration_tts">旁白 TTS</label>
+            <div class="st-is-toggle">
+                <input id="enable_narration_tts" type="checkbox" />
+                <span class="st-is-slider"></span>
+            </div>
+        </div>
+        <div class="st-is-field">
+            <label for="narration_engine">旁白 TTS 引擎</label>
+            <select id="narration_engine" class="st-is-select">
+                <option value="edge">Edge（微软语音）</option>
+                <option value="minimax">MiniMax（T2A v2）</option>
+                <option value="nimo">MiMo-V2.5-TTS（小米）</option>
+            </select>
+        </div>
+        <div class="st-is-field">
+            <label for="voice_tts_provider">人物 TTS 引擎</label>
+            <select id="voice_tts_provider" class="st-is-select">
+                <option value="doubao">豆包（火山引擎）</option>
+                <option value="minimax">MiniMax（T2A v2）</option>
+                <option value="edge">Edge（微软语音）</option>
+                <option value="nimo">MiMo-V2.5-TTS（小米）</option>
+            </select>
+        </div>
+        <div class="st-is-field">
+            <label for="nimoCloneStorage" title="选择"酒馆"后，MiMo 复刻音频将通过 /api/images/upload 存储到服务端，可跨浏览器/设备使用；选择"浏览器"则存到本地 IndexedDB（默认）。">MiMo 复刻音频存储位置</label>
+            <select id="nimoCloneStorage" class="st-is-select">
+                <option value="browser">浏览器（IndexedDB，本地）</option>
+                <option value="jiuguan">酒馆（服务端，跨设备）</option>
+            </select>
+        </div>
+    </div>
+    <div class="st-is-settings-section">
+        <h3>语音优先设置</h3>
+        <div class="st-is-field">
+            <label for="voiceDuckingEnabled">启用语音优先 (自动降低背景音乐)</label>
+            <div class="st-is-toggle">
+                <input id="voiceDuckingEnabled" type="checkbox" />
+                <span class="st-is-slider"></span>
+            </div>
+        </div>
+        <div class="st-is-field">
+            <label for="voiceDuckingPercentage">背景音乐降低幅度 (%)</label>
+            <div class="st-is-range-container">
+                <input class="st-is-range-slider" type="range" id="voiceDuckingPercentage" min="0" max="100" step="1" value="50">
+                <input class="st-is-range-input" type="number" id="voiceDuckingPercentage_value" data-for="voiceDuckingPercentage" min="0" max="100" step="1" value="50">
+            </div>
+        </div>
+        <div class="st-is-field">
+            <label for="voiceDuckingFadeTime">语音优先淡入淡出时间 (秒)</label>
+            <div class="st-is-range-container">
+                <input class="st-is-range-slider" type="range" id="voiceDuckingFadeTime" min="0" max="5" step="0.1" value="0.5">
+                <input class="st-is-range-input" type="number" id="voiceDuckingFadeTime_value" data-for="voiceDuckingFadeTime" min="0" max="5" step="0.1" value="0.5">
+            </div>
+        </div>
+    </div>
+    <div class="st-is-settings-section">
+        <h3>阅读高亮设置</h3>
+        <div class="st-is-field">
+            <label for="highlightColor">高亮颜色</label>
+            <input type="color" id="highlightColor" value="#007BFF" class="st-is-color-picker">
+        </div>
+        <div class="st-is-field">
+            <label for="textColor">字体颜色</label>
+            <input type="color" id="textColor" value="#FFFFFF" class="st-is-color-picker">
+        </div>
+        <div class="st-is-field">
+            <label for="highlightOpacity">高亮不透明度</label>
+            <div class="st-is-range-container">
+                <input class="st-is-range-slider" type="range" id="highlightOpacity" min="0" max="1" step="0.1" value="0.4">
+                <input class="st-is-range-input" type="number" id="highlightOpacity_value" data-for="highlightOpacity" min="0" max="1" step="0.1" value="0.4">
+            </div>
+        </div>
+    </div>
+</div>

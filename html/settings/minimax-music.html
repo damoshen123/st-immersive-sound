@@ -1,0 +1,253 @@
+<div class="st-is-tab-content" id="st-is-tab-minimax-music">
+
+    <div class="st-is-settings-section">
+        <h3>MiniMax 音乐生成</h3>
+        <p style="opacity:.75; margin-top:-6px;">
+            通过风格描述 prompt 与歌词 lyrics 生成音乐，复用「MiniMax」设置页的连接配置。<strong>本工具不持久化生成结果</strong>。
+        </p>
+
+        <div class="st-is-field">
+            <label>生成模式</label>
+            <div style="display:flex; gap:14px; flex-wrap:wrap;">
+                <label><input type="radio" name="minimax_music_mode" value="song" checked> 🎤 歌曲</label>
+                <label><input type="radio" name="minimax_music_mode" value="instrumental"> 🎻 纯音乐</label>
+                <label><input type="radio" name="minimax_music_mode" value="auto-lyrics"> ✨ AI 写词</label>
+                <label><input type="radio" name="minimax_music_mode" value="cover"> 🎙️ 翻唱</label>
+            </div>
+        </div>
+
+        <div class="st-is-field">
+            <label for="minimax_music_model">模型</label>
+            <select id="minimax_music_model" class="st-is-select">
+                <option value="music-2.6-free">music-2.6-free（文生音乐·免费）</option>
+                <option value="music-2.6">music-2.6（文生音乐·付费）</option>
+                <option value="music-cover-free">music-cover-free（翻唱·免费）</option>
+                <option value="music-cover">music-cover（翻唱·付费）</option>
+            </select>
+        </div>
+
+        <!-- 翻唱配置 -->
+        <div id="minimax_music_cover_block" style="display:none;">
+            <div class="st-is-settings-section" style="margin-top:8px; padding:14px; background:rgba(167,139,250,.05); border-color:rgba(167,139,250,.3);">
+                <h4 style="color:#a78bfa;">🎙️ 翻唱配置</h4>
+
+                <div class="st-is-field">
+                    <label>翻唱方式</label>
+                    <div style="display:flex; gap:14px; flex-wrap:wrap;">
+                        <label><input type="radio" name="minimax_cover_mode" value="one-step"> 一步翻唱（仅换风格）</label>
+                        <label><input type="radio" name="minimax_cover_mode" value="two-step" checked> 两步翻唱（可改写歌词）</label>
+                    </div>
+                </div>
+
+                <div class="st-is-field">
+                    <label>参考音频来源（6秒~6分钟，≤50MB，mp3/wav/flac）</label>
+                    <div style="display:flex; gap:14px; flex-wrap:wrap;">
+                        <label><input type="radio" name="minimax_cover_input_type" value="url" checked> 公网 URL</label>
+                        <label><input type="radio" name="minimax_cover_input_type" value="file"> 上传文件</label>
+                        <label><input type="radio" name="minimax_cover_input_type" value="feature_id"> 已有 cover_feature_id</label>
+                    </div>
+                </div>
+
+                <div class="st-is-field-col" id="minimax_cover_input_url">
+                    <input type="text" id="minimax_cover_audio_url" class="st-is-text-input" placeholder="https://... .mp3 / .wav / .flac">
+                </div>
+                <div class="st-is-field-col" id="minimax_cover_input_file" style="display:none;">
+                    <button class="st-is-btn" id="minimax_cover_file_btn"><i class="fa-solid fa-upload"></i> 选择音频文件</button>
+                    <input type="file" id="minimax_cover_file_input" accept="audio/mpeg,audio/wav,audio/flac,.mp3,.wav,.flac" style="display:none;">
+                    <span id="minimax_cover_file_status" style="opacity:.75; margin-left:8px;">未选择</span>
+                </div>
+                <div class="st-is-field-col" id="minimax_cover_input_feature_id" style="display:none;">
+                    <input type="text" id="minimax_cover_feature_id_input" class="st-is-text-input" placeholder="预处理返回的 cover_feature_id（24h 有效）">
+                </div>
+
+                <div id="minimax_cover_preprocess_btn_wrap" style="margin-top:10px;">
+                    <button class="st-is-btn" id="minimax_btn_cover_preprocess"><i class="fa-solid fa-magnifying-glass"></i> 调用预处理</button>
+                    <span id="minimax_cover_preprocess_status" style="opacity:.75; margin-left:10px;"></span>
+                </div>
+
+                <div id="minimax_cover_preprocess_result" style="margin-top:10px; padding:10px; background:rgba(0,0,0,.15); border-radius:6px; display:none;">
+                    <div><strong>cover_feature_id：</strong><code id="minimax_cpr_feature_id"></code> <span style="opacity:.6;">(24h 有效)</span></div>
+                    <div><strong>音频时长：</strong><span id="minimax_cpr_duration">-</span> 秒</div>
+                    <div><strong>段落结构：</strong><span id="minimax_cpr_segments"></span></div>
+                    <button class="st-is-btn" id="minimax_btn_fill_lyrics_tpl" style="margin-top:8px;">📋 将模板填入下方歌词框</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="st-is-field-col">
+            <label id="minimax_music_prompt_label">风格描述 prompt（必填，1~2000 字符）</label>
+            <textarea id="minimax_music_prompt" class="st-is-textarea" rows="3"
+                placeholder="例如：Indie folk, melancholic, rainy night, soft female vocals, acoustic guitar"></textarea>
+            <div style="opacity:.6; font-size:12px;"><span id="minimax_music_prompt_count">0</span> / <span id="minimax_music_prompt_max">2000</span> 字符</div>
+            <button class="st-is-btn" id="minimax_btn_music_presets" style="margin-top:6px;"><i class="fa-solid fa-lightbulb"></i> 风格示例</button>
+        </div>
+
+        <div class="st-is-field-col" id="minimax_music_lyrics_block">
+            <label id="minimax_music_lyrics_label">歌词 lyrics（用 [Intro]/[Verse]/[Chorus] 等标签分段，1~3500 字符）</label>
+            <textarea id="minimax_music_lyrics" class="st-is-textarea" rows="6"
+                placeholder="[Intro]&#10;&#10;[Verse]&#10;街灯闪烁，夜风轻叹&#10;&#10;[Chorus]&#10;..."></textarea>
+            <div style="opacity:.6; font-size:12px;"><span id="minimax_music_lyrics_count">0</span> / <span id="minimax_music_lyrics_max">3500</span> 字符</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;">
+                <button class="st-is-btn-tag minimax-music-tag" data-tag="[Intro]\n" title="前奏 Intro">🎼 前奏 / Intro</button>
+                <button class="st-is-btn-tag minimax-music-tag" data-tag="[Verse]\n" title="主歌 Verse">🎤 主歌 / Verse</button>
+                <button class="st-is-btn-tag minimax-music-tag" data-tag="[Pre Chorus]\n" title="预副歌 Pre-chorus">🎶 预副歌 / Pre-chorus</button>
+                <button class="st-is-btn-tag minimax-music-tag" data-tag="[Chorus]\n" title="副歌 Chorus">🎙️ 副歌 / Chorus</button>
+                <button class="st-is-btn-tag minimax-music-tag" data-tag="[Hook]\n" title="Hook（钩子段）">🪝 钩子 / Hook</button>
+                <button class="st-is-btn-tag minimax-music-tag" data-tag="[Drop]\n" title="Drop（高潮释放）">💥 释放 / Drop</button>
+                <button class="st-is-btn-tag minimax-music-tag" data-tag="[Bridge]\n" title="过门 Bridge">🌉 过门 / Bridge</button>
+                <button class="st-is-btn-tag minimax-music-tag" data-tag="[Solo]\n" title="Solo（独奏）">🎸 独奏 / Solo</button>
+                <button class="st-is-btn-tag minimax-music-tag" data-tag="[Build Up]\n" title="递进 Build-up">📈 递进 / Build-up</button>
+                <button class="st-is-btn-tag minimax-music-tag" data-tag="[Instrumental]\n" title="器乐段 Instrumental">🎻 器乐段 / Instrumental</button>
+                <button class="st-is-btn-tag minimax-music-tag" data-tag="[Breakdown]\n" title="Breakdown（拆解段）">🔻 拆解 / Breakdown</button>
+                <button class="st-is-btn-tag minimax-music-tag" data-tag="[Break]\n" title="间歇段 Break">⏸ 间歇 / Break</button>
+                <button class="st-is-btn-tag minimax-music-tag" data-tag="[Interlude]\n" title="间奏 Interlude">🎵 间奏 / Interlude</button>
+                <button class="st-is-btn-tag minimax-music-tag" data-tag="[Outro]\n" title="尾奏 Outro">🏁 尾奏 / Outro</button>
+            </div>
+
+            <details style="margin-top:10px; background:rgba(102,126,234,.06); border-left:3px solid #667eea; border-radius:6px; padding:8px 12px;">
+                <summary style="cursor:pointer; font-weight:600; user-select:none;">
+                    📖 歌词结构教程：14 种段落标签的含义与使用时机
+                </summary>
+                <div style="margin-top:10px; font-size:13px; line-height:1.7;">
+                    <p style="opacity:.8; margin:4px 0 10px;">
+                        在歌词最前面用 <code>[标签]</code> 单独占一行，告诉模型"接下来这一段是什么类型"。
+                        模型会据此调整旋律走向、配器密度、能量曲线。
+                        <b>标签必须用英文方括号写英文名</b>，中文按钮只是显示用，插入后真正写入的还是英文。
+                    </p>
+
+                    <h5 style="margin:12px 0 4px; color:#a78bfa;">🏗 一首歌的常见骨架</h5>
+                    <p style="opacity:.85; margin:2px 0 6px;">最经典的流行结构（你 90% 的歌都可以套这个）：</p>
+                    <pre style="background:rgba(0,0,0,.18); padding:8px 10px; border-radius:4px; margin:0 0 8px; overflow:auto;">[Intro]  →  [Verse]  →  [Pre Chorus]  →  [Chorus]
+        →  [Verse]  →  [Pre Chorus]  →  [Chorus]
+        →  [Bridge]  →  [Chorus]  →  [Outro]</pre>
+                    <p style="opacity:.7; margin:0 0 10px; font-size:12px;">
+                        电子/舞曲常见：<code>[Intro] → [Build Up] → [Drop] → [Breakdown] → [Build Up] → [Drop] → [Outro]</code>。
+                    </p>
+
+                    <h5 style="margin:12px 0 4px; color:#a78bfa;">🎤 含人声的段落（写歌词的地方）</h5>
+                    <ul style="margin:4px 0 8px; padding-left:20px;">
+                        <li><b>🎤 主歌 [Verse]</b>：叙事段，铺陈故事 / 情绪。每段 4–8 句，旋律相对平稳，能量中等。<br>
+                            <span style="opacity:.65;">用法：每首歌通常 2–3 段 Verse，第 2 段 Verse 歌词不同但旋律可重复第 1 段。</span></li>
+                        <li><b>🎶 预副歌 [Pre Chorus]</b>：副歌前的"引线"，能量从 Verse 慢慢推上去。1–2 句即可。<br>
+                            <span style="opacity:.65;">用法：可选段落；用了能让副歌爆发更有冲击力，去掉也不影响结构。</span></li>
+                        <li><b>🎙️ 副歌 [Chorus]</b>：全曲记忆点 / 情绪高峰，反复出现。一般写最朗朗上口的几句。<br>
+                            <span style="opacity:.65;">用法：一首歌至少 2 次，推荐 3 次（第 3 次可升 key 或加和声）。</span></li>
+                        <li><b>🪝 Hook</b>：钩子段，比 Chorus 更短更洗脑，常见于嘻哈/流行。可以代替 Chorus 或穿插出现。<br>
+                            <span style="opacity:.65;">用法：1–2 句简短记忆点，比如"baby baby ohh"那种，专门用来洗脑。</span></li>
+                        <li><b>🌉 过门 [Bridge]</b>：第二次副歌之后的"转折段"，情绪 / 调性变化，避免听觉疲劳。<br>
+                            <span style="opacity:.65;">用法：通常 4–8 句，歌词内容与 Verse / Chorus 都不同；之后回到最后一次副歌。</span></li>
+                    </ul>
+
+                    <h5 style="margin:12px 0 4px; color:#a78bfa;">🎼 纯演奏 / 过渡段（不写歌词或留空）</h5>
+                    <ul style="margin:4px 0 8px; padding-left:20px;">
+                        <li><b>🎼 前奏 [Intro]</b>：开场氛围铺垫，0–15 秒。<br>
+                            <span style="opacity:.65;">用法：基本每首都加，给听众一个进入歌曲的过渡。下面通常空一行不写歌词。</span></li>
+                        <li><b>🏁 尾奏 [Outro]</b>：结尾收束，淡出 / 重复关键句 / 器乐 fade out。<br>
+                            <span style="opacity:.65;">用法：基本每首都加，可以让模型自然结束而不是被切断。</span></li>
+                        <li><b>🎵 间奏 [Interlude]</b>：段落之间的纯器乐过渡，比 Bridge 短，不带歌词。<br>
+                            <span style="opacity:.65;">用法：Verse 1 → Verse 2 之间需要喘息时插入。</span></li>
+                        <li><b>🎻 器乐段 [Instrumental]</b>：完全无人声的演奏段，常用于民谣 / 摇滚的"假尾奏"。<br>
+                            <span style="opacity:.65;">用法：跟 Interlude 类似但更长更主动，可以理解为"把人声让位给乐器秀一段"。</span></li>
+                        <li><b>🎸 Solo</b>：器乐独奏段（吉他 solo / 钢琴 solo / 萨克斯 solo 等）。<br>
+                            <span style="opacity:.65;">用法：摇滚 / 爵士 / 蓝调风格里，常放在第二次副歌之后、Bridge 之前。</span></li>
+                    </ul>
+
+                    <h5 style="margin:12px 0 4px; color:#a78bfa;">⚡ 电子 / 舞曲专用</h5>
+                    <ul style="margin:4px 0 8px; padding-left:20px;">
+                        <li><b>📈 递进 [Build Up]</b>：能量从低到高的爬升段（白噪声 / 鼓点逐渐密集 / 滤波打开）。<br>
+                            <span style="opacity:.65;">用法：Drop 之前必备，制造"快要爆炸"的预期感。</span></li>
+                        <li><b>💥 Drop</b>：能量瞬间释放的高潮段，电子舞曲的核心爽点。<br>
+                            <span style="opacity:.65;">用法：跟在 Build Up 之后；House / Dubstep / Trap 必备段落。</span></li>
+                        <li><b>🔻 Breakdown</b>：把 Drop 之后的密集编排"拆解掉"，只剩极少元素（人声 / 键盘垫底）。<br>
+                            <span style="opacity:.65;">用法：电子曲中常做"Drop → Breakdown → Build Up → Drop"循环，制造起伏。</span></li>
+                        <li><b>⏸ 间歇 [Break]</b>：完全或几乎静音的短暂停顿（半拍 ~ 2 小节）。<br>
+                            <span style="opacity:.65;">用法：在 Drop 之前一拍 [Break] 能极大增强落点的冲击力。</span></li>
+                    </ul>
+
+                    <h5 style="margin:12px 0 4px; color:#a78bfa;">📝 写法范例</h5>
+                    <pre style="background:rgba(0,0,0,.18); padding:10px; border-radius:4px; margin:4px 0; overflow:auto; font-size:12px;">[Intro]
+
+[Verse]
+街灯闪烁，夜风轻叹
+影子被拉长在归家的路上
+
+[Pre Chorus]
+我数着每一颗星
+
+[Chorus]
+带我去看海，带我去远方
+让所有的悲伤都被浪花带走
+
+[Verse]
+想起从前，我们坐在屋檐下
+雨打在瓦片上像首老歌
+
+[Chorus]
+带我去看海，带我去远方
+让所有的悲伤都被浪花带走
+
+[Bridge]
+也许时间会让一切变得简单
+
+[Chorus]
+带我去看海，带我去远方
+让所有的悲伤都被浪花带走
+
+[Outro]
+</pre>
+
+                    <h5 style="margin:12px 0 4px; color:#a78bfa;">💡 实用 Tips</h5>
+                    <ul style="margin:4px 0 4px; padding-left:20px; opacity:.85;">
+                        <li>标签 <b>独占一行</b>，前后各空一行可读性更好。</li>
+                        <li>纯器乐段（Intro / Outro / Interlude / Instrumental / Solo / Drop / Build Up / Breakdown / Break）下方<b>不要写歌词</b>，留空让模型自由发挥。</li>
+                        <li>同一标签可重复使用，模型会理解为"再来一段同类型的"。</li>
+                        <li>歌词字数控制在 <b>1~3500 字符</b>；段落越多，每段越短，节奏感越强。</li>
+                        <li>风格描述（上方 prompt）决定"曲风"，段落标签决定"结构"，两者配合才能稳定出货。</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <div class="st-is-settings-section">
+        <h4>音频参数</h4>
+        <div class="st-is-field">
+            <label for="minimax_music_format">格式</label>
+            <select id="minimax_music_format" class="st-is-select">
+                <option value="mp3">MP3</option>
+                <option value="wav">WAV</option>
+                <option value="flac">FLAC</option>
+            </select>
+        </div>
+        <div class="st-is-field">
+            <label for="minimax_music_sample_rate">采样率</label>
+            <select id="minimax_music_sample_rate" class="st-is-select">
+                <option value="44100">44100 Hz</option>
+                <option value="32000">32000 Hz</option>
+                <option value="24000">24000 Hz</option>
+            </select>
+        </div>
+        <div class="st-is-field">
+            <label for="minimax_music_bitrate">比特率</label>
+            <select id="minimax_music_bitrate" class="st-is-select">
+                <option value="256000">256 kbps</option>
+                <option value="128000">128 kbps</option>
+                <option value="64000">64 kbps</option>
+                <option value="32000">32 kbps</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="st-is-settings-section">
+        <div style="text-align:center;">
+            <button class="st-is-btn" id="minimax_btn_gen_music" style="font-size:15px; padding:10px 20px;">
+                <i class="fa-solid fa-music"></i> 生成音乐
+            </button>
+        </div>
+        <div id="minimax_music_status" style="margin-top:10px; opacity:.85; text-align:center;"></div>
+        <div class="st-is-field-col" style="margin-top:10px;">
+            <audio id="minimax_music_audio" controls style="width:100%; display:none;"></audio>
+            <a id="minimax_music_download" class="st-is-btn" style="display:none; margin-top:6px;">⬇ 下载音乐</a>
+        </div>
+    </div>
+</div>

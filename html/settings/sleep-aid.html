@@ -1,0 +1,489 @@
+<div class="st-is-tab-content" id="st-is-tab-sleep-aid">
+
+    <!-- 页面顶部介绍 -->
+    <div class="st-is-settings-section sa-intro">
+        <h3>🌙 助眠中心</h3>
+        <p class="sa-hint">
+            告诉我此刻的你想要什么，我会为你生成一段专属的助眠引导。<br>
+            点选即可，不想写字也没关系——所有需要打字的地方都是可选的。
+        </p>
+    </div>
+
+    <!-- ───────────────────────── 第一层：核心选择 ───────────────────────── -->
+    <div class="st-is-settings-section sa-layer sa-layer-1" data-layer="1">
+        <h3>第一层 · 核心选择 <span class="sa-required-badge">必填</span></h3>
+        <p class="sa-hint">这几个选择决定了整段引导的方向。</p>
+
+        <!-- 当下状态 -->
+        <div class="sa-field">
+            <label class="sa-label">当下状态</label>
+            <div class="sa-pill-group" data-field="currentState" data-mode="single">
+                <button type="button" class="sa-pill" data-value="racing_thoughts">思绪停不下来</button>
+                <button type="button" class="sa-pill" data-value="tired_awake">身体很累但睡不着</button>
+                <button type="button" class="sa-pill" data-value="low_mood">情绪低落</button>
+                <button type="button" class="sa-pill" data-value="anxious">莫名焦虑</button>
+                <button type="button" class="sa-pill" data-value="just_relax">单纯想放松</button>
+                <button type="button" class="sa-pill" data-value="irritable">烦躁易怒</button>
+                <button type="button" class="sa-pill" data-value="empty">空虚发呆</button>
+                <button type="button" class="sa-pill" data-value="tense">紧绷难松</button>
+            </div>
+        </div>
+
+        <!-- 想去的场景 -->
+        <div class="sa-field">
+            <label class="sa-label">想去的场景</label>
+            <div class="sa-pill-group" data-field="scene" data-mode="single">
+                <button type="button" class="sa-pill" data-value="forest">🌲 森林</button>
+                <button type="button" class="sa-pill" data-value="ocean">🌊 海边</button>
+                <button type="button" class="sa-pill" data-value="snowy_cabin">❄️ 雪夜小屋</button>
+                <button type="button" class="sa-pill" data-value="space">🌌 宇宙飘浮</button>
+                <button type="button" class="sa-pill" data-value="childhood_room">🏠 童年房间</button>
+                <button type="button" class="sa-pill" data-value="mountain_stream">⛰️ 山间溪流</button>
+                <button type="button" class="sa-pill" data-value="quiet_temple">🛕 安静寺院</button>
+                <button type="button" class="sa-pill" data-value="rainy_window">🌧️ 雨夜窗边</button>
+                <button type="button" class="sa-pill" data-value="fireplace">🔥 壁炉旁</button>
+                <button type="button" class="sa-pill" data-value="clouds">☁️ 云端漂浮</button>
+                <button type="button" class="sa-pill" data-value="custom" data-expand="scene-custom">✏️ 自定义</button>
+            </div>
+            <div class="sa-sub-input" id="scene-custom" hidden>
+                <input type="text" class="st-is-text-input sa-input" data-field="sceneCustom"
+                    placeholder="描述一个你想去的地方……" maxlength="50">
+            </div>
+        </div>
+
+        <!-- 讲述人是谁 -->
+        <div class="sa-field">
+            <label class="sa-label">讲述人是谁</label>
+            <p class="sa-hint sa-hint-inline">不同身份会带来不同的语气和距离感。</p>
+
+            <div class="sa-narrator-group">
+                <div class="sa-narrator-section">
+                    <h4 class="sa-narrator-title">🌿 专业身份</h4>
+                    <div class="sa-pill-group" data-field="narrator" data-mode="single" data-shared-group="narrator">
+                        <button type="button" class="sa-pill" data-value="healer">🧘 疗愈师</button>
+                        <button type="button" class="sa-pill" data-value="therapist">💼 心理咨询师</button>
+                        <button type="button" class="sa-pill" data-value="meditation_guide">✨ 冥想导师</button>
+                    </div>
+                </div>
+                <div class="sa-narrator-section">
+                    <h4 class="sa-narrator-title">🏠 亲密关系</h4>
+                    <div class="sa-pill-group" data-field="narrator" data-mode="single" data-shared-group="narrator">
+                        <button type="button" class="sa-pill" data-value="sister">👩 温柔的姐姐</button>
+                        <button type="button" class="sa-pill" data-value="brother">🧑 可靠的哥哥</button>
+                        <button type="button" class="sa-pill" data-value="mother">💗 妈妈</button>
+                        <button type="button" class="sa-pill" data-value="father">🛡️ 爸爸</button>
+                        <button type="button" class="sa-pill" data-value="lover">💕 爱人</button>
+                    </div>
+                </div>
+                <div class="sa-narrator-section">
+                    <h4 class="sa-narrator-title">🌟 朋友与自己</h4>
+                    <div class="sa-pill-group" data-field="narrator" data-mode="single" data-shared-group="narrator">
+                        <button type="button" class="sa-pill" data-value="friend">🤝 亲近的朋友</button>
+                        <button type="button" class="sa-pill" data-value="inner_voice">🪞 你自己内在的声音</button>
+                    </div>
+                </div>
+                <div class="sa-narrator-section">
+                    <h4 class="sa-narrator-title">📖 想象身份</h4>
+                    <div class="sa-pill-group" data-field="narrator" data-mode="single" data-shared-group="narrator">
+                        <button type="button" class="sa-pill" data-value="custom" data-expand="narrator-custom">✏️ 自定义身份</button>
+                    </div>
+                </div>
+            </div>
+            <div class="sa-sub-input" id="narrator-custom" hidden>
+                <input type="text" class="st-is-text-input sa-input" data-field="narratorCustom"
+                    placeholder='例如：一只猫 / 森林里的精灵 / 我喜欢的某个角色' maxlength="50">
+            </div>
+        </div>
+
+        <!-- 对你的称呼 -->
+        <div class="sa-field">
+            <label class="sa-label">对你的称呼</label>
+            <p class="sa-hint sa-hint-inline">那个声音会怎么称呼你？选一个让你听了会放松的。</p>
+            <div class="sa-pill-group" data-field="address" data-mode="single">
+                <button type="button" class="sa-pill is-selected" data-value="you">你</button>
+                <button type="button" class="sa-pill" data-value="baby">宝贝</button>
+                <button type="button" class="sa-pill" data-value="dear">亲爱的</button>
+                <button type="button" class="sa-pill" data-value="child">孩子</button>
+                <button type="button" class="sa-pill" data-value="cutie">小可爱</button>
+                <button type="button" class="sa-pill" data-value="little_one">小家伙</button>
+                <button type="button" class="sa-pill" data-value="friend">朋友</button>
+                <button type="button" class="sa-pill" data-value="use_name" data-expand="address-name">（用我的名字）</button>
+                <button type="button" class="sa-pill" data-value="none">（不称呼）</button>
+                <button type="button" class="sa-pill" data-value="custom" data-expand="address-custom">✏️ 自己写一个</button>
+            </div>
+            <div class="sa-sub-input" id="address-name" hidden>
+                <input type="text" class="st-is-text-input sa-input" data-field="addressCustomName"
+                    placeholder="填你的名字或昵称……" maxlength="20">
+            </div>
+            <div class="sa-sub-input" id="address-custom" hidden>
+                <input type="text" class="st-is-text-input sa-input" data-field="addressCustomTerm"
+                    placeholder="自己写一个称呼……" maxlength="10">
+            </div>
+        </div>
+
+        <!-- 当前环境 -->
+        <div class="sa-field">
+            <label class="sa-label">当前环境</label>
+            <div class="sa-pill-group" data-field="environment" data-mode="single">
+                <button type="button" class="sa-pill" data-value="in_bed">🛏️ 床上准备入睡</button>
+                <button type="button" class="sa-pill" data-value="couch">🛋️ 沙发椅子小憩</button>
+                <button type="button" class="sa-pill" data-value="commute">🚇 通勤路上</button>
+                <button type="button" class="sa-pill" data-value="work_break">⚡ 工作间隙快速放松</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ───────────────────────── 第二层：精细化 ───────────────────────── -->
+    <div class="st-is-settings-section sa-layer sa-layer-2" data-layer="2">
+        <h3>
+            <button type="button" class="sa-collapse-btn" data-collapse-target="sa-layer-2-body" aria-expanded="true">
+                <span class="sa-collapse-icon">▾</span>
+            </button>
+            第二层 · 精细化 <span class="sa-optional-badge">可选</span>
+        </h3>
+        <div id="sa-layer-2-body" class="sa-collapsible-body">
+            <p class="sa-hint">如果你愿意多花一点时间告诉我更多，引导会更贴合你。所有项都可以跳过——<b>点选即可，不想写字也没关系</b>。</p>
+
+            <!-- 身体紧张点 -->
+            <div class="sa-field">
+                <label class="sa-label">今天身体哪里最累</label>
+                <div class="sa-chip-group" data-field="bodyTension" data-mode="multi">
+                    <button type="button" class="sa-chip" data-value="neck_shoulder">肩颈</button>
+                    <button type="button" class="sa-chip" data-value="chest">胸口</button>
+                    <button type="button" class="sa-chip" data-value="stomach">胃部</button>
+                    <button type="button" class="sa-chip" data-value="jaw">下颌</button>
+                    <button type="button" class="sa-chip" data-value="back">后背</button>
+                    <button type="button" class="sa-chip" data-value="waist">腰部</button>
+                    <button type="button" class="sa-chip" data-value="head">头部</button>
+                    <button type="button" class="sa-chip" data-value="eyes">眼睛</button>
+                    <button type="button" class="sa-chip" data-value="whole">全身</button>
+                </div>
+            </div>
+
+            <!-- 感官偏好 -->
+            <div class="sa-field">
+                <label class="sa-label">你更容易感受到什么</label>
+                <div class="sa-pill-group" data-field="sensoryPreference" data-mode="single">
+                    <button type="button" class="sa-pill" data-value="visual">看到的画面</button>
+                    <button type="button" class="sa-pill" data-value="auditory">听到的声音</button>
+                    <button type="button" class="sa-pill" data-value="kinesthetic">身体的感受</button>
+                    <button type="button" class="sa-pill" data-value="olfactory">气味或味道</button>
+                </div>
+            </div>
+
+            <!-- 困扰你的事 -->
+            <div class="sa-field">
+                <label class="sa-label">今天有什么困扰你的事</label>
+                <p class="sa-hint sa-hint-inline">点几个相关的就够，AI 会在引导开头温柔地承认它，然后帮你把它放在一边。</p>
+                <div class="sa-chip-group" data-field="troubles" data-mode="multi">
+                    <button type="button" class="sa-chip" data-value="work_pressure">工作压力</button>
+                    <button type="button" class="sa-chip" data-value="conflict">人际冲突</button>
+                    <button type="button" class="sa-chip" data-value="family">家庭事务</button>
+                    <button type="button" class="sa-chip" data-value="relationship">感情困扰</button>
+                    <button type="button" class="sa-chip" data-value="money">经济压力</button>
+                    <button type="button" class="sa-chip" data-value="health">健康担忧</button>
+                    <button type="button" class="sa-chip" data-value="unfinished">未完成的事</button>
+                    <button type="button" class="sa-chip" data-value="future_anxiety">对未来的焦虑</button>
+                    <button type="button" class="sa-chip" data-value="info_overload">信息过载</button>
+                    <button type="button" class="sa-chip" data-value="body_tired">身体疲惫</button>
+                    <button type="button" class="sa-chip" data-value="low_mood2">情绪低落</button>
+                    <button type="button" class="sa-chip" data-value="vague">说不清的烦躁</button>
+                </div>
+                <button type="button" class="sa-expand-btn" data-expand="troubles-custom">+ 还有别的话想说...</button>
+                <div class="sa-sub-input" id="troubles-custom" hidden>
+                    <textarea class="st-is-textarea sa-textarea" data-field="troublesCustom"
+                        placeholder="写几个词就好……" maxlength="100" rows="2"></textarea>
+                </div>
+            </div>
+
+            <!-- 小确幸 -->
+            <div class="sa-field">
+                <label class="sa-label">今天的一点点好</label>
+                <p class="sa-hint sa-hint-inline">哪怕只有一件也行。</p>
+                <div class="sa-chip-group" data-field="bright" data-mode="multi">
+                    <button type="button" class="sa-chip" data-value="hot_drink">一杯热饮</button>
+                    <button type="button" class="sa-chip" data-value="good_meal">一顿好饭</button>
+                    <button type="button" class="sa-chip" data-value="good_weather">好天气</button>
+                    <button type="button" class="sa-chip" data-value="music">一段音乐</button>
+                    <button type="button" class="sa-chip" data-value="friend_msg">朋友的消息</button>
+                    <button type="button" class="sa-chip" data-value="alone_moment">独处的片刻</button>
+                    <button type="button" class="sa-chip" data-value="task_done">完成了一件事</button>
+                    <button type="button" class="sa-chip" data-value="tender_moment">一个温柔的瞬间</button>
+                    <button type="button" class="sa-chip" data-value="body_relaxed">身体放松了一下</button>
+                    <button type="button" class="sa-chip" data-value="liked_thing">看到喜欢的东西</button>
+                    <button type="button" class="sa-chip" data-value="just_ok">没什么特别但还行</button>
+                </div>
+                <button type="button" class="sa-expand-btn" data-expand="bright-custom">+ 自己加一个...</button>
+                <div class="sa-sub-input" id="bright-custom" hidden>
+                    <input type="text" class="st-is-text-input sa-input" data-field="brightCustom"
+                        placeholder="自己加一个……" maxlength="50">
+                </div>
+            </div>
+
+            <!-- 今晚最想要的感觉 -->
+            <div class="sa-field">
+                <label class="sa-label">今晚最想要的感觉</label>
+                <p class="sa-hint sa-hint-inline">选 1-3 个最贴近的。</p>
+                <div class="sa-chip-group" data-field="mood" data-mode="multi">
+                    <button type="button" class="sa-chip" data-value="companied">被陪伴</button>
+                    <button type="button" class="sa-chip" data-value="allowed_to_rest">被允许什么都不做</button>
+                    <button type="button" class="sa-chip" data-value="understood">被理解</button>
+                    <button type="button" class="sa-chip" data-value="protected">被保护</button>
+                    <button type="button" class="sa-chip" data-value="witnessed">被见证</button>
+                    <button type="button" class="sa-chip" data-value="quiet">安静</button>
+                    <button type="button" class="sa-chip" data-value="warm">温暖</button>
+                    <button type="button" class="sa-chip" data-value="safe">安全感</button>
+                    <button type="button" class="sa-chip" data-value="restart">重新开始的感觉</button>
+                    <button type="button" class="sa-chip" data-value="blank">什么都不想</button>
+                    <button type="button" class="sa-chip" data-value="empty_mind">单纯放空</button>
+                </div>
+                <button type="button" class="sa-expand-btn" data-expand="mood-custom">+ 自己描述...</button>
+                <div class="sa-sub-input" id="mood-custom" hidden>
+                    <input type="text" class="st-is-text-input sa-input" data-field="moodCustom"
+                        placeholder="自己描述一下想要的感觉……" maxlength="50">
+                </div>
+            </div>
+
+            <!-- 目标时长 -->
+            <div class="sa-field">
+                <label class="sa-label">目标时长</label>
+                <div class="sa-pill-group" data-field="duration" data-mode="single">
+                    <button type="button" class="sa-pill" data-value="5">5 分钟</button>
+                    <button type="button" class="sa-pill is-selected" data-value="10">10 分钟</button>
+                    <button type="button" class="sa-pill" data-value="20">20 分钟</button>
+                    <button type="button" class="sa-pill" data-value="30">30 分钟</button>
+                </div>
+            </div>
+
+            <!-- 声音性别倾向 -->
+            <div class="sa-field">
+                <label class="sa-label">声音性别倾向</label>
+                <div class="sa-pill-group" data-field="voiceGender" data-mode="single">
+                    <button type="button" class="sa-pill is-selected" data-value="any">不限</button>
+                    <button type="button" class="sa-pill" data-value="female">女声</button>
+                    <button type="button" class="sa-pill" data-value="male">男声</button>
+                    <button type="button" class="sa-pill" data-value="neutral">中性</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ───────────────────────── 第三层：个性锚点 ───────────────────────── -->
+    <div class="st-is-settings-section sa-layer sa-layer-3" data-layer="3">
+        <h3>
+            <button type="button" class="sa-collapse-btn is-collapsed" data-collapse-target="sa-layer-3-body" aria-expanded="false">
+                <span class="sa-collapse-icon">▸</span>
+            </button>
+            第三层 · 个性锚点 <span class="sa-optional-badge">可选 · 高级</span>
+        </h3>
+        <div id="sa-layer-3-body" class="sa-collapsible-body" hidden>
+            <p class="sa-hint">这一层是给愿意深入的人准备的。你不需要全部回答——哪怕只填一项，引导都会变得更深刻、更贴合你。</p>
+
+            <!-- 安全记忆 -->
+            <div class="sa-field">
+                <label class="sa-label">安全记忆</label>
+                <p class="sa-hint sa-hint-inline">先点一个最接近的模板，再稍微改几个字就行——不需要自己从零写。</p>
+                <div class="sa-chip-group sa-template-group" data-field="safeMemoryTemplate" data-mode="single">
+                    <button type="button" class="sa-chip" data-value="childhood_grandma"
+                        data-template="小时候被外婆/外公搂在怀里，闻着熟悉的味道，外面的一切都和我无关。">🧓 童年外婆/外公怀里</button>
+                    <button type="button" class="sa-chip" data-value="rainy_bed"
+                        data-template="下雨天窝在被子里，听着雨声，什么都不用做。">🛏️ 雨天的被窝</button>
+                    <button type="button" class="sa-chip" data-value="library"
+                        data-template="在图书馆角落看书，周围只有翻页声和远处的脚步。">📚 安静的图书馆</button>
+                    <button type="button" class="sa-chip" data-value="bike_home"
+                        data-template="放学骑车回家，路灯把影子拉得很长，没有人催我。">🚲 放学回家的路</button>
+                    <button type="button" class="sa-chip" data-value="travel_view"
+                        data-template="一次旅行中看到的风景，让我愣在那里，时间像是停住了。">🌊 旅行中的风景</button>
+                    <button type="button" class="sa-chip" data-value="hot_drink_night"
+                        data-template="深夜里捧着一杯热饮，灯光很暗，外面很安静。">☕ 深夜的一杯热饮</button>
+                    <button type="button" class="sa-chip" data-value="pet"
+                        data-template="和我的宠物窝在一起，它的呼吸很平稳，我也跟着安静下来。">🐈 和宠物在一起</button>
+                    <button type="button" class="sa-chip" data-value="kitchen"
+                        data-template="家里厨房飘出的饭菜香，听到家人在外面说话的声音。">🍳 家里的厨房</button>
+                    <button type="button" class="sa-chip" data-value="afternoon_sun"
+                        data-template="午后阳光照进房间，什么都不用想，就这样靠着。">☀️ 午后的阳光</button>
+                    <button type="button" class="sa-chip" data-value="stargazing"
+                        data-template="一个人看着星空，觉得自己很小，但被某种温柔包裹着。">🌌 一个人看星空</button>
+                    <button type="button" class="sa-chip" data-value="custom"
+                        data-template="">✏️ 我自己写</button>
+                </div>
+                <textarea class="st-is-textarea sa-textarea sa-safe-memory-text" data-field="safeMemoryText"
+                    placeholder="选一个模板自动填入，或自己写……" maxlength="200" rows="3"></textarea>
+            </div>
+
+            <!-- 安全感的细节 -->
+            <div class="sa-field">
+                <label class="sa-label">在那个画面里，最让你感到安心的是什么</label>
+                <p class="sa-hint sa-hint-inline">可多选。</p>
+                <div class="sa-chip-group" data-field="safetyExtras" data-mode="multi">
+                    <button type="button" class="sa-chip" data-value="sound" title="如某人的呼吸、风声、雨声">一个声音</button>
+                    <button type="button" class="sa-chip" data-value="smell" title="如饭香、雨后泥土、香薰">一种气味</button>
+                    <button type="button" class="sa-chip" data-value="touch" title="如毛毯、温水、被子的重量">一种触感</button>
+                    <button type="button" class="sa-chip" data-value="light" title="如夕阳、烛光、月光">一种光线</button>
+                    <button type="button" class="sa-chip" data-value="distance" title="如有人在身边、独处">一种距离</button>
+                    <button type="button" class="sa-chip" data-value="warmth" title="如温暖、凉爽">一种温度</button>
+                </div>
+            </div>
+
+            <!-- 禁忌词 -->
+            <div class="sa-field">
+                <label class="sa-label">不想听到的词</label>
+                <p class="sa-hint sa-hint-inline">有些词语可能会让你不舒服或勾起不好的回忆。如果有，请列出来，AI 会避开它们。</p>
+                <div class="sa-chip-group" data-field="forbiddenWords" data-mode="multi">
+                    <button type="button" class="sa-chip" data-value="darkness">黑暗</button>
+                    <button type="button" class="sa-chip" data-value="pitch_black">漆黑</button>
+                    <button type="button" class="sa-chip" data-value="falling">坠落</button>
+                    <button type="button" class="sa-chip" data-value="sinking">下沉</button>
+                    <button type="button" class="sa-chip" data-value="disappear">消失</button>
+                    <button type="button" class="sa-chip" data-value="vanish">不见</button>
+                    <button type="button" class="sa-chip" data-value="alone">一个人</button>
+                    <button type="button" class="sa-chip" data-value="lonely">孤独</button>
+                    <button type="button" class="sa-chip" data-value="mother">母亲</button>
+                    <button type="button" class="sa-chip" data-value="father">父亲</button>
+                    <button type="button" class="sa-chip" data-value="home">家</button>
+                    <button type="button" class="sa-chip" data-value="death">死亡</button>
+                    <button type="button" class="sa-chip" data-value="forever">永远</button>
+                    <button type="button" class="sa-chip" data-value="end">结束</button>
+                    <button type="button" class="sa-chip" data-value="leave">离开</button>
+                    <button type="button" class="sa-chip" data-value="lose">失去</button>
+                    <button type="button" class="sa-chip" data-value="silence">沉默</button>
+                    <button type="button" class="sa-chip" data-value="empty_room">空荡</button>
+                </div>
+                <button type="button" class="sa-expand-btn" data-expand="forbidden-custom">+ 我还想加几个...</button>
+                <div class="sa-sub-input" id="forbidden-custom" hidden>
+                    <input type="text" class="st-is-text-input sa-input" data-field="forbiddenCustom"
+                        placeholder="用逗号分隔，例如：某个名字, 某个地方……" maxlength="100">
+                </div>
+            </div>
+
+            <!-- 结尾倾向 -->
+            <div class="sa-field">
+                <label class="sa-label">结尾倾向</label>
+                <p class="sa-hint sa-hint-inline">你希望这段引导以什么方式结束？</p>
+                <div class="sa-pill-group" data-field="endingStyle" data-mode="single">
+                    <button type="button" class="sa-pill" data-value="sleep">🌙 直接入睡</button>
+                    <button type="button" class="sa-pill" data-value="mindful">🧘 保留清醒做正念</button>
+                    <button type="button" class="sa-pill" data-value="wake">☀️ 轻轻唤醒</button>
+                    <button type="button" class="sa-pill" data-value="music_only">🎵 只留音乐</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ───────────────────────── 操作区 ───────────────────────── -->
+    <div class="st-is-settings-section sa-actions-section">
+        <div class="sa-actions">
+            <button type="button" class="st-is-btn sa-btn-secondary" id="sa-preview-btn">
+                <i class="fa-solid fa-eye"></i> 生成预览
+            </button>
+            <button type="button" class="st-is-btn sa-btn-secondary" id="sa-reset-btn">
+                <i class="fa-solid fa-rotate-left"></i> 清空表单
+            </button>
+            <button type="button" class="st-is-btn sa-btn-secondary" id="sa-abort-btn" hidden>
+                <i class="fa-solid fa-ban"></i> 中止
+            </button>
+            <button type="button" class="st-is-btn st-is-btn-primary sa-btn-generate" id="sa-generate-btn" disabled>
+                🌙 生成今晚的引导
+            </button>
+        </div>
+        <p class="sa-hint sa-validation-hint" id="sa-validation-hint" hidden>
+            请先完成第一层的全部选择
+        </p>
+
+        <div class="sa-preview" id="sa-preview-area" hidden>
+            <h4>当前选择</h4>
+            <div class="sa-preview-content" id="sa-preview-content"></div>
+        </div>
+
+        <div class="sa-result-area" id="sa-result-area" hidden>
+            <div class="sa-result-header">
+                <h4>🌙 今晚的引导</h4>
+                <div class="sa-result-meta">
+                    <span class="sa-result-status" id="sa-result-status"></span>
+                    <button type="button" class="st-is-btn sa-btn-secondary" id="sa-result-copy">
+                        <i class="fa-solid fa-copy"></i> 复制
+                    </button>
+                    <button type="button" class="st-is-btn sa-btn-secondary" id="sa-result-clear">
+                        <i class="fa-solid fa-eraser"></i> 清空
+                    </button>
+                </div>
+            </div>
+            <textarea class="st-is-textarea sa-result-text" id="sa-result-text"
+                rows="14" placeholder="点击「生成今晚的引导」后，文本会出现在这里。你可以自由修改，再用于朗读。"></textarea>
+            <p class="sa-hint sa-result-hint">
+                生成后可以自由编辑这段文字，再交给下一阶段的 TTS 进行朗读。
+            </p>
+        </div>
+
+        <div class="sa-audio-section" id="sa-audio-section">
+            <div class="sa-result-header">
+                <h4>🎧 助眠音频生成</h4>
+                <div class="sa-result-meta">
+                    <span class="sa-result-status" id="sa-audio-status">未开始</span>
+                </div>
+            </div>
+
+            <div class="sa-audio-toolbar">
+                <label class="sa-audio-engine-label" for="sa-audio-engine">TTS 引擎</label>
+                <select id="sa-audio-engine" class="st-is-select sa-audio-engine-select">
+                    <option value="edge">Edge（微软语音）</option>
+                    <option value="minimax">MiniMax（T2A v2）</option>
+                    <option value="nimo">MiMo-V2.5-TTS（小米）</option>
+                </select>
+            </div>
+
+            <div class="sa-audio-context-override">
+                <label class="sa-audio-context-toggle">
+                    <input type="checkbox" id="sa-audio-context-override-enabled">
+                    <span>启用全局 `context_texts` 替换（仅对助眠中心音频生效）</span>
+                </label>
+                <textarea
+                    class="st-is-textarea sa-audio-context-text"
+                    id="sa-audio-context-override-text"
+                    rows="3"
+                    spellcheck="false"
+                    placeholder="开启后，所有 VOICE 段落的 context_texts 都会统一替换为这里的内容。"
+                    disabled
+                ></textarea>
+            </div>
+
+            <div class="sa-actions sa-audio-actions">
+                <button type="button" class="st-is-btn st-is-btn-primary sa-btn-generate" id="sa-generate-audio-btn" disabled>
+                    🎧 生成音频
+                </button>
+                <button type="button" class="st-is-btn sa-btn-secondary" id="sa-audio-abort-btn" hidden>
+                    <i class="fa-solid fa-ban"></i> 中止
+                </button>
+                <button type="button" class="st-is-btn sa-btn-secondary" id="sa-audio-reparse-btn" disabled title="使用上方编辑后的配置重新解析，不提前请求 TTS">
+                    🔄 重新解析
+                </button>
+                <button type="button" class="st-is-btn sa-btn-secondary" id="sa-render-audio-btn" disabled>
+                    🎼 生成音频文件
+                </button>
+                <button type="button" class="st-is-btn sa-btn-secondary" id="sa-audio-download-btn" disabled>
+                    💾 下载
+                </button>
+            </div>
+
+            <p class="sa-hint sa-audio-hint" id="sa-audio-hint">
+                先生成脚本文本，再点击「生成音频」产出配置；如有需要可「重新解析」检查配置；点击「生成音频文件」时才会统一请求 TTS 并离线渲染，随后可下载为 MP3（192 kbps）。
+            </p>
+
+            <div class="sa-result-area sa-audio-result-area" id="sa-audio-result-area" hidden>
+                <div class="sa-audio-grid">
+                    <div class="sa-audio-pane">
+                        <label class="sa-label" for="sa-audio-raw-config">LLM 返回的音频配置（可编辑）</label>
+                        <textarea class="st-is-textarea sa-result-text sa-audio-text" id="sa-audio-raw-config" rows="10" spellcheck="false" placeholder="LLM 生成或手动编辑的音频配置；编辑后点击「重新解析」更新摘要，真正的 TTS 会在「生成音频文件」时统一请求。"></textarea>
+                    </div>
+                    <div class="sa-audio-pane">
+                        <label class="sa-label" for="sa-audio-parsed-summary">解析结果摘要</label>
+                        <textarea class="st-is-textarea sa-result-text sa-audio-text" id="sa-audio-parsed-summary" rows="10" readonly></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <audio id="sa-audio-player" class="sa-audio-player" controls preload="metadata"></audio>
+        </div>
+    </div>
+
+</div>

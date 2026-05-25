@@ -1,0 +1,52 @@
+<div class="st-is-tab-content" id="st-is-tab-cache">
+    <div class="st-is-settings-section">
+        <h3>缓存管理</h3>
+        <div class="st-is-field">
+            <input type="text" id="ac-search-input" placeholder="搜索音频名称...">
+        </div>
+        <div class="st-is-field" id="ac-category-selector">
+            <label for="ac-category-select">分类筛选:</label>
+            <select id="ac-category-select" class="st-is-select">
+                <option value="__all__">全部分类</option>
+                <option value="SFX_">音效 (SFX_)</option>
+                <option value="Music_">音乐 (Music_)</option>
+                <option value="Ambiance_">环境 (Ambiance_)</option>
+                <option value="__other__">其他</option>
+            </select>
+        </div>
+        <div class="st-is-field" id="ac-preset-selector">
+            <label for="ac-preset-select">选择预设:</label>
+            <select id="ac-preset-select" class="st-is-select">
+                <option value="__all__">全部启用的预设</option>
+            </select>
+        </div>
+        <div class="st-is-field" id="ac-entry-selector">
+            <label for="ac-entry-select">音效设定预设条目筛选:</label>
+            <select id="ac-entry-select" class="st-is-select">
+                <option value="__all__">全部</option>
+            </select>
+        </div>
+        <div class="st-is-cache-controls">
+            <button id="ac-load-world-audio-button" class="st-is-btn"><i class="fa-solid fa-book"></i> 从世界书加载音频</button>
+            <button id="ac-new-audio-button" class="st-is-btn" style="display: none;"><i class="fa-solid fa-plus"></i> 新建</button>
+            <button id="ac-cache-all-world-audio-button" class="st-is-btn"><i class="fa-solid fa-download"></i> 缓存所有</button>
+            <button id="ac-reload-audio-list-button" class="st-is-btn"><i class="fa-solid fa-sync"></i> 显示已缓存音频</button>
+            <button id="ac-delete-all-cache-button" class="st-is-btn danger"><i class="fa-solid fa-trash"></i> 删除所有缓存</button>
+        </div>
+        <div id="st-is-world-book-warning" class="st-is-warning-message" style="display: none;">
+            <strong>注意:</strong> 对世界书的修改需要刷新页面后才能生效。在刷新之前，请不要在其他地方修改世界书，否则您的更改可能会被覆盖。
+        </div>
+        <div id="st-is-world-book-selector" class="st-is-field" style="display: none;">
+            <label for="st-is-world-book-select">选择世界书:</label>
+            <select id="st-is-world-book-select" class="st-is-select"></select>
+        </div>
+        <div id="ac-cache-progress-container" class="st-is-progress-container" style="display: none;">
+            <label for="ac-cache-progress-bar">缓存进度:</label>
+            <progress id="ac-cache-progress-bar" value="0" max="100"></progress>
+            <span id="ac-cache-progress-label">0%</span>
+        </div>
+        <div id="ac-audio-list-container" class="st-is-cache-list-container">
+            <!-- Audio items table will be dynamically inserted here -->
+        </div>
+    </div>
+</div>

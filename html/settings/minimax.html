@@ -1,0 +1,501 @@
+<div class="st-is-tab-content" id="st-is-tab-minimax">
+
+    <!-- ─── 连接设置 ─────────────────────────────────────────── -->
+    <div class="st-is-settings-section">
+        <h3>MiniMax 连接设置</h3>
+        <p style="opacity:.75; margin-top:-6px;">
+            通过 MiniMax T2A v2 接口合成语音。浏览器直连官方域名（api.minimax.io / api.minimaxi.com）。
+        </p>
+
+        <div class="st-is-field-col">
+            <label for="minimax_api_key">API Key（支持多个，每行一个）</label>
+            <div style="display:flex; gap:8px; align-items:flex-start;">
+                <textarea id="minimax_api_key" class="st-is-textarea" rows="3"
+                    placeholder="每行一个 MiniMax API Key&#10;服务端限速：每 Key 10 次/分钟，自动均衡使用并在限流时切换" style="flex:1; font-family:monospace;"></textarea>
+                <button class="st-is-icon-btn" id="minimax_api_key_toggle" title="显示/隐藏">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+            </div>
+            <div id="minimax_api_key_status" style="opacity:.7; font-size:12px; margin-top:4px;">未配置</div>
+        </div>
+
+        <div class="st-is-field">
+            <label for="minimax_platform">平台</label>
+            <select id="minimax_platform" class="st-is-select">
+                <option value="cn">中文站 (api.minimaxi.com)</option>
+                <option value="io">国际站 (api.minimax.io)</option>
+            </select>
+        </div>
+
+        <div class="st-is-field-col">
+            <label>请求地址预览</label>
+            <div id="minimax_url_preview" style="opacity:.85; font-family:monospace; padding:6px 10px; background:rgba(128,128,128,.08); border-radius:6px;">—</div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:10px; margin-top:10px; flex-wrap:wrap;">
+            <button class="st-is-btn" id="minimax_health_button">
+                <i class="fa-solid fa-signal"></i> 检测连接
+            </button>
+            <span id="minimax_health_status" style="opacity:.75;">未检测</span>
+        </div>
+    </div>
+
+    <!-- ─── 音色管理 ─────────────────────────────────────────── -->
+    <div class="st-is-settings-section">
+        <h3>音色管理</h3>
+
+        <div class="st-is-field-col">
+            <label>当前音色（用于人物 TTS / 测试合成）</label>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <input type="text" id="minimax_current_voice_id" class="st-is-text-input" readonly
+                    style="flex:1; font-family:monospace;">
+                <button class="st-is-icon-btn" id="minimax_current_voice_clear" title="清空"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </div>
+
+        <div class="st-is-field-col">
+            <label>旁白音色（用于旁白 TTS，未设置时回退到当前音色）</label>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <input type="text" id="minimax_narration_voice_id" class="st-is-text-input" readonly
+                    style="flex:1; font-family:monospace;" placeholder="未设置（将回退到当前音色）">
+                <button class="st-is-btn" id="minimax_narration_voice_use_current" title="把当前音色设为旁白">用当前</button>
+                <button class="st-is-icon-btn" id="minimax_narration_voice_clear" title="清空"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </div>
+
+        <!-- 类型切换 -->
+        <div style="display:flex; gap:6px; margin:12px 0 8px; flex-wrap:wrap;">
+            <button class="st-is-btn minimax-cat-btn active" data-cat="cloud">☁ 云端音色</button>
+            <button class="st-is-btn minimax-cat-btn" data-cat="mine">👤 我的音色</button>
+            <button class="st-is-btn minimax-cat-btn" data-cat="custom">✏ 自定义音色</button>
+        </div>
+
+        <!-- 云端音色 -->
+        <div class="minimax-cat-panel" data-cat="cloud">
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+                <button class="st-is-btn" id="minimax_btn_get_voices">
+                    <i class="fa-solid fa-cloud-arrow-down"></i> 拉取云端音色
+                </button>
+                <span id="minimax_voice_status" style="opacity:.75; align-self:center;">未加载</span>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+                <input type="text" id="minimax_voice_search" class="st-is-text-input"
+                    placeholder="🔍 搜索 ID / 名称 / 描述" style="flex:2; min-width:180px;">
+                <select id="minimax_voice_lang_filter" class="st-is-select" style="flex:1; min-width:120px;">
+                    <option value="">全部语言</option>
+                </select>
+            </div>
+            <div id="minimax_voice_grid" class="minimax-voice-grid"></div>
+        </div>
+
+        <!-- 我的音色 -->
+        <div class="minimax-cat-panel" data-cat="mine" style="display:none;">
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+                <button class="st-is-btn" id="minimax_btn_sync_voices">
+                    <i class="fa-solid fa-rotate"></i> 从云端同步
+                </button>
+                <button class="st-is-btn" id="minimax_btn_clean_expired">
+                    <i class="fa-solid fa-trash-can"></i> 清理过期
+                </button>
+            </div>
+            <p style="opacity:.6; font-size:12px;">复刻音色 7 天内未试听会过期。同步会把云端 voice_cloning + voice_generation 合并到本地列表。</p>
+            <div id="minimax_my_voices_list"></div>
+        </div>
+
+        <!-- 自定义音色（添加到我的音色，不调用 API） -->
+        <div class="minimax-cat-panel" data-cat="custom" style="display:none;">
+            <p style="opacity:.6; font-size:12px;">把已知的 voice_id 添加到「我的音色」（不调用 API）。适合手动登记第三方平台或私有 voice_id。</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:8px; margin-bottom:8px;">
+                <input type="text" id="minimax_custom_voice_id" class="st-is-text-input" placeholder="voice_id">
+                <input type="text" id="minimax_custom_voice_nick" class="st-is-text-input" placeholder="备注（昵称，用于角色匹配）">
+                <select id="minimax_custom_voice_model" class="st-is-select">
+                    <option value="speech-2.8-hd">speech-2.8-hd</option>
+                    <option value="speech-2.8-turbo">speech-2.8-turbo</option>
+                    <option value="speech-2.6-hd">speech-2.6-hd</option>
+                    <option value="speech-2.6-turbo">speech-2.6-turbo</option>
+                    <option value="speech-02-hd">speech-02-hd</option>
+                    <option value="speech-02-turbo">speech-02-turbo</option>
+                </select>
+                <button class="st-is-btn" id="minimax_btn_add_custom"><i class="fa-solid fa-plus"></i> 添加</button>
+            </div>
+            <div style="margin-bottom:8px;">
+                <button class="st-is-btn danger" id="minimax_btn_clear_custom">
+                    <i class="fa-solid fa-trash"></i> 清空全部自定义音色
+                </button>
+            </div>
+            <div id="minimax_custom_voices_list"></div>
+        </div>
+    </div>
+
+    <!-- ─── 朗读参数 ─────────────────────────────────────────── -->
+    <div class="st-is-settings-section">
+        <h3>朗读参数</h3>
+
+        <div class="st-is-field">
+            <label for="minimax_model">模型</label>
+            <select id="minimax_model" class="st-is-select">
+                <option value="speech-2.8-hd">speech-2.8-hd（最新HD，支持语气标签）</option>
+                <option value="speech-2.8-turbo">speech-2.8-turbo（最新Turbo，支持语气标签）</option>
+                <option value="speech-2.6-hd">speech-2.6-hd</option>
+                <option value="speech-2.6-turbo">speech-2.6-turbo（40语种）</option>
+                <option value="speech-02-hd">speech-02-hd</option>
+                <option value="speech-02-turbo">speech-02-turbo</option>
+            </select>
+        </div>
+
+        <div class="st-is-field">
+            <label for="minimax_speed">语速 (0.5–2.0)</label>
+            <div class="st-is-range-container">
+                <input class="st-is-range-slider" type="range" id="minimax_speed" min="0.5" max="2.0" step="0.1" value="1.0">
+                <input class="st-is-range-input" type="number" id="minimax_speed_value" data-for="minimax_speed" min="0.5" max="2.0" step="0.1" value="1.0">
+            </div>
+        </div>
+
+        <div class="st-is-field">
+            <label for="minimax_vol">音量 (0.1–10.0)</label>
+            <div class="st-is-range-container">
+                <input class="st-is-range-slider" type="range" id="minimax_vol" min="0.1" max="10.0" step="0.1" value="1.0">
+                <input class="st-is-range-input" type="number" id="minimax_vol_value" data-for="minimax_vol" min="0.1" max="10.0" step="0.1" value="1.0">
+            </div>
+        </div>
+
+        <div class="st-is-field">
+            <label for="minimax_pitch">音调 (-12–12)</label>
+            <div class="st-is-range-container">
+                <input class="st-is-range-slider" type="range" id="minimax_pitch" min="-12" max="12" step="1" value="0">
+                <input class="st-is-range-input" type="number" id="minimax_pitch_value" data-for="minimax_pitch" min="-12" max="12" step="1" value="0">
+            </div>
+        </div>
+
+        <div class="st-is-field">
+            <label for="minimax_lang_boost">语言增强</label>
+            <select id="minimax_lang_boost" class="st-is-select">
+                <option value="auto">自动检测</option>
+                <option value="Chinese">中文（普通话）</option>
+                <option value="Chinese,Yue">中文（粤语）</option>
+                <option value="English">英语</option>
+                <option value="Japanese">日语</option>
+                <option value="Korean">韩语</option>
+                <option value="Spanish">西班牙语</option>
+                <option value="French">法语</option>
+                <option value="Russian">俄语</option>
+                <option value="German">德语</option>
+                <option value="Portuguese">葡萄牙语</option>
+                <option value="Italian">意大利语</option>
+                <option value="Turkish">土耳其语</option>
+                <option value="Dutch">荷兰语</option>
+                <option value="Vietnamese">越南语</option>
+                <option value="Indonesian">印尼语</option>
+                <option value="Thai">泰语</option>
+                <option value="Arabic">阿拉伯语</option>
+            </select>
+        </div>
+
+        <div class="st-is-field">
+            <label for="minimax_emotion">情绪</label>
+            <select id="minimax_emotion" class="st-is-select">
+                <option value="">不设置</option>
+                <option value="happy">😊 开心</option>
+                <option value="sad">😢 难过</option>
+                <option value="angry">😡 生气</option>
+                <option value="fearful">😨 害怕</option>
+                <option value="disgusted">🤢 厌恶</option>
+                <option value="surprised">😲 惊讶</option>
+                <option value="neutral">😐 中性</option>
+                <option value="fluent">✨ 生动</option>
+            </select>
+        </div>
+
+        <div class="st-is-field">
+            <label for="minimax_format">输出格式</label>
+            <select id="minimax_format" class="st-is-select">
+                <option value="mp3">MP3</option>
+                <option value="wav">WAV</option>
+                <option value="flac">FLAC</option>
+            </select>
+        </div>
+
+        <div class="st-is-field">
+            <label for="minimax_sample_rate">采样率</label>
+            <select id="minimax_sample_rate" class="st-is-select">
+                <option value="32000">32000 Hz</option>
+                <option value="44100">44100 Hz</option>
+                <option value="24000">24000 Hz</option>
+                <option value="22050">22050 Hz</option>
+                <option value="16000">16000 Hz</option>
+                <option value="8000">8000 Hz</option>
+            </select>
+        </div>
+
+        <div class="st-is-field">
+            <label for="minimax_bitrate">比特率（仅 mp3）</label>
+            <select id="minimax_bitrate" class="st-is-select">
+                <option value="128000">128 kbps</option>
+                <option value="32000">32 kbps</option>
+                <option value="64000">64 kbps</option>
+                <option value="256000">256 kbps</option>
+            </select>
+        </div>
+
+        <div class="st-is-field">
+            <label for="minimax_channel">声道</label>
+            <select id="minimax_channel" class="st-is-select">
+                <option value="1">1 — 单声道 (mono)</option>
+                <option value="2">2 — 立体声 (stereo)</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- ─── 高级:语音修改 + 发音字典（全局共享）─────────── -->
+    <div class="st-is-settings-section">
+        <h3>高级（语音修改 / 发音字典）</h3>
+        <p style="opacity:.75; margin-top:-6px;">
+            这两组配置全局共享 — 同时作用于人物 TTS 与下方测试工具。
+        </p>
+
+        <h4 style="margin-top:8px;">语音修改 (voice_modify)</h4>
+        <div class="st-is-field">
+            <label for="minimax_vm_pitch">明暗 Pitch (-100~100)</label>
+            <div class="st-is-range-container">
+                <input class="st-is-range-slider" type="range" id="minimax_vm_pitch" min="-100" max="100" step="1" value="0">
+                <input class="st-is-range-input" type="number" id="minimax_vm_pitch_value" data-for="minimax_vm_pitch" min="-100" max="100" step="1" value="0">
+            </div>
+        </div>
+        <div class="st-is-field">
+            <label for="minimax_vm_intensity">力度 Intensity (-100~100)</label>
+            <div class="st-is-range-container">
+                <input class="st-is-range-slider" type="range" id="minimax_vm_intensity" min="-100" max="100" step="1" value="0">
+                <input class="st-is-range-input" type="number" id="minimax_vm_intensity_value" data-for="minimax_vm_intensity" min="-100" max="100" step="1" value="0">
+            </div>
+        </div>
+        <div class="st-is-field">
+            <label for="minimax_vm_timbre">音色 Timbre (-100~100)</label>
+            <div class="st-is-range-container">
+                <input class="st-is-range-slider" type="range" id="minimax_vm_timbre" min="-100" max="100" step="1" value="0">
+                <input class="st-is-range-input" type="number" id="minimax_vm_timbre_value" data-for="minimax_vm_timbre" min="-100" max="100" step="1" value="0">
+            </div>
+        </div>
+        <div class="st-is-field">
+            <label for="minimax_vm_sound_effect">音效 sound_effects</label>
+            <select id="minimax_vm_sound_effect" class="st-is-select">
+                <option value="">不设置</option>
+                <option value="spacious_echo">spacious_echo — 宽敞空间回声</option>
+                <option value="auditorium_echo">auditorium_echo — 礼堂广播回声</option>
+                <option value="lofi_telephone">lofi_telephone — 电话失真效果</option>
+                <option value="robotic">robotic — 机器人效果</option>
+            </select>
+        </div>
+        <div style="text-align:right;">
+            <button class="st-is-btn" id="minimax_btn_reset_vm">重置 voice_modify</button>
+        </div>
+
+        <h4 style="margin-top:16px;">发音字典 (pronunciation_dict)</h4>
+        <p style="opacity:.6; font-size:12px;">
+            拼音用空格分隔字符，多音字带声调（ā á ǎ à）；字母可拆分读，如 <code>AI/A I</code>、<code>重庆/chóng qìng</code>。
+        </p>
+        <div id="minimax_pron_table" style="display:flex; flex-direction:column; gap:6px;"></div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+            <button class="st-is-btn" id="minimax_btn_add_pron"><i class="fa-solid fa-plus"></i> 添加一行</button>
+            <button class="st-is-btn" id="minimax_btn_pron_tpl"><i class="fa-solid fa-list"></i> 常用模板</button>
+            <button class="st-is-btn danger" id="minimax_btn_clear_pron"><i class="fa-solid fa-trash"></i> 清空</button>
+        </div>
+    </div>
+
+    <!-- ─── 角色匹配设定 ─────────────────────────────────────── -->
+    <div class="st-is-settings-section">
+        <h4>音色与角色匹配设定（MiniMax 专用）</h4>
+        <p style="opacity:.75; margin-top:-6px;">
+            当主要设置选择「MiniMax」时，LLM 在生成 BGM 标签时使用此处的规则把角色匹配到音色。
+        </p>
+        <div class="st-is-field">
+            <label for="minimax_char_match_profile_select">匹配设定</label>
+            <div class="st-is-profile-controls">
+                <select id="minimax_char_match_profile_select" class="st-is-select"></select>
+                <button class="st-is-icon-btn" id="minimax_save_char_match_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                <button class="st-is-icon-btn" id="minimax_save_as_char_match_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                <button class="st-is-icon-btn" id="minimax_import_char_match_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                <button class="st-is-icon-btn" id="minimax_export_char_match_profile_button" title="导出"><i class="fa-solid fa-file-export"></i></button>
+                <button class="st-is-icon-btn" id="minimax_export_all_char_match_profiles_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                <button class="st-is-icon-btn danger" id="minimax_delete_char_match_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+        <div class="st-is-field-col">
+            <label for="minimax_char_match_rules_editor">规则设定</label>
+            <textarea id="minimax_char_match_rules_editor" class="st-is-textarea" rows="5"
+                placeholder="使用自然语言描述 MiniMax 音色名称（voice_id 或自定义昵称）与角色名称的匹配关系"></textarea>
+        </div>
+    </div>
+
+    <!-- ─── 测试工具 ─────────────────────────────────────────── -->
+    <div class="st-is-settings-section">
+        <h4>测试工具</h4>
+
+        <div class="st-is-field-col">
+            <label for="minimax_test_text">测试文本</label>
+            <textarea id="minimax_test_text" class="st-is-textarea" rows="3"
+                placeholder="输入要合成的文本... 语气标签示例（仅 2.8 模型）：哎呀(laughs)，今天天气真好！<#1.0#>不过(sighs)我有点累了。"></textarea>
+        </div>
+
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;">
+            <span style="opacity:.6; font-size:12px; align-self:center;">语气：</span>
+            <button class="st-is-btn-tag minimax-tag" data-tag="(laughs)">😂 笑声</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="(chuckle)">🤭 轻笑</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="(coughs)">🤧 咳嗽</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="(clear-throat)">� 清嗓子</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="(groans)">😩 呻吟</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="(breath)">🌬️ 正常换气</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="(pant)">😮 喘气</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="(inhale)">⬇️ 吸气</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="(exhale)">⬆️ 呼气</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="(gasps)">� 倒吸气</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="(sniffs)">👃 吸鼻子</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="(sighs)">😮‍💨 叹气</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="(snorts)">😒 哼</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="(burps)">� 打嗝</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="(lip-smacking)">� 咂嘴</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="(humming)">🎵 哼唱</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="(hissing)">� 嘶嘶声</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="(emm)">🤔 呃</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="(sneezes)">🤧 喷嚏</button>
+        </div>
+
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;">
+            <span style="opacity:.6; font-size:12px; align-self:center;">停顿：</span>
+            <button class="st-is-btn-tag minimax-tag" data-tag="<#0.5#>">⏸ 0.5秒</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="<#1.0#>">⏸ 1秒</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="<#2.0#>">⏸ 2秒</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="<#3.0#>">⏸ 3秒</button>
+            <button class="st-is-btn-tag minimax-tag" data-tag="<#5.0#>">⏸ 5秒</button>
+        </div>
+
+        <div id="minimax_test_cost" style="margin-top:10px; padding:8px 12px; background:rgba(128,128,128,.08); border-radius:6px; border-left:3px solid #667eea; font-size:13px; opacity:.85;">
+            中文 <span id="minimax_han_count">0</span> 字 |
+            英文 <span id="minimax_en_word_count">0</span> 词 / <span id="minimax_en_char_count">0</span> 字符 |
+            标签 <span id="minimax_tag_count">0</span> 个(不计费) |
+            计费总额: <span id="minimax_char_count">0</span> 字符
+        </div>
+
+        <div style="text-align:center; margin: 16px 0;">
+            <button class="st-is-btn" id="minimax_test_button">
+                <i class="fa-solid fa-microphone-lines"></i> 测试合成（使用当前音色）
+            </button>
+        </div>
+
+        <div class="st-is-field-col">
+            <label>测试结果</label>
+            <audio id="minimax_test_audio" controls style="width:100%; display:none;"></audio>
+        </div>
+    </div>
+</div>
+
+<!-- ─── 局部样式 ─────────────────────────────────────────── -->
+<style>
+.minimax-cat-btn { font-size: 13px; padding: 6px 12px; opacity: 0.6; }
+.minimax-cat-btn.active { opacity: 1; border-bottom: 2px solid #667eea; }
+.minimax-voice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 8px;
+    max-height: 420px;
+    overflow-y: auto;
+    padding: 4px;
+}
+.minimax-voice-card {
+    padding: 10px;
+    background: rgba(128,128,128,.06);
+    border-radius: 8px;
+    border: 1px solid rgba(128,128,128,.2);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.minimax-voice-card:hover, .minimax-voice-card.selected {
+    border-color: #667eea;
+    background: rgba(102,126,234,.08);
+}
+.minimax-voice-card .vid {
+    color: #667eea;
+    font-weight: 600;
+    font-family: monospace;
+    word-break: break-all;
+}
+.minimax-voice-card .vname { margin-top: 4px; opacity: 0.85; }
+.minimax-voice-card .vdesc { margin-top: 4px; opacity: 0.6; font-size: 12px; }
+.minimax-voice-card .vmeta { margin-top: 4px; opacity: 0.5; font-size: 11px; }
+.minimax-voice-card .vactions { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+.minimax-voice-card .vactions button {
+    font-size: 12px; padding: 4px 10px;
+    border-radius: 4px; border: 1px solid rgba(128,128,128,.3);
+    background: rgba(128,128,128,.1); color: inherit;
+    cursor: pointer;
+}
+.minimax-voice-card .vactions button:hover {
+    border-color: #667eea; color: #667eea;
+}
+.minimax-voice-card .vactions button.danger:hover {
+    border-color: #f88; color: #f88;
+}
+.minimax-pron-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 6px;
+}
+.minimax-pron-row input {
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid rgba(128,128,128,.3);
+    background: rgba(128,128,128,.05);
+    color: inherit;
+    font-size: 13px;
+}
+.st-is-btn-tag {
+    padding: 4px 10px;
+    border-radius: 12px;
+    background: rgba(128,128,128,.1);
+    border: 1px solid rgba(128,128,128,.2);
+    color: inherit;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.15s;
+}
+.st-is-btn-tag:hover {
+    border-color: #a78bfa;
+    color: #a78bfa;
+}
+.minimax-mvitem {
+    padding: 10px;
+    background: rgba(128,128,128,.06);
+    border-radius: 6px;
+    border: 1px solid rgba(128,128,128,.2);
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+.minimax-mvitem .vid {
+    color: #667eea;
+    font-weight: 600;
+    font-family: monospace;
+    word-break: break-all;
+}
+.minimax-mvitem .vmeta { opacity: 0.6; font-size: 12px; margin-top: 4px; }
+.minimax-mvitem .vactions { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+.minimax-mvitem .vactions button {
+    font-size: 12px; padding: 4px 10px;
+    border-radius: 4px; border: 1px solid rgba(128,128,128,.3);
+    background: rgba(128,128,128,.1); color: inherit;
+    cursor: pointer;
+}
+.minimax-mvitem .vactions button:hover { border-color: #667eea; color: #667eea; }
+.minimax-mvitem .vactions button.danger:hover { border-color: #f88; color: #f88; }
+.minimax-badge {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    margin-left: 4px;
+}
+.minimax-badge.green { background: rgba(34,197,94,.2); color: #4ade80; }
+.minimax-badge.amber { background: rgba(245,158,11,.2); color: #fbbf24; }
+.minimax-badge.red   { background: rgba(239,68,68,.2);  color: #f87171; }
+.minimax-badge.blue  { background: rgba(59,130,246,.2); color: #60a5fa; }
+.minimax-badge.gray  { background: rgba(128,128,128,.2); color: inherit; }
+</style>

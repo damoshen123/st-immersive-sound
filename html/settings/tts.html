@@ -1,0 +1,123 @@
+<div class="st-is-tab-content" id="st-is-tab-tts">
+    <div class="st-is-settings-section">
+        <h3>豆包tts</h3>
+        <!-- API 密钥配置 -->
+        <h4>API 配置</h4>
+        <div class="st-is-field">
+            <label for="tts_api_config_profile_select">API 配置</label>
+            <div class="st-is-profile-controls">
+                <select id="tts_api_config_profile_select" class="st-is-select"></select>
+                <button class="st-is-icon-btn" id="new_api_config_profile_button" title="新建"><i class="fa-solid fa-plus"></i></button>
+                <button class="st-is-icon-btn" id="save_api_config_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                <button class="st-is-icon-btn" id="import_api_config_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                <button class="st-is-icon-btn" id="export_api_config_profile_button" title="导出"><i class="fa-solid fa-file-export"></i></button>
+                <button class="st-is-icon-btn" id="export_all_api_config_profiles_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                <button class="st-is-icon-btn danger" id="delete_api_config_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+        <div class="st-is-field-col">
+            <label for="tts_api_config_profile_name">API 配置名称</label>
+            <textarea id="tts_api_config_profile_name" class="st-is-textarea" rows="1" placeholder="输入配置名称..."></textarea>
+        </div>
+        <div class="st-is-field-col">
+            <label for="tts_app_id">APP_ID</label>
+            <textarea id="tts_app_id" class="st-is-textarea" rows="2" placeholder="请输入你的 APP_ID"></textarea>
+        </div>
+        <div class="st-is-field-col">
+            <label for="tts_access_key">ACCESS_KEY</label>
+            <textarea id="tts_access_key" class="st-is-textarea" rows="3" placeholder="请输入你的 ACCESS_KEY"></textarea>
+        </div>
+        <div class="st-is-grid">
+            <div class="st-is-field-col">
+                <label for="tts_synthesis_quota">合成语音额度 (-1为无限)</label>
+                <input type="number" id="tts_synthesis_quota" class="st-is-text-input" placeholder="-1">
+            </div>
+            <div class="st-is-field-col">
+                <label for="tts_clone_quota">复刻语音额度 (-1为无限)</label>
+                <input type="number" id="tts_clone_quota" class="st-is-text-input" placeholder="-1">
+            </div>
+        </div>
+
+        <hr class="st-is-hr">
+
+        <!-- 音色配置管理 (Moved inside API config) -->
+        <h4>音色配置 (属于当前API)</h4>
+        <div class="st-is-field">
+            <label for="tts_speaker_profile_select">音色配置</label>
+            <div class="st-is-profile-controls">
+                <select id="tts_speaker_profile_select" class="st-is-select"></select>
+                <button class="st-is-icon-btn" id="new_speaker_profile_button" title="新建"><i class="fa-solid fa-plus"></i></button>
+                <button class="st-is-icon-btn" id="save_speaker_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                <button class="st-is-icon-btn" id="import_speaker_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                <button class="st-is-icon-btn" id="export_speaker_profile_button" title="导出"><i class="fa-solid fa-file-export"></i></button>
+                <button class="st-is-icon-btn" id="export_all_speaker_profiles_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                <button class="st-is-icon-btn danger" id="delete_speaker_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+        <div class="st-is-field-col">
+            <label for="tts_speaker_profile_name">音色名称</label>
+            <textarea id="tts_speaker_profile_name" class="st-is-textarea" rows="2" placeholder="输入音色名称..."></textarea>
+        </div>
+        <div class="st-is-field-col">
+            <label for="tts_speaker_id">音色 Speaker ID</label>
+            <textarea id="tts_speaker_id" class="st-is-textarea" rows="4" placeholder="输入 Speaker ID..."></textarea>
+        </div>
+        <div class="st-is-field">
+            <label for="tts_resource_id_select">音频类型</label>
+            <select id="tts_resource_id_select" class="st-is-select">
+                <option value="seed-tts-2.0">合成音频</option>
+                <option value="seed-icl-2.0">复刻音频</option>
+            </select>
+        </div>
+        <div class="st-is-field-col">
+            <label for="tts_speaker_description">音色简介</label>
+            <textarea id="tts_speaker_description" class="st-is-textarea" rows="3" placeholder="输入音色简介..."></textarea>
+        </div>
+    </div>
+
+
+
+    <div class="st-is-settings-section">
+        <!-- 音色与角色匹配设定 -->
+        <h4>音色与角色匹配设定</h4>
+        <div class="st-is-field">
+            <label for="tts_char_match_profile_select">匹配设定</label>
+            <div class="st-is-profile-controls">
+                <select id="tts_char_match_profile_select" class="st-is-select"></select>
+                <button class="st-is-icon-btn" id="save_char_match_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                <button class="st-is-icon-btn" id="save_as_char_match_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                <button class="st-is-icon-btn" id="import_char_match_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                <button class="st-is-icon-btn" id="export_char_match_profile_button" title="导出"><i class="fa-solid fa-file-export"></i></button>
+                <button class="st-is-icon-btn" id="export_all_char_match_profiles_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                <button class="st-is-icon-btn danger" id="delete_char_match_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+        <div class="st-is-field-col">
+            <label for="tts_char_match_rules_editor">规则设定</label>
+            <textarea id="tts_char_match_rules_editor" class="st-is-textarea" rows="5" placeholder="输入格式为: 使用自然语言描述音色名称和角色名称的匹配的关系"></textarea>
+        </div>
+    </div>
+
+    <div class="st-is-settings-section">
+        <!-- 测试区域 -->
+        <h4>测试工具</h4>
+        <div class="st-is-field-col">
+            <label for="tts_test_text">测试文本</label>
+            <textarea id="tts_test_text" class="st-is-textarea" rows="4" placeholder="输入要合成语音的文本..."></textarea>
+        </div>
+        <div class="st-is-field-col">
+            <label for="tts_context_texts">语气控制</label>
+            <textarea id="tts_context_texts" class="st-is-textarea" rows="2" placeholder="输入语气设定，以优化语气..."></textarea>
+        </div>
+        <div style="text-align: center; margin: 20px 0;">
+            <button class="st-is-btn" id="tts_test_button">
+                <i class="fa-solid fa-microphone-lines"></i>
+                测试当前音色
+            </button>
+        </div>
+        <div class="st-is-field-col">
+            <label>测试结果</label>
+            <audio id="tts_test_result_audio" controls style="width: 100%; display: none;"></audio>
+        </div>
+    </div>
+</div>

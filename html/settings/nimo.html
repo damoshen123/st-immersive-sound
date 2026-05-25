@@ -1,0 +1,279 @@
+<div class="st-is-tab-content" id="st-is-tab-nimo">
+
+    <!-- ─── 连接设置 ─────────────────────────────────────────── -->
+    <div class="st-is-settings-section">
+        <h3>MiMo-V2.5-TTS 连接设置</h3>
+        <p style="opacity:.75; margin-top:-6px;">
+            通过小米 MiMo-V2.5-TTS（OpenAI 风格 chat/completions）合成语音。
+        </p>
+
+        <div class="st-is-field-col">
+            <label for="nimo_api_key">API Key（支持多个，每行一个）</label>
+            <div style="display:flex; gap:8px; align-items:flex-start;">
+                <textarea id="nimo_api_key" class="st-is-textarea" rows="3"
+                    placeholder="每行一个 MiMo API Key&#10;多 Key 会自动轮询" style="flex:1; font-family:monospace;"></textarea>
+                <button class="st-is-icon-btn" id="nimo_api_key_toggle" title="显示/隐藏">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+            </div>
+            <div id="nimo_api_key_status" style="opacity:.7; font-size:12px; margin-top:4px;">未配置</div>
+        </div>
+
+        <div class="st-is-field">
+            <label for="nimo_base_url">API Base URL</label>
+            <input type="text" id="nimo_base_url" class="st-is-text-input" value="https://api.xiaomimimo.com/v1" style="font-family:monospace;" />
+        </div>
+
+        <div style="display:flex; align-items:center; gap:10px; margin-top:10px; flex-wrap:wrap;">
+            <button class="st-is-btn" id="nimo_health_button">
+                <i class="fa-solid fa-signal"></i> 检测连接
+            </button>
+            <span id="nimo_health_status" style="opacity:.75;">未检测</span>
+        </div>
+    </div>
+
+    <!-- ─── 音色管理 ─────────────────────────────────────────── -->
+    <div class="st-is-settings-section">
+        <h3>音色管理</h3>
+
+        <div class="st-is-field-col">
+            <label>当前音色（用于人物 TTS / 测试合成）</label>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <input type="text" id="nimo_current_voice_display" class="st-is-text-input" readonly
+                    style="flex:1; font-family:monospace;">
+                <button class="st-is-icon-btn" id="nimo_current_voice_clear" title="清空"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </div>
+
+        <div class="st-is-field-col">
+            <label>旁白音色（用于旁白 TTS；为空时回退到当前音色）</label>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <input type="text" id="nimo_narration_voice_display" class="st-is-text-input" readonly
+                    style="flex:1; font-family:monospace;">
+                <button class="st-is-icon-btn" id="nimo_narration_voice_clear" title="清空"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </div>
+
+        <!-- 类型切换 -->
+        <div style="display:flex; gap:6px; margin:12px 0 8px; flex-wrap:wrap;">
+            <button class="st-is-btn nimo-cat-btn active" data-cat="preset">🎭 预置音色</button>
+            <button class="st-is-btn nimo-cat-btn" data-cat="mine">👤 我的音色</button>
+            <button class="st-is-btn nimo-cat-btn" data-cat="clone">🎙 音色复刻</button>
+            <button class="st-is-btn nimo-cat-btn" data-cat="design">✨ 音色描述</button>
+            <button class="st-is-btn nimo-cat-btn" data-cat="custom">✏ 自定义</button>
+        </div>
+
+        <!-- 预置音色 -->
+        <div class="nimo-cat-panel" data-cat="preset">
+            <p style="opacity:.6; font-size:12px;">官方预置音色，点击可设为当前音色，或"加入我的音色"方便角色匹配。</p>
+            <div id="nimo_preset_grid" class="nimo-voice-grid"></div>
+        </div>
+
+        <!-- 我的音色 -->
+        <div class="nimo-cat-panel" data-cat="mine" style="display:none;">
+            <p style="opacity:.6; font-size:12px;">包含已收藏的预置 / 克隆 / 描述 / 自定义音色。</p>
+            <div id="nimo_my_voices_list"></div>
+        </div>
+
+        <!-- 音色复刻 -->
+        <div class="nimo-cat-panel" data-cat="clone" style="display:none;">
+            <p style="opacity:.6; font-size:12px;">上传一段参考音频（mp3 / wav，≤ 10 MB）做音色复刻；参考音频会存储到 st-chatu8 configDatabase。</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr auto; gap:8px; margin-bottom:8px; align-items:center;">
+                <input type="text" id="nimo_clone_nick" class="st-is-text-input" placeholder="音色昵称（用于角色匹配）">
+                <label for="nimo_clone_file" class="st-is-btn" style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; margin:0; justify-content:center;">
+                    <i class="fa-solid fa-upload"></i>
+                    <span id="nimo_clone_file_label">选择参考音频</span>
+                    <input type="file" id="nimo_clone_file" accept="audio/mp3,audio/mpeg,audio/wav,audio/*" style="position:absolute; width:1px; height:1px; opacity:0; pointer-events:none;">
+                </label>
+                <button class="st-is-btn" id="nimo_clone_add"><i class="fa-solid fa-plus"></i> 保存</button>
+            </div>
+            <div id="nimo_clone_preview_row" style="display:none; align-items:center; gap:8px; margin-bottom:8px;">
+                <span style="opacity:.7; font-size:12px; white-space:nowrap;">原始参考音频：</span>
+                <audio id="nimo_clone_preview" controls preload="metadata" style="flex:1; height:32px;"></audio>
+                <span id="nimo_clone_preview_meta" style="opacity:.6; font-size:12px; white-space:nowrap;"></span>
+            </div>
+            <div id="nimo_clone_status" style="opacity:.7; font-size:12px;">尚未保存任何克隆音色</div>
+        </div>
+
+        <!-- 音色描述（voicedesign）-->
+        <div class="nimo-cat-panel" data-cat="design" style="display:none;">
+            <p style="opacity:.6; font-size:12px;">用自然语言描述期望的音色（voicedesign 模型），每次请求时实时生成。</p>
+            <div style="display:grid; grid-template-columns:1fr 2fr auto; gap:8px; margin-bottom:8px;">
+                <input type="text" id="nimo_design_nick" class="st-is-text-input" placeholder="音色昵称">
+                <input type="text" id="nimo_design_prompt" class="st-is-text-input" placeholder="音色描述，例如：温柔知性的御姐女声，带一点沙哑">
+                <button class="st-is-btn" id="nimo_design_add"><i class="fa-solid fa-plus"></i> 保存</button>
+            </div>
+        </div>
+
+        <!-- 自定义音色 -->
+        <div class="nimo-cat-panel" data-cat="custom" style="display:none;">
+            <p style="opacity:.6; font-size:12px;">手动登记一个已知的 voice 字符串（完全透传给 MiMo API 的 audio.voice 字段）。</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr auto; gap:8px; margin-bottom:8px;">
+                <input type="text" id="nimo_custom_nick" class="st-is-text-input" placeholder="音色昵称">
+                <input type="text" id="nimo_custom_voice" class="st-is-text-input" placeholder="voice 字符串">
+                <button class="st-is-btn" id="nimo_custom_add"><i class="fa-solid fa-plus"></i> 添加</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── 朗读参数 ─────────────────────────────────────────── -->
+    <div class="st-is-settings-section">
+        <h3>朗读参数</h3>
+
+        <div class="st-is-field">
+            <label for="nimo_format">输出格式</label>
+            <select id="nimo_format" class="st-is-select">
+                <option value="wav">wav</option>
+                <option value="mp3">mp3</option>
+                <option value="pcm16">pcm16（前端自动封装 WAV 头）</option>
+            </select>
+        </div>
+
+        <div class="st-is-field-col">
+            <label for="nimo_style_prefix">默认风格前缀（可选）</label>
+            <input type="text" id="nimo_style_prefix" class="st-is-text-input"
+                placeholder="例如：(开心) / (磁性，低沉)">
+            <div style="opacity:.6; font-size:12px; margin-top:4px;">
+                若文本开头没有 <code>(...)</code>，合成时会自动前置此字符串。仅影响人物 TTS。
+            </div>
+        </div>
+
+        <div class="st-is-field-col">
+            <label for="nimo_narration_style_prefix">旁白风格前缀（可选）</label>
+            <input type="text" id="nimo_narration_style_prefix" class="st-is-text-input"
+                placeholder="例如：(温柔) / (磁性)">
+        </div>
+    </div>
+
+    <!-- ─── 角色匹配设定 ─────────────────────────────────────── -->
+    <div class="st-is-settings-section">
+        <h4>音色与角色匹配设定（MiMo 专用）</h4>
+        <p style="opacity:.75; margin-top:-6px;">
+            当人物 TTS 引擎选择「MiMo」时，LLM 会用此处的规则把角色名匹配到音色。
+        </p>
+        <div class="st-is-field">
+            <label for="nimo_char_match_profile_select">匹配设定</label>
+            <div class="st-is-profile-controls">
+                <select id="nimo_char_match_profile_select" class="st-is-select"></select>
+                <button class="st-is-icon-btn" id="nimo_save_char_match_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                <button class="st-is-icon-btn" id="nimo_save_as_char_match_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                <button class="st-is-icon-btn danger" id="nimo_delete_char_match_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+        <div class="st-is-field-col">
+            <label for="nimo_char_match_rules_editor">规则设定</label>
+            <textarea id="nimo_char_match_rules_editor" class="st-is-textarea" rows="5"
+                placeholder="使用自然语言描述音色昵称与角色名的匹配关系"></textarea>
+        </div>
+    </div>
+
+    <!-- ─── 测试工具 ─────────────────────────────────────────── -->
+    <div class="st-is-settings-section">
+        <h4>测试工具</h4>
+
+        <div class="st-is-field-col">
+            <label for="nimo_test_text">测试文本</label>
+            <textarea id="nimo_test_text" class="st-is-textarea" rows="3"
+                placeholder="输入要合成的文本... 在开头加 (开心) / (紧张，深呼吸) 等可控制情绪"></textarea>
+        </div>
+
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;">
+            <span style="opacity:.6; font-size:12px; align-self:center;">风格：</span>
+            <button class="st-is-btn-tag nimo-tag" data-tag="(开心)">😄 开心</button>
+            <button class="st-is-btn-tag nimo-tag" data-tag="(悲伤)">😢 悲伤</button>
+            <button class="st-is-btn-tag nimo-tag" data-tag="(愤怒)">😡 愤怒</button>
+            <button class="st-is-btn-tag nimo-tag" data-tag="(温柔)">🌸 温柔</button>
+            <button class="st-is-btn-tag nimo-tag" data-tag="(高冷)">❄️ 高冷</button>
+            <button class="st-is-btn-tag nimo-tag" data-tag="(慵懒)">😌 慵懒</button>
+            <button class="st-is-btn-tag nimo-tag" data-tag="(磁性)">🎙 磁性</button>
+            <button class="st-is-btn-tag nimo-tag" data-tag="(醇厚)">🍷 醇厚</button>
+            <button class="st-is-btn-tag nimo-tag" data-tag="(夹子音)">🎀 夹子音</button>
+            <button class="st-is-btn-tag nimo-tag" data-tag="(御姐音)">💋 御姐音</button>
+            <button class="st-is-btn-tag nimo-tag" data-tag="(东北话)">🧣 东北话</button>
+            <button class="st-is-btn-tag nimo-tag" data-tag="(四川话)">🌶 四川话</button>
+            <button class="st-is-btn-tag nimo-tag" data-tag="(粤语)">🥮 粤语</button>
+            <button class="st-is-btn-tag nimo-tag" data-tag="(唱歌)">🎵 唱歌</button>
+            <button class="st-is-btn-tag nimo-tag" data-tag="(紧张，深呼吸)">😰 紧张</button>
+        </div>
+
+        <div style="text-align:center; margin: 16px 0;">
+            <button class="st-is-btn" id="nimo_test_button">
+                <i class="fa-solid fa-microphone-lines"></i> 测试合成（使用当前音色）
+            </button>
+            <span id="nimo_test_status" style="opacity:.75; margin-left:8px;"></span>
+        </div>
+
+        <div class="st-is-field-col">
+            <label>测试结果</label>
+            <audio id="nimo_test_audio" controls style="width:100%; display:none;"></audio>
+        </div>
+    </div>
+</div>
+
+<!-- ─── 局部样式 ─────────────────────────────────────────── -->
+<style>
+.nimo-cat-btn { font-size: 13px; padding: 6px 12px; opacity: 0.6; }
+.nimo-cat-btn.active { opacity: 1; border-bottom: 2px solid #4f7cff; }
+.nimo-voice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 8px;
+    max-height: 420px;
+    overflow-y: auto;
+    padding: 4px;
+}
+.nimo-voice-card {
+    padding: 10px;
+    background: rgba(128,128,128,.06);
+    border-radius: 8px;
+    border: 1px solid rgba(128,128,128,.2);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.nimo-voice-card:hover, .nimo-voice-card.selected {
+    border-color: #4f7cff;
+    background: rgba(79,124,255,.08);
+}
+.nimo-voice-card .vname { font-weight: 600; }
+.nimo-voice-card .vmeta { margin-top: 4px; opacity: 0.6; font-size: 12px; }
+.nimo-voice-card .vactions { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+.nimo-voice-card .vactions button {
+    font-size: 12px; padding: 4px 10px;
+    border-radius: 4px; border: 1px solid rgba(128,128,128,.3);
+    background: rgba(128,128,128,.1); color: inherit;
+    cursor: pointer;
+}
+.nimo-voice-card .vactions button:hover { border-color: #4f7cff; color: #4f7cff; }
+.nimo-voice-card .vactions button.danger:hover { border-color: #f88; color: #f88; }
+.nimo-mvitem {
+    padding: 10px;
+    background: rgba(128,128,128,.06);
+    border-radius: 6px;
+    border: 1px solid rgba(128,128,128,.2);
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+.nimo-mvitem .vname { font-weight: 600; color: #4f7cff; }
+.nimo-mvitem .vmeta { opacity: 0.6; font-size: 12px; margin-top: 4px; word-break: break-all; }
+.nimo-mvitem .vactions { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+.nimo-mvitem .vactions button {
+    font-size: 12px; padding: 4px 10px;
+    border-radius: 4px; border: 1px solid rgba(128,128,128,.3);
+    background: rgba(128,128,128,.1); color: inherit;
+    cursor: pointer;
+}
+.nimo-mvitem .vactions button:hover { border-color: #4f7cff; color: #4f7cff; }
+.nimo-mvitem .vactions button.danger:hover { border-color: #f88; color: #f88; }
+.nimo-badge {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    margin-left: 4px;
+}
+.nimo-badge.blue  { background: rgba(59,130,246,.2); color: #60a5fa; }
+.nimo-badge.green { background: rgba(34,197,94,.2); color: #4ade80; }
+.nimo-badge.amber { background: rgba(245,158,11,.2); color: #fbbf24; }
+.nimo-badge.gray  { background: rgba(128,128,128,.2); color: inherit; }
+</style>

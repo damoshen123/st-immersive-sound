@@ -1,0 +1,649 @@
+<div class="st-is-tab-content" id="st-is-tab-effects-processor">
+    <div class="container">
+        <header>
+            <h1>🎧 音频处理工具</h1>
+            <button class="reset-btn" id="epResetAllBtn">重置全部参数</button>
+        </header>
+
+        <!-- 区块一：文件输入 -->
+        <div class="section">
+            <div class="section-header">
+                <h2>📁 文件输入</h2>
+            </div>
+            <div class="file-input-group">
+                <div class="file-input-box" id="audioInputBox" onclick="document.getElementById('audioFile').click()">
+                    <input type="file" id="audioFile" accept="audio/*">
+                    <div class="icon">🎵</div>
+                    <div class="label">点击或拖拽选择音频文件</div>
+                    <div class="filename" id="audioFileName"></div>
+                    <div class="audio-preview" id="audioPreview" style="display: none;">
+                        <button class="preview-btn" id="previewOriginalBtn">▶ 预览原始音频</button>
+                        <span id="audioDuration"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 区块二：动态压缩 -->
+        <div class="section">
+            <div class="section-header">
+                <h2>🎚️ 动态压缩</h2>
+                <div class="section-header-controls">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="compressorEnabled" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="st-is-field">
+                <label for="ep_compressor_profile_select">压缩预设</label>
+                <div class="st-is-profile-controls">
+                    <select id="ep_compressor_profile_select" class="st-is-select"></select>
+                    <button class="st-is-icon-btn" id="ep_save_compressor_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                    <button class="st-is-icon-btn" id="ep_save_as_compressor_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                    <button class="st-is-icon-btn" id="ep_import_compressor_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                    <button class="st-is-icon-btn" id="ep_export_compressor_profile_button" title="导出单个"><i class="fa-solid fa-file-export"></i></button>
+                    <button class="st-is-icon-btn" id="ep_export_all_compressor_profile_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                    <button class="st-is-icon-btn danger" id="ep_delete_compressor_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>
+            <div class="slider-group">
+                <div class="slider-item">
+                    <div class="slider-label">
+                        <span class="name">阈值 (Threshold)</span>
+                        <span class="value" id="thresholdValue">-24 dB</span>
+                    </div>
+                    <input type="range" class="slider" id="threshold" min="-60" max="0" value="-24">
+                </div>
+                <div class="slider-item">
+                    <div class="slider-label">
+                        <span class="name">压缩比 (Ratio)</span>
+                        <span class="value" id="ratioValue">4:1</span>
+                    </div>
+                    <input type="range" class="slider" id="ratio" min="1" max="20" value="4">
+                </div>
+                <div class="slider-item">
+                    <div class="slider-label">
+                        <span class="name">启动时间 (Attack)</span>
+                        <span class="value" id="attackValue">10 ms</span>
+                    </div>
+                    <input type="range" class="slider" id="attack" min="0" max="100" value="10">
+                </div>
+                <div class="slider-item">
+                    <div class="slider-label">
+                        <span class="name">释放时间 (Release)</span>
+                        <span class="value" id="releaseValue">250 ms</span>
+                    </div>
+                    <input type="range" class="slider" id="release" min="50" max="1000" value="250">
+                </div>
+                <div class="slider-item">
+                    <div class="slider-label">
+                        <span class="name">增益补偿 (Makeup)</span>
+                        <span class="value" id="makeupValue">6 dB</span>
+                    </div>
+                    <input type="range" class="slider" id="makeup" min="0" max="24" value="6">
+                </div>
+            </div>
+            <div class="section-footer">
+                <button class="listen-btn" id="listenCompressorBtn" disabled>🎧 试听压缩效果</button>
+            </div>
+        </div>
+
+        <!-- 区块三：声音特效 -->
+        <div class="section">
+            <div class="section-header">
+                <h2>✨ 声音特效</h2>
+                <div class="section-header-controls">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="effectsEnabled" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="st-is-field">
+                <label for="ep_effects_profile_select">声音特效预设</label>
+                <div class="st-is-profile-controls">
+                    <select id="ep_effects_profile_select" class="st-is-select"></select>
+                    <button class="st-is-icon-btn" id="ep_save_effects_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                    <button class="st-is-icon-btn" id="ep_save_as_effects_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                    <button class="st-is-icon-btn" id="ep_import_effects_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                    <button class="st-is-icon-btn" id="ep_export_effects_profile_button" title="导出单个"><i class="fa-solid fa-file-export"></i></button>
+                    <button class="st-is-icon-btn" id="ep_export_all_effects_profile_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                    <button class="st-is-icon-btn danger" id="ep_delete_effects_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>
+
+            <!-- 音高控制 -->
+            <div class="effect-module">
+                <div class="effect-header">
+                    <h3>🎹 音高控制 (Pitch)</h3>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="pitchEnabled">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="slider-group">
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span class="name">音高偏移</span>
+                            <span class="value" id="pitchShiftValue">0 半音</span>
+                        </div>
+                        <input type="range" class="slider" id="pitchShift" min="-12" max="12" value="0">
+                    </div>
+                </div>
+                <div class="radio-group">
+                    <label class="radio-item">
+                        <input type="radio" name="grainSize" value="small"> 小颗粒
+                    </label>
+                    <label class="radio-item">
+                        <input type="radio" name="grainSize" value="medium" checked> 中颗粒
+                    </label>
+                    <label class="radio-item">
+                        <input type="radio" name="grainSize" value="large"> 大颗粒
+                    </label>
+                </div>
+            </div>
+
+            <!-- 滤波器 -->
+            <div class="effect-module">
+                <div class="effect-header">
+                    <h3>🌊 滤波器 (Filter)</h3>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="filterEnabled">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <!-- 高通滤波器（低频截止） -->
+                <div class="filter-sub-module">
+                    <div class="filter-sub-header">
+                        <div class="filter-title">
+                            高通滤波器（低频截止）
+                            <span class="freq-badge">削弱低频</span>
+                        </div>
+                        <label class="toggle-switch-small">
+                            <input type="checkbox" id="highpassEnabled" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-item">
+                            <div class="slider-label">
+                                <span class="name">截止频率</span>
+                                <span class="value" id="highpassFreqValue">80 Hz</span>
+                            </div>
+                            <input type="range" class="slider" id="highpassFreq" min="20" max="2000" value="80">
+                        </div>
+                        <div class="slider-item">
+                            <div class="slider-label">
+                                <span class="name">Q值</span>
+                                <span class="value" id="highpassQValue">0.7</span>
+                            </div>
+                            <input type="range" class="slider" id="highpassQ" min="0.1" max="10" step="0.1" value="0.7">
+                        </div>
+                    </div>
+                    <div class="filter-description">低于此频率的声音将被削弱（去除低频噪音、隆隆声）</div>
+                </div>
+
+                <!-- 低通滤波器（高频截止） -->
+                <div class="filter-sub-module">
+                    <div class="filter-sub-header">
+                        <div class="filter-title">
+                            低通滤波器（高频截止）
+                            <span class="freq-badge">削弱高频</span>
+                        </div>
+                        <label class="toggle-switch-small">
+                            <input type="checkbox" id="lowpassEnabled" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-item">
+                            <div class="slider-label">
+                                <span class="name">截止频率</span>
+                                <span class="value" id="lowpassFreqValue">8000 Hz</span>
+                            </div>
+                            <input type="range" class="slider" id="lowpassFreq" min="500" max="20000" value="8000">
+                        </div>
+                        <div class="slider-item">
+                            <div class="slider-label">
+                                <span class="name">Q值</span>
+                                <span class="value" id="lowpassQValue">0.7</span>
+                            </div>
+                            <input type="range" class="slider" id="lowpassQ" min="0.1" max="10" step="0.1" value="0.7">
+                        </div>
+                    </div>
+                    <div class="filter-description">高于此频率的声音将被削弱（模拟隔墙、电话效果）</div>
+                </div>
+            </div>
+
+            <!-- 失真 -->
+            <div class="effect-module">
+                <div class="effect-header">
+                    <h3>🔥 失真 (Distortion)</h3>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="distortionEnabled">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="slider-group">
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span class="name">失真量</span>
+                            <span class="value" id="distortionAmountValue">0%</span>
+                        </div>
+                        <input type="range" class="slider" id="distortionAmount" min="0" max="100" value="0">
+                    </div>
+                </div>
+                <div class="radio-group">
+                    <label class="radio-item">
+                        <input type="radio" name="distortionType" value="soft" checked> 软削峰
+                    </label>
+                    <label class="radio-item">
+                        <input type="radio" name="distortionType" value="hard"> 硬削峰
+                    </label>
+                </div>
+            </div>
+
+            <!-- 合唱 -->
+            <div class="effect-module">
+                <div class="effect-header">
+                    <h3>🎭 合唱 (Chorus)</h3>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="chorusEnabled">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="slider-group">
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span class="name">深度</span>
+                            <span class="value" id="chorusDepthValue">50%</span>
+                        </div>
+                        <input type="range" class="slider" id="chorusDepth" min="0" max="100" value="50">
+                    </div>
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span class="name">速率</span>
+                            <span class="value" id="chorusRateValue">1.5 Hz</span>
+                        </div>
+                        <input type="range" class="slider" id="chorusRate" min="0.1" max="10" step="0.1" value="1.5">
+                    </div>
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span class="name">混合量</span>
+                            <span class="value" id="chorusWetValue">50%</span>
+                        </div>
+                        <input type="range" class="slider" id="chorusWet" min="0" max="100" value="50">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 延迟 -->
+            <div class="effect-module">
+                <div class="effect-header">
+                    <h3>📢 延迟 (Delay)</h3>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="delayEnabled">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="slider-group">
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span class="name">延迟时间</span>
+                            <span class="value" id="delayTimeValue">200 ms</span>
+                        </div>
+                        <input type="range" class="slider" id="delayTime" min="0" max="1000" value="200">
+                    </div>
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span class="name">反馈量</span>
+                            <span class="value" id="delayFeedbackValue">30%</span>
+                        </div>
+                        <input type="range" class="slider" id="delayFeedback" min="0" max="90" value="30">
+                    </div>
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span class="name">混合量</span>
+                            <span class="value" id="delayWetValue">30%</span>
+                        </div>
+                        <input type="range" class="slider" id="delayWet" min="0" max="100" value="30">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 特效混响 -->
+            <div class="effect-module">
+                <div class="effect-header">
+                    <h3>🌌 特效混响 (Effect Reverb)</h3>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="effectReverbEnabled">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="slider-group">
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span class="name">衰减时间</span>
+                            <span class="value" id="reverbDecayValue">2.0 s</span>
+                        </div>
+                        <input type="range" class="slider" id="reverbDecay" min="0.1" max="10" step="0.1" value="2">
+                    </div>
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span class="name">预延迟</span>
+                            <span class="value" id="reverbPredelayValue">20 ms</span>
+                        </div>
+                        <input type="range" class="slider" id="reverbPredelay" min="0" max="100" value="20">
+                    </div>
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span class="name">干湿比</span>
+                            <span class="value" id="reverbWetValue">30%</span>
+                        </div>
+                        <input type="range" class="slider" id="reverbWet" min="0" max="100" value="30">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-footer">
+                <button class="listen-btn" id="listenEffectsBtn" disabled>🎧 试听效果</button>
+            </div>
+
+            <hr class="st-is-hr">
+
+            <div class="st-is-field">
+                <label for="ep_effects_description_profile_select">预设介绍</label>
+                <div class="st-is-profile-controls">
+                    <select id="ep_effects_description_profile_select" class="st-is-select"></select>
+                    <button class="st-is-icon-btn" id="ep_save_effects_description_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                    <button class="st-is-icon-btn" id="ep_save_as_effects_description_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                    <button class="st-is-icon-btn" id="ep_import_effects_description_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                    <button class="st-is-icon-btn" id="ep_export_effects_description_profile_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                    <button class="st-is-icon-btn danger" id="ep_delete_effects_description_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>
+            <div class="st-is-field-col">
+                <textarea id="ep_effects_description_editor" class="st-is-textarea" rows="4" placeholder="此处是对当前类别下所有预设的介绍和说明..."></textarea>
+            </div>
+        </div>
+
+        <!-- 区块四：环境混响 -->
+        <div class="section">
+            <div class="section-header">
+                <h2>🏛️ 环境混响 (IR Convolution)</h2>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="irReverbEnabled" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <div class="st-is-field ep-toggle-field">
+                <label for="irApplyToVoiceOnly">只对语音生效</label>
+                <label class="st-is-toggle">
+                    <input id="irApplyToVoiceOnly" type="checkbox">
+                    <span class="st-is-slider"></span>
+                </label>
+            </div>
+
+            <div class="st-is-field">
+                <label for="ep_ir_profile_select">IR 预设</label>
+                <div class="st-is-profile-controls">
+                    <select id="ep_ir_profile_select" class="st-is-select"></select>
+                    <button class="st-is-icon-btn" id="ep_save_ir_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                    <button class="st-is-icon-btn" id="ep_save_as_ir_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                    <button class="st-is-icon-btn" id="ep_import_ir_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                    <button class="st-is-icon-btn" id="ep_export_ir_profile_button" title="导出单个"><i class="fa-solid fa-file-export"></i></button>
+                    <button class="st-is-icon-btn" id="ep_export_all_ir_profile_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                    <button class="st-is-icon-btn danger" id="ep_delete_ir_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>
+            
+            <div class="ir-status no-file" id="irStatus">
+                ℹ️ 将根据预设名自动加载同名的 .wav 文件 (例如: "教堂.wav")
+            </div>
+
+            <div class="slider-group" style="margin-top: 20px;">
+                <div class="slider-item">
+                    <div class="slider-label">
+                        <span class="name">干湿比</span>
+                        <span class="value" id="irWetValue">50%</span>
+                    </div>
+                    <input type="range" class="slider" id="irWet" min="0" max="100" value="50">
+                </div>
+                <div class="slider-item">
+                    <div class="slider-label">
+                        <span class="name">输出增益</span>
+                        <span class="value" id="irGainValue">0 dB</span>
+                    </div>
+                    <input type="range" class="slider" id="irGain" min="-12" max="12" value="0">
+                </div>
+            </div>
+            <div class="section-footer">
+                <button class="listen-btn" id="listenIRBtn" disabled>🎧 试听环境混响效果</button>
+                <span class="status-hint" id="irListenHint" style="display: none;">请先上传 IR 文件</span>
+            </div>
+
+            <hr class="st-is-hr">
+
+            <div class="st-is-field">
+                <label for="ep_ir_description_profile_select">预设介绍</label>
+                <div class="st-is-profile-controls">
+                    <select id="ep_ir_description_profile_select" class="st-is-select"></select>
+                    <button class="st-is-icon-btn" id="ep_save_ir_description_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                    <button class="st-is-icon-btn" id="ep_save_as_ir_description_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                    <button class="st-is-icon-btn" id="ep_import_ir_description_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                    <button class="st-is-icon-btn" id="ep_export_ir_description_profile_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                    <button class="st-is-icon-btn danger" id="ep_delete_ir_description_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>
+            <div class="st-is-field-col">
+                <textarea id="ep_ir_description_editor" class="st-is-textarea" rows="4" placeholder="此处是对当前类别下所有预设的介绍和说明..."></textarea>
+            </div>
+        </div>
+
+        <!-- 区块五：空间音频 -->
+        <div class="section">
+            <div class="section-header">
+                <h2>🌍 空间音频</h2>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="spatialEnabled" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <div class="spatial-controls">
+                <div class="spatial-preset-control">
+                    <div class="st-is-field">
+                        <label for="ep_spatial_profile_select">移动预设</label>
+                        <div class="st-is-profile-controls">
+                            <select id="ep_spatial_profile_select" class="st-is-select"></select>
+                            <button class="st-is-icon-btn" id="ep_save_spatial_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                            <button class="st-is-icon-btn" id="ep_save_as_spatial_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                            <button class="st-is-icon-btn" id="ep_import_spatial_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                    <button class="st-is-icon-btn" id="ep_export_spatial_profile_button" title="导出单个"><i class="fa-solid fa-file-export"></i></button>
+                    <button class="st-is-icon-btn" id="ep_export_all_spatial_profile_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                    <button class="st-is-icon-btn danger" id="ep_delete_spatial_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="speed-control">
+                    <div class="slider-label">
+                        <span class="name">默认速度（新建点使用）</span>
+                        <span class="value" id="defaultSpeedValue">1.0 米/秒</span>
+                    </div>
+                    <input type="range" class="slider" id="defaultSpeed" min="0.1" max="10" step="0.1" value="1">
+                </div>
+            </div>
+
+            <div class="path-controls" style="margin-bottom: 20px;">
+                <button class="path-btn" id="addPathPointBtn">➕ 新建点</button>
+                <button class="path-btn delete" id="deleteSelectedPointBtn">🗑️ 删除点</button>
+                <button class="path-btn clear" id="clearAllPointsBtn">🔄 清空路径</button>
+                <button class="path-btn apply-all" id="applyDefaultSpeedToAllBtn">📋 应用默认速度到全部</button>
+            </div>
+
+            <!-- 选中点编辑面板 -->
+            <div class="selected-point-panel hidden" id="selectedPointPanel">
+                <h4>📍 选中点 #<span id="selectedPointNumber">1</span></h4>
+                <div class="point-info-row">
+                    <div class="point-info-item">X: <span id="selectedPointX">0.00</span> 米</div>
+                    <div class="point-info-item">Y: <span id="selectedPointY">0.00</span> 米</div>
+                    <div class="point-info-item">Z: <span id="selectedPointZ">0.00</span> 米</div>
+                </div>
+                <div class="segment-speed-control" id="segmentSpeedControl">
+                    <div class="label">到下一点 (#<span id="nextPointNumber">2</span>) 的移动速度：</div>
+                    <div class="speed-input-group">
+                        <input type="range" class="slider" id="segmentSpeed" min="0.1" max="10" step="0.1" value="1">
+                        <span class="speed-value" id="segmentSpeedValue">1.0 米/秒</span>
+                    </div>
+                    <div class="point-info-row" style="margin-top: 10px; margin-bottom: 0;">
+                        <div class="point-info-item">段距离: <span id="segmentDistance">0.00</span> 米</div>
+                        <div class="point-info-item">段时长: <span id="segmentDuration">0.00</span> 秒</div>
+                    </div>
+                </div>
+                <!-- 新增：驻留时间控制 -->
+                <div class="segment-speed-control" id="pointDwellControl" style="margin-top: 10px;">
+                    <div class="label">在该点驻留的时间：</div>
+                    <div class="speed-input-group">
+                        <input type="range" class="slider" id="pointDwellTime" min="0" max="10" step="0.1" value="0">
+                        <span class="speed-value" id="pointDwellTimeValue">0.0 秒</span>
+                    </div>
+                </div>
+                <div class="no-next-point" id="noNextPointHint" style="display: none;">
+                    这是最后一个点，没有下一段路径
+                </div>
+            </div>
+
+            <!-- 空间音频参数 -->
+            <div class="spatial-params">
+                <h4>🔧 空间参数</h4>
+                <div class="slider-group">
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span class="name">距离模型</span>
+                            <span class="value" id="distanceModelValue">inverse</span>
+                        </div>
+                        <select class="preset-select" id="distanceModel" style="width: 100%; margin-top: 5px;">
+                            <option value="linear">线性 (linear)</option>
+                            <option value="inverse" selected>反比 (inverse)</option>
+                            <option value="exponential">指数 (exponential)</option>
+                        </select>
+                    </div>
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span class="name">参考距离</span>
+                            <span class="value" id="refDistanceValue">1.0 米</span>
+                        </div>
+                        <input type="range" class="slider" id="refDistance" min="0.1" max="10" step="0.1" value="1">
+                    </div>
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span class="name">最大距离</span>
+                            <span class="value" id="maxDistanceValue">20 米</span>
+                        </div>
+                        <input type="range" class="slider" id="maxDistance" min="1" max="100" value="20">
+                    </div>
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span class="name">衰减因子</span>
+                            <span class="value" id="rolloffValue">1.0</span>
+                        </div>
+                        <input type="range" class="slider" id="rolloff" min="0" max="5" step="0.1" value="1">
+                    </div>
+                </div>
+                <div class="slider-group" style="margin-top: 15px;">
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span class="name">内锥角度</span>
+                            <span class="value" id="coneInnerValue">360°</span>
+                        </div>
+                        <input type="range" class="slider" id="coneInner" min="0" max="360" value="360">
+                    </div>
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span class="name">外锥角度</span>
+                            <span class="value" id="coneOuterValue">360°</span>
+                        </div>
+                        <input type="range" class="slider" id="coneOuter" min="0" max="360" value="360">
+                    </div>
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span class="name">外锥增益</span>
+                            <span class="value" id="coneOuterGainValue">0.0</span>
+                        </div>
+                        <input type="range" class="slider" id="coneOuterGain" min="0" max="1" step="0.1" value="0">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 网格大小控制 -->
+            <div class="grid-scale-control">
+                <label>🔍 网格大小:</label>
+                <select id="gridSizeSelect">
+                    <option value="0.5">0.5 米/格（近距离）</option>
+                    <option value="1" selected>1 米/格（标准）</option>
+                    <option value="2">2 米/格（中距离）</option>
+                    <option value="5">5 米/格（远距离）</option>
+                    <option value="10">10 米/格（超远）</option>
+                </select>
+                <span class="current-range" id="currentRangeDisplay">可视范围: ±5 米</span>
+            </div>
+
+            <div class="views-container">
+                <div class="view-box">
+                    <h4>俯视图 (XZ 平面) - 拖拽调整水平位置</h4>
+                    <canvas class="view-canvas" id="topView" width="400" height="400"></canvas>
+                </div>
+                <div class="view-box">
+                    <h4>平视图 (XY 平面) - 拖拽调整高度</h4>
+                    <canvas class="view-canvas" id="frontView" width="400" height="400"></canvas>
+                </div>
+            </div>
+
+            <div class="path-info">
+                路径总长度: <span id="pathLength">0.00</span> 米 | 
+                预计总时间: <span id="pathTime">0.00</span> 秒 |
+                路径点数: <span id="pointCount">0</span>
+            </div>
+
+            <div class="section-footer">
+                <button class="listen-btn" id="listenSpatialBtn" disabled>🎧 试听空间音频效果</button>
+            </div>
+
+            <hr class="st-is-hr">
+
+            <div class="st-is-field">
+                <label for="ep_spatial_description_profile_select">预设介绍</label>
+                <div class="st-is-profile-controls">
+                    <select id="ep_spatial_description_profile_select" class="st-is-select"></select>
+                    <button class="st-is-icon-btn" id="ep_save_spatial_description_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                    <button class="st-is-icon-btn" id="ep_save_as_spatial_description_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                    <button class="st-is-icon-btn" id="ep_import_spatial_description_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                    <button class="st-is-icon-btn" id="ep_export_spatial_description_profile_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                    <button class="st-is-icon-btn danger" id="ep_delete_spatial_description_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>
+            <div class="st-is-field-col">
+                <textarea id="ep_spatial_description_editor" class="st-is-textarea" rows="4" placeholder="此处是对当前类别下所有预设的介绍和说明..."></textarea>
+            </div>
+        </div>
+
+        <!-- 输出区域 -->
+        <div class="output-section">
+            <div class="output-buttons">
+                <button class="final-btn" id="finalPlayBtn" disabled>▶ 最终试听</button>
+                <button class="final-btn stop" id="epStopBtn">⏹ 停止</button>
+            </div>
+            <div class="export-group">
+                <select class="format-select" id="exportFormat">
+                    <option value="wav">WAV</option>
+                    <option value="mp3">MP3</option>
+                </select>
+                <button class="export-btn" id="exportBtn" disabled>💾 导出音频</button>
+            </div>
+        </div>
+    </div>
+</div>

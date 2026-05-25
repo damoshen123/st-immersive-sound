@@ -1,0 +1,2110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniMax 语音合成工具</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f0f1a; color: #e0e0e0; min-height: 100vh; padding: 20px;
+        }
+        h1 {
+            text-align: center; margin: 20px 0 30px; font-size: 28px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .container { max-width: 960px; margin: 0 auto; }
+        .tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 2px solid #2a2a3e; }
+        .tab {
+            padding: 12px 24px; cursor: pointer; border-radius: 8px 8px 0 0;
+            background: #1a1a2e; color: #888; font-size: 15px; transition: all 0.3s;
+        }
+        .tab.active { background: #2a2a3e; color: #fff; border-bottom: 2px solid #667eea; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+        .card {
+            background: #1a1a2e; border-radius: 12px; padding: 24px;
+            margin-bottom: 20px; border: 1px solid #2a2a3e;
+        }
+        .card h3 { margin-bottom: 16px; color: #667eea; font-size: 18px; }
+        label { display: block; margin: 12px 0 6px; font-size: 14px; color: #aaa; }
+        input[type="text"], input[type="password"], select, textarea {
+            width: 100%; padding: 10px 14px; border-radius: 8px;
+            border: 1px solid #3a3a5e; background: #12122a; color: #e0e0e0;
+            font-size: 14px; outline: none; transition: border 0.3s;
+        }
+        input:focus, select:focus, textarea:focus { border-color: #667eea; }
+        textarea { resize: vertical; min-height: 120px; font-family: inherit; }
+        .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .row-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+        .btn {
+            padding: 12px 28px; border-radius: 8px; border: none;
+            font-size: 15px; font-weight: 600; cursor: pointer;
+            transition: all 0.3s; margin-top: 16px; display: inline-block; text-decoration: none;
+        }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+        .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-secondary { background: #2a2a3e; color: #ccc; }
+        .btn-secondary:hover { background: #3a3a5e; }
+        .btn-sm { padding: 8px 16px; font-size: 13px; margin-top: 8px; }
+        .btn-success { background: linear-gradient(135deg, #34d399, #059669); color: #fff; }
+        .btn-success:hover { opacity: 0.85; transform: translateY(-1px); }
+        .btn-success:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
+        .btn-warning:hover { opacity: 0.85; transform: translateY(-1px); }
+        .btn-warning:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .tag {
+            padding: 6px 12px; background: #2a2a3e; border-radius: 20px;
+            font-size: 12px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent;
+        }
+        .tag:hover { border-color: #667eea; color: #667eea; }
+        .voice-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 10px; max-height: 400px; overflow-y: auto; padding-right: 8px;
+        }
+        .voice-grid::-webkit-scrollbar { width: 6px; }
+        .voice-grid::-webkit-scrollbar-thumb { background: #3a3a5e; border-radius: 3px; }
+        .voice-item {
+            padding: 12px; background: #12122a; border-radius: 8px; cursor: pointer;
+            border: 1px solid #2a2a3e; transition: all 0.2s; font-size: 13px;
+        }
+        .voice-item:hover, .voice-item.selected { border-color: #667eea; background: #1e1e38; }
+        .voice-item .vid { color: #667eea; font-weight: 600; font-size: 13px; }
+        .voice-item .vname { color: #ccc; margin-top: 4px; }
+        .voice-item .vdesc { color: #777; margin-top: 4px; font-size: 12px; }
+        .filter-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+        .filter-row input, .filter-row select { width: auto; min-width: 180px; }
+        .audio-box {
+            margin-top: 16px; padding: 16px; background: #12122a; border-radius: 8px; display: none;
+        }
+        .audio-box audio { width: 100%; margin-top: 8px; }
+        .log {
+            margin-top: 16px; padding: 14px; background: #0a0a18; border-radius: 8px;
+            font-family: 'Courier New', monospace; font-size: 13px; color: #7a7;
+            max-height: 250px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; display: none;
+        }
+        .slider-group { display: flex; align-items: center; gap: 10px; }
+        .slider-group input[type="range"] { flex: 1; background: transparent; border: none; padding: 0; }
+        .slider-val { min-width: 40px; text-align: center; color: #667eea; font-weight: 600; }
+        .cost-info {
+            margin-top: 12px; padding: 10px 14px; background: #12122a; border-radius: 8px;
+            font-size: 13px; color: #aaa; border-left: 3px solid #667eea;
+        }
+        .cost-info span { color: #667eea; font-weight: 600; }
+        .upload-area {
+            border: 2px dashed #3a3a5e; border-radius: 8px; padding: 30px;
+            text-align: center; cursor: pointer; transition: all 0.3s; color: #777;
+        }
+        .upload-area:hover { border-color: #667eea; color: #667eea; }
+        .upload-area.mini { padding: 16px; }
+        .status { margin-top: 8px; font-size: 13px; }
+        .status.ok { color: #5a5; }
+        .status.err { color: #a55; }
+        .status.loading { color: #aa5; }
+        .hint {
+            font-size: 12px; color: #666; margin-top: 4px; padding: 6px 10px;
+            background: #0a0a18; border-radius: 6px;
+        }
+        .collapsible-header {
+            display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px 0; user-select: none;
+        }
+        .collapsible-header .arrow { transition: transform 0.3s; font-size: 12px; color: #667eea; }
+        .collapsible-header.open .arrow { transform: rotate(90deg); }
+        .collapsible-body { display: none; padding: 0 0 8px 0; }
+        .collapsible-body.open { display: block; }
+        .section-divider { border: none; border-top: 1px solid #2a2a3e; margin: 16px 0; }
+        .activate-box {
+            margin-top: 16px; padding: 20px; background: #1a1a10; border-radius: 10px;
+            border: 1px solid #554400; display: none;
+        }
+        .activate-box h4 { color: #f59e0b; margin-bottom: 10px; font-size: 16px; }
+        .activate-box p { color: #aaa; font-size: 13px; margin-bottom: 12px; line-height: 1.6; }
+        .activate-box .activate-steps { color: #888; font-size: 12px; margin-top: 8px; }
+        .activate-box .activate-steps span { color: #f59e0b; }
+        /* ===== 文本编辑器高亮叠加 ===== */
+        .editor-wrap { position: relative; }
+        .editor-wrap textarea {
+            position: relative; background: transparent !important;
+            color: transparent; caret-color: #e0e0e0;
+            z-index: 2; line-height: 1.5; min-height: 140px;
+        }
+        .editor-wrap textarea::placeholder { color: #555; }
+        .editor-highlight {
+            position: absolute; inset: 0;
+            padding: 10px 14px;
+            border: 1px solid transparent; border-radius: 8px;
+            font-family: inherit; font-size: 14px; line-height: 1.5;
+            white-space: pre-wrap; word-wrap: break-word; overflow: auto;
+            pointer-events: none; color: #e0e0e0; z-index: 1;
+            background: #12122a;
+        }
+        .hl-tone { color: #a78bfa; background: rgba(167,139,250,0.18); border-radius: 3px; padding: 0 2px; }
+        .hl-pause { color: #f59e0b; background: rgba(245,158,11,0.18); border-radius: 3px; padding: 0 2px; }
+        /* ===== 发音字典 ===== */
+        .pron-table { display: grid; gap: 6px; margin-top: 8px; }
+        .pron-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: center; }
+        .pron-row input { padding: 8px 10px; }
+        .pron-del {
+            background: #3a1a1a; color: #f88; border: 1px solid #5a2a2a;
+            border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 12px;
+        }
+        .pron-del:hover { background: #5a2a2a; }
+        /* ===== 音色管理卡片 ===== */
+        .vm-card {
+            padding: 14px; background: #12122a; border-radius: 10px;
+            border: 1px solid #2a2a3e; margin-bottom: 10px;
+        }
+        .vm-card .vm-vid { color: #667eea; font-weight: 600; font-size: 14px; }
+        .vm-card .vm-meta { color: #888; font-size: 12px; margin-top: 6px; }
+        .vm-card .vm-actions { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+        .vm-card .vm-actions button {
+            padding: 6px 12px; font-size: 12px; border-radius: 6px;
+            border: 1px solid #3a3a5e; background: #1a1a2e; color: #ccc; cursor: pointer;
+        }
+        .vm-card .vm-actions button:hover { border-color: #667eea; color: #fff; }
+        .vm-card .vm-actions .danger { color: #f88; }
+        .vm-card .vm-actions .danger:hover { border-color: #f88; }
+        .vm-card audio { width: 100%; margin-top: 8px; }
+        .badge {
+            display: inline-block; padding: 2px 8px; border-radius: 10px;
+            font-size: 11px; margin-left: 4px; vertical-align: middle;
+        }
+        .badge.green { background: #064e3b; color: #34d399; }
+        .badge.red { background: #4c0519; color: #fda4af; }
+        .badge.amber { background: #422006; color: #fbbf24; }
+        .badge.gray { background: #292929; color: #aaa; }
+        .badge.blue { background: #0a2a4a; color: #60a5fa; }
+        /* ===== 模态框 ===== */
+        .modal-mask {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+            display: none; align-items: center; justify-content: center; z-index: 100;
+        }
+        .modal-mask.open { display: flex; }
+        .modal {
+            background: #1a1a2e; border-radius: 12px; padding: 24px;
+            width: 90%; max-width: 480px; border: 1px solid #3a3a5e;
+        }
+        .modal h3 { margin-bottom: 12px; color: #667eea; }
+        .modal-actions { margin-top: 16px; display: flex; gap: 8px; justify-content: flex-end; }
+        /* ===== 音乐生成 ===== */
+        .mode-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; margin: 8px 0; }
+        .mode-row label { display: inline-flex; align-items: center; gap: 6px; margin: 0; cursor: pointer; }
+        /* ===== 音乐翻唱 ===== */
+        .cover-section {
+            margin-top: 12px; padding: 14px; background: #12122a;
+            border-radius: 10px; border: 1px solid #2a2a3e;
+        }
+        .cover-section h4 { color: #a78bfa; font-size: 14px; margin-bottom: 10px; }
+        .cover-result-card {
+            margin-top: 12px; padding: 14px; background: #0a0a18;
+            border-radius: 8px; border: 1px solid #a78bfa; font-size: 13px;
+        }
+        .cover-result-card .row-meta { color: #aaa; margin: 6px 0; }
+        .cover-result-card .row-meta .k { color: #a78bfa; margin-right: 4px; }
+        .cover-result-card code { color: #34d399; background: transparent; }
+        .segment-tag {
+            display: inline-block; padding: 3px 8px; margin: 3px 4px 3px 0;
+            border-radius: 10px; font-size: 11px;
+            background: #2a2a3e; color: #ccc; border: 1px solid #3a3a5e;
+        }
+        .segment-tag.intro, .segment-tag.outro {
+            background: #422006; color: #fbbf24; border-color: #5a3300;
+        }
+        .segment-tag.verse {
+            background: #0a2a4a; color: #60a5fa; border-color: #1a3a5e;
+        }
+        .segment-tag.chorus, .segment-tag.hook {
+            background: #4c0519; color: #fda4af; border-color: #6a1029;
+        }
+        .segment-tag.bridge, .segment-tag.pre_chorus, .segment-tag.prechorus {
+            background: #064e3b; color: #34d399; border-color: #0a6e5b;
+        }
+        .upload-area.cover { border-color: rgba(167,139,250,0.35); }
+        .upload-area.cover:hover { border-color: #a78bfa; color: #a78bfa; }
+        .tabs { flex-wrap: wrap; }
+        @media (max-width: 640px) {
+            .row, .row-2, .row-3, .row-4 { grid-template-columns: 1fr; }
+            .filter-row { flex-direction: column; }
+            .filter-row input, .filter-row select { width: 100%; }
+            .pron-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>MiniMax 语音合成工具</h1>
+    <script src="minimax_voices.js"></script>
+
+    <!-- 设置 -->
+    <div class="card">
+        <h3>⚙️ 连接设置</h3>
+        <div class="row-3">
+            <div>
+                <label>API Key</label>
+                <input type="password" id="apiKey" placeholder="你的 MiniMax API Key">
+            </div>
+            <div>
+                <label>Worker 代理地址</label>
+                <input type="text" id="workerUrl" placeholder="https://your-worker.workers.dev" value="">
+                <div class="hint">Cloudflare Worker 地址，留空则直连</div>
+            </div>
+            <div>
+                <label>平台</label>
+                <select id="platform">
+                    <option value="io">国际站 (api.minimax.io)</option>
+                    <option value="cn">中文站 (api.minimaxi.com)</option>
+                </select>
+            </div>
+        </div>
+        <div class="hint" style="margin-top:12px;">
+            请求地址预览：<strong id="urlPreview" style="color:#667eea;">—</strong>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <div class="tab active" data-tab="tab-voices">🎙️ 音色列表</div>
+        <div class="tab" data-tab="tab-tts">🔊 语音合成</div>
+        <div class="tab" data-tab="tab-clone">🧬 音色复刻</div>
+        <div class="tab" data-tab="tab-myvoices">📋 我的音色</div>
+        <div class="tab" data-tab="tab-music">🎵 音乐生成</div>
+    </div>
+
+    <!-- Tab 1: 音色列表 -->
+    <div class="tab-panel active" id="tab-voices">
+        <div class="card">
+            <h3>获取可用音色</h3>
+            <button class="btn btn-primary" id="btnGetVoices">获取音色列表（含试听）</button>
+            <button class="btn btn-secondary" id="btnToggleLog1">查看日志</button>
+            <div class="log" id="log-voices"></div>
+            <div class="status" id="voiceStatus"></div>
+            <div style="margin-top:16px;">
+                <div class="filter-row">
+                    <input type="text" id="voiceSearch" placeholder="搜索音色名称或ID...">
+                    <select id="voiceLangFilter"><option value="">全部语言</option></select>
+                    <select id="voiceTypeFilter">
+                        <option value="">全部类型</option>
+                        <option value="system">系统音色</option>
+                        <option value="clone">复刻音色</option>
+                        <option value="design">设计音色</option>
+                    </select>
+                </div>
+                <div class="voice-grid" id="voiceGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 2: 语音合成 -->
+    <div class="tab-panel" id="tab-tts">
+        <div class="card">
+            <h3>语音合成 (T2A)</h3>
+
+            <label>文本内容</label>
+            <div class="editor-wrap">
+                <div class="editor-highlight" id="ttsHighlight"></div>
+                <textarea id="ttsText" spellcheck="false" placeholder="输入要合成的文本...&#10;&#10;语气标签示例（仅 2.8 模型）:&#10;哎呀(laughs)，今天天气真好！&lt;#1.0#&gt;不过(sighs)我有点累了。"></textarea>
+            </div>
+
+            <div class="cost-info">
+                中文 <span id="hanCount">0</span> 字 |
+                英文 <span id="enWordCount">0</span> 词 / <span id="enCharCount">0</span> 字符 |
+                标签 <span id="tagCount">0</span> 个(不计费) |
+                计费总额: <span id="charCount">0</span> 字符 |
+                国际站 HD: <span id="costIO">$0.0000</span> |
+                Turbo: <span id="costIOTurbo">$0.0000</span> |
+                中文站 HD: <span id="costCN">¥0.0000</span>
+            </div>
+
+            <div class="row-2" style="margin-top:12px;">
+                <div>
+                    <label>音色 voice_id</label>
+                    <input type="text" id="ttsVoiceId" value="Chinese (Mandarin)_Warm_Bestie" placeholder="从音色列表选择或手动输入">
+                </div>
+                <div>
+                    <label>模型</label>
+                    <select id="ttsModel">
+                        <option value="speech-2.8-hd">speech-2.8-hd（最新HD，支持语气标签）</option>
+                        <option value="speech-2.8-turbo">speech-2.8-turbo（最新Turbo，支持语气标签）</option>
+                        <option value="speech-2.6-hd">speech-2.6-hd</option>
+                        <option value="speech-2.6-turbo">speech-2.6-turbo（40语种）</option>
+                        <option value="speech-02-hd">speech-02-hd</option>
+                        <option value="speech-02-turbo">speech-02-turbo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top:8px;">
+                <div>
+                    <label>语速 (0.5~2.0)</label>
+                    <div class="slider-group">
+                        <input type="range" id="ttsSpeed" min="0.5" max="2.0" step="0.1" value="1.0">
+                        <span class="slider-val" id="ttsSpeedVal">1.0</span>
+                    </div>
+                </div>
+                <div>
+                    <label>音量 (0.1~10.0)</label>
+                    <div class="slider-group">
+                        <input type="range" id="ttsVol" min="0.1" max="10.0" step="0.1" value="1.0">
+                        <span class="slider-val" id="ttsVolVal">1.0</span>
+                    </div>
+                </div>
+                <div>
+                    <label>音调 (-12~12)</label>
+                    <div class="slider-group">
+                        <input type="range" id="ttsPitch" min="-12" max="12" step="1" value="0">
+                        <span class="slider-val" id="ttsPitchVal">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row-2" style="margin-top:8px;">
+                <div>
+                    <label>语言增强</label>
+                    <select id="ttsLang">
+                        <option value="Chinese">中文（普通话）</option>
+                        <option value="Chinese,Yue">中文（粤语）</option>
+                        <option value="English">英语</option>
+                        <option value="Japanese">日语</option>
+                        <option value="Korean">韩语</option>
+                        <option value="Spanish">西班牙语</option>
+                        <option value="French">法语</option>
+                        <option value="Russian">俄语</option>
+                        <option value="German">德语</option>
+                        <option value="Portuguese">葡萄牙语</option>
+                        <option value="Italian">意大利语</option>
+                        <option value="Turkish">土耳其语</option>
+                        <option value="Dutch">荷兰语</option>
+                        <option value="Ukrainian">乌克兰语</option>
+                        <option value="Vietnamese">越南语</option>
+                        <option value="Indonesian">印尼语</option>
+                        <option value="Thai">泰语</option>
+                        <option value="Arabic">阿拉伯语</option>
+                        <option value="Polish">波兰语</option>
+                        <option value="Romanian">罗马尼亚语</option>
+                        <option value="Greek">希腊语</option>
+                        <option value="Czech">捷克语</option>
+                        <option value="Finnish">芬兰语</option>
+                        <option value="Hindi">印地语</option>
+                        <option value="Bulgarian">保加利亚语</option>
+                        <option value="Danish">丹麦语</option>
+                        <option value="Hebrew">希伯来语</option>
+                        <option value="Malay">马来语</option>
+                        <option value="Persian">波斯语</option>
+                        <option value="Slovak">斯洛伐克语</option>
+                        <option value="Swedish">瑞典语</option>
+                        <option value="Croatian">克罗地亚语</option>
+                        <option value="Filipino">菲律宾语</option>
+                        <option value="Hungarian">匈牙利语</option>
+                        <option value="Norwegian">挪威语</option>
+                        <option value="Slovenian">斯洛文尼亚语</option>
+                        <option value="Catalan">加泰罗尼亚语</option>
+                        <option value="Nynorsk">新挪威语</option>
+                        <option value="Tamil">泰米尔语</option>
+                        <option value="Afrikaans">南非荷兰语</option>
+                        <option value="auto">自动检测</option>
+                    </select>
+                </div>
+                <div>
+                    <label>情绪</label>
+                    <select id="ttsEmotion">
+                        <option value="">不设置</option>
+                        <option value="happy">😊 开心</option>
+                        <option value="sad">😢 难过</option>
+                        <option value="angry">😡 生气</option>
+                        <option value="fearful">😨 害怕</option>
+                        <option value="disgusted">🤢 厌恶</option>
+                        <option value="surprised">😲 惊讶</option>
+                        <option value="neutral">😐 中性</option>
+                    </select>
+                </div>
+                <div>
+                    <label>输出格式</label>
+                    <select id="ttsFormat">
+                        <option value="mp3">MP3</option>
+                        <option value="wav">WAV</option>
+                        <option value="flac">FLAC</option>
+                    </select>
+                </div>
+                <div>
+                    <label>采样率</label>
+                    <select id="ttsSampleRate">
+                        <option value="32000">32000 Hz</option>
+                        <option value="44100">44100 Hz</option>
+                        <option value="24000">24000 Hz</option>
+                        <option value="22050">22050 Hz</option>
+                        <option value="16000">16000 Hz</option>
+                        <option value="8000">8000 Hz</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row-2" style="margin-top:8px;">
+                <div>
+                    <label>比特率 bitrate <span style="color:#666;font-size:11px;">(WAV/FLAC 无损格式忽略)</span></label>
+                    <select id="ttsBitrate">
+                        <option value="128000">128 kbps</option>
+                        <option value="32000">32 kbps</option>
+                        <option value="64000">64 kbps</option>
+                        <option value="256000">256 kbps</option>
+                    </select>
+                </div>
+                <div>
+                    <label>声道 channel</label>
+                    <select id="ttsChannel">
+                        <option value="1">1 — 单声道 (mono)</option>
+                        <option value="2">2 — 立体声 (stereo)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 语音修改 voice_modify -->
+            <hr class="section-divider">
+            <div class="collapsible-header open" id="voiceModifyToggle">
+                <span class="arrow" style="transform:rotate(90deg);">▶</span>
+                <label style="margin:0;cursor:pointer;color:#a78bfa;">语音修改 (voice_modify) — 音效 / 音色微调</label>
+            </div>
+            <div class="collapsible-body open" id="voiceModifyBody">
+                <div class="hint" style="margin-bottom:12px;">
+                    对合成语音进行后处理：调整明暗、力度、磁性，或添加音效。仅支持非流式 mp3/wav/flac 和流式 mp3。
+                </div>
+                <div class="row" style="margin-top:8px;">
+                    <div>
+                        <label>明暗 Pitch (-100~100)</label>
+                        <div class="slider-group">
+                            <input type="range" id="vmPitch" min="-100" max="100" step="1" value="0">
+                            <span class="slider-val" id="vmPitchVal">0</span>
+                        </div>
+                        <div class="hint">← 低沉深邃 | 明亮清脆 →</div>
+                    </div>
+                    <div>
+                        <label>力度 Intensity (-100~100)</label>
+                        <div class="slider-group">
+                            <input type="range" id="vmIntensity" min="-100" max="100" step="1" value="0">
+                            <span class="slider-val" id="vmIntensityVal">0</span>
+                        </div>
+                        <div class="hint">← 有力浑厚 | 轻柔温和 →</div>
+                    </div>
+                    <div>
+                        <label>音色 Timbre (-100~100)</label>
+                        <div class="slider-group">
+                            <input type="range" id="vmTimbre" min="-100" max="100" step="1" value="0">
+                            <span class="slider-val" id="vmTimbreVal">0</span>
+                        </div>
+                        <div class="hint">← 磁性浑厚 | 清脆干净 →</div>
+                    </div>
+                </div>
+                <div class="row-2" style="margin-top:12px;">
+                    <div>
+                        <label>音效 sound_effects</label>
+                        <select id="vmSoundEffect">
+                            <option value="">不设置</option>
+                            <option value="spacious_echo">spacious_echo — 宽敞空间回声</option>
+                            <option value="auditorium_echo">auditorium_echo — 礼堂广播回声</option>
+                            <option value="lofi_telephone">lofi_telephone — 电话失真效果</option>
+                            <option value="robotic">robotic — 机器人效果</option>
+                        </select>
+                        <div class="hint">一次只能选一个音效，可与上方微调参数同时使用</div>
+                    </div>
+                    <div style="display:flex;align-items:flex-end;">
+                        <button class="btn btn-secondary btn-sm" id="btnResetVoiceModify" style="margin-bottom:4px;">重置全部</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 发音字典 pronunciation_dict -->
+            <hr class="section-divider">
+            <div class="collapsible-header" id="pronToggle">
+                <span class="arrow">▶</span>
+                <label style="margin:0;cursor:pointer;color:#a78bfa;">发音字典 (pronunciation_dict) — 自定义专有名词读音</label>
+            </div>
+            <div class="collapsible-body" id="pronBody">
+                <div class="hint" style="margin-bottom:8px;">
+                    💡 拼音用空格分隔字符，多音字带声调（ā á ǎ à）；字母可拆分读，如 <code>AI/A I</code>、<code>GPT/G P T</code>、<code>重庆/chóng qìng</code>。
+                </div>
+                <div class="pron-table" id="pronTable"></div>
+                <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="btn btn-secondary btn-sm" id="btnAddPron" style="margin:0;">+ 添加一行</button>
+                    <button class="btn btn-secondary btn-sm" id="btnPronTpl" style="margin:0;">📋 常用模板</button>
+                    <button class="btn btn-secondary btn-sm" id="btnClearPron" style="margin:0;">🗑 清空</button>
+                </div>
+            </div>
+
+            <!-- 语气标签 -->
+            <hr class="section-divider">
+            <label>快速插入语气标签（仅 speech-2.8 模型生效，点击插入到光标位置）</label>
+            <div class="tags">
+                <span class="tag" data-tag="(laughs)">😂 笑声</span>
+                <span class="tag" data-tag="(chuckle)">🤭 轻笑</span>
+                <span class="tag" data-tag="(sighs)">😮‍💨 叹气</span>
+                <span class="tag" data-tag="(gasps)">😱 倒吸气</span>
+                <span class="tag" data-tag="(coughs)">🤧 咳嗽</span>
+                <span class="tag" data-tag="(clear-throat)">😤 清嗓</span>
+                <span class="tag" data-tag="(breath)">🌬️ 呼吸</span>
+                <span class="tag" data-tag="(humming)">🎵 哼唱</span>
+                <span class="tag" data-tag="(sneezes)">🤧 喷嚏</span>
+                <span class="tag" data-tag="(emm)">🤔 嗯…</span>
+                <span class="tag" data-tag="(groans)">😩 呻吟</span>
+                <span class="tag" data-tag="(pant)">😮 喘气</span>
+                <span class="tag" data-tag="(inhale)">😤 吸气</span>
+                <span class="tag" data-tag="(exhale)">😌 呼气</span>
+                <span class="tag" data-tag="(sniffs)">👃 抽鼻</span>
+                <span class="tag" data-tag="(snorts)">😤 哼鼻</span>
+                <span class="tag" data-tag="(lip-smacking)">👄 咂嘴</span>
+                <span class="tag" data-tag="(hissing)">🐍 嘶声</span>
+                <span class="tag" data-tag="(whistles)">🎶 口哨</span>
+                <span class="tag" data-tag="(crying)">😭 哭泣</span>
+                <span class="tag" data-tag="(applause)">👏 掌声</span>
+                <span class="tag" data-tag="(burps)">😳 打嗝</span>
+            </div>
+
+            <label>停顿控制</label>
+            <div class="tags">
+                <span class="tag" data-tag="<#0.5#>">⏸ 0.5秒</span>
+                <span class="tag" data-tag="<#1.0#>">⏸ 1秒</span>
+                <span class="tag" data-tag="<#2.0#>">⏸ 2秒</span>
+                <span class="tag" data-tag="<#3.0#>">⏸ 3秒</span>
+                <span class="tag" data-tag="<#5.0#>">⏸ 5秒</span>
+            </div>
+
+            <div style="margin-top:16px;">
+                <button class="btn btn-primary" id="btnSynthesize">合成语音</button>
+                <button class="btn btn-secondary" id="btnToggleLog2">查看日志</button>
+            </div>
+            <div class="log" id="log-tts"></div>
+            <div class="audio-box" id="audioBox">
+                <div id="audioInfo"></div>
+                <audio id="audioPlayer" controls></audio>
+                <div style="margin-top:8px;">
+                    <a id="audioDownload" class="btn btn-secondary btn-sm" download="minimax_tts.mp3">⬇ 下载音频</a>
+                </div>
+            </div>
+            <div class="status" id="ttsStatus"></div>
+        </div>
+    </div>
+
+    <!-- Tab 3: 音色复刻 -->
+    <div class="tab-panel" id="tab-clone">
+        <div class="card">
+            <h3>音色复刻</h3>
+            <p style="color:#888;font-size:13px;margin-bottom:16px;">
+                上传 10~300 秒音频（mp3/m4a/wav ≤20MB），复刻费 $1.5/音色（首次合成时收取）。7天内使用一次即永久保留。
+            </p>
+
+            <label>第1步：上传复刻音频（必需，10~300秒）</label>
+            <div class="upload-area" id="uploadArea">
+                <div>📁 点击或拖拽上传音频文件</div>
+                <div style="font-size:12px;margin-top:4px;">mp3 / m4a / wav，10~300秒，≤20MB</div>
+                <input type="file" id="cloneFile" accept=".mp3,.m4a,.wav" style="display:none;">
+            </div>
+            <div class="status" id="uploadStatus"></div>
+
+            <hr class="section-divider">
+            <div class="collapsible-header" id="promptToggle">
+                <span class="arrow">▶</span>
+                <label style="margin:0;cursor:pointer;color:#a78bfa;">第2步（可选）：上传示例音频（增强复刻质量）</label>
+            </div>
+            <div class="collapsible-body" id="promptBody">
+                <div class="hint" style="margin-bottom:12px;">
+                    上传一小段示例音频（<strong style="color:#a78bfa;">≤8秒</strong>）及其对应文字，可提高复刻的相似度和稳定性。
+                    上传时 purpose 为 <code>prompt_audio</code>，通过 <code>clone_prompt</code> 参数传入。
+                </div>
+                <div class="upload-area mini" id="promptUploadArea">
+                    <div>📁 点击或拖拽上传示例音频</div>
+                    <div style="font-size:12px;margin-top:4px;">mp3 / m4a / wav，≤8秒</div>
+                    <input type="file" id="promptFile" accept=".mp3,.m4a,.wav" style="display:none;">
+                </div>
+                <div class="status" id="promptUploadStatus"></div>
+                <label>示例音频对应文字（必须与音频内容完全一致，以标点结尾）</label>
+                <input type="text" id="promptText" placeholder="例如：你好，欢迎使用语音合成功能。">
+            </div>
+
+            <hr class="section-divider">
+            <div class="row-2" style="margin-top:8px;">
+                <div>
+                    <label>第3步：设置音色 ID</label>
+                    <input type="text" id="cloneVoiceId" placeholder="自定义唯一ID，如 my_voice_001">
+                </div>
+                <div>
+                    <label>模型</label>
+                    <select id="cloneModel">
+                        <option value="speech-2.8-hd">speech-2.8-hd</option>
+                        <option value="speech-2.8-turbo">speech-2.8-turbo</option>
+                        <option value="speech-2.6-hd">speech-2.6-hd</option>
+                        <option value="speech-2.6-turbo">speech-2.6-turbo</option>
+                        <option value="speech-02-hd">speech-02-hd</option>
+                        <option value="speech-02-turbo">speech-02-turbo</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row-2" style="margin-top:8px;">
+                <div>
+                    <label>降噪处理</label>
+                    <select id="cloneNoiseReduce">
+                        <option value="false">关闭</option>
+                        <option value="true">开启</option>
+                    </select>
+                </div>
+                <div>
+                    <label>音量归一化</label>
+                    <select id="cloneVolNorm">
+                        <option value="false">关闭</option>
+                        <option value="true">开启</option>
+                    </select>
+                </div>
+            </div>
+            <label>预览文本（可选）</label>
+            <input type="text" id="clonePreviewText" value="你好，这是复刻声音的预览测试。">
+            <div style="margin-top:16px;">
+                <button class="btn btn-primary" id="btnClone">开始复刻</button>
+                <button class="btn btn-secondary" id="btnToggleLog3">查看日志</button>
+            </div>
+            <div class="log" id="log-clone"></div>
+            <div class="audio-box" id="cloneAudioBox">
+                <div>✅ 复刻完成！预览音频：</div>
+                <audio id="cloneAudioPlayer" controls></audio>
+            </div>
+            <div class="status" id="cloneStatus"></div>
+
+            <!-- 第4步：激活音色 -->
+            <div class="activate-box" id="activateBox">
+                <h4>⚡ 第4步：激活复刻音色（必须！）</h4>
+                <p>
+                    复刻接口返回的音色是<strong style="color:#f59e0b;">临时音色</strong>，必须在 <strong style="color:#f59e0b;">7天（168小时）内</strong>
+                    调用一次语音合成 (T2A) 接口才能永久激活。<br>
+                    点击下方按钮，系统将自动使用复刻的 voice_id 调用一次合成接口完成激活。
+                </p>
+                <div class="row-2">
+                    <div>
+                        <label style="margin-top:0;">激活用 voice_id</label>
+                        <input type="text" id="activateVoiceId" readonly style="color:#f59e0b;">
+                    </div>
+                    <div>
+                        <label style="margin-top:0;">激活文本</label>
+                        <input type="text" id="activateText" value="你好，这是音色激活测试，激活后音色将永久保留。">
+                    </div>
+                </div>
+                <button class="btn btn-warning" id="btnActivate">⚡ 立即激活（调用一次 T2A 合成）</button>
+                <div class="status" id="activateStatus"></div>
+                <div class="audio-box" id="activateAudioBox">
+                    <div>✅ 激活成功！音色已永久保留。试听：</div>
+                    <audio id="activateAudioPlayer" controls></audio>
+                </div>
+                <div class="activate-steps">
+                    <span>工作原理：</span> 调用 <code>/t2a_v2</code> 接口，使用复刻的 voice_id 合成一段短文本。
+                    首次合成时会收取 $1.5 复刻费用 + 正常合成费用。此后该音色永久可用。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 4: 我的音色 -->
+    <div class="tab-panel" id="tab-myvoices">
+        <div class="card">
+            <h3>📋 我的音色（复刻音色管理）</h3>
+            <p style="color:#888;font-size:13px;margin-bottom:16px;">
+                统一管理本地登记的复刻音色。<strong style="color:#a78bfa;">三类来源</strong>：复刻成功后自动登记 / 从云端 <code>get_voice</code> 同步 / 从已知 voice_id 手动导入。
+                未激活音色 7 天后过期，激活/试听一次即永久保留。
+            </p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+                <button class="btn btn-primary btn-sm" id="btnImportVoice" style="margin:0;">📥 从 ID 导入</button>
+                <button class="btn btn-secondary btn-sm" id="btnSyncVoices" style="margin:0;">🔄 从云端同步</button>
+                <button class="btn btn-secondary btn-sm" id="btnCleanExpired" style="margin:0;">🗑 清理过期</button>
+                <button class="btn btn-secondary btn-sm" id="btnToggleLog5" style="margin:0;">查看日志</button>
+            </div>
+            <div class="log" id="log-myvoices"></div>
+            <div id="myVoicesList"></div>
+        </div>
+    </div>
+
+    <!-- Tab 5: 音乐生成 -->
+    <div class="tab-panel" id="tab-music">
+        <div class="card">
+            <h3>🎵 音乐生成 (Music Generation)</h3>
+            <p style="color:#888;font-size:13px;margin-bottom:12px;">
+                通过风格描述 prompt 与歌词 lyrics 生成音乐。<strong style="color:#a78bfa;">music-2.6-free</strong> 免费但 RPM 较低；<strong style="color:#f59e0b;">music-2.6</strong> 付费、更稳定。
+            </p>
+
+            <label>生成模式</label>
+            <div class="mode-row">
+                <label><input type="radio" name="musicMode" value="song" checked> 🎤 歌曲（带人声+歌词）</label>
+                <label><input type="radio" name="musicMode" value="instrumental"> 🎻 纯音乐</label>
+                <label><input type="radio" name="musicMode" value="auto-lyrics"> ✨ AI 写词</label>
+                <label><input type="radio" name="musicMode" value="cover"> 🎙️ 翻唱 (Cover)</label>
+            </div>
+
+            <div class="row-2">
+                <div>
+                    <label>模型</label>
+                    <select id="musicModel">
+                        <option value="music-2.6-free">music-2.6-free（文生音乐·免费）</option>
+                        <option value="music-2.6">music-2.6（文生音乐·付费）</option>
+                        <option value="music-cover-free">music-cover-free（翻唱·免费）</option>
+                        <option value="music-cover">music-cover（翻唱·付费）</option>
+                    </select>
+                </div>
+                <div style="display:flex;align-items:flex-end;">
+                    <button class="btn btn-secondary btn-sm" id="btnMusicPresets" style="margin:0;">💡 风格示例</button>
+                </div>
+            </div>
+
+            <div id="musicCoverBlock" style="display:none;">
+                <hr class="section-divider">
+                <div class="cover-section">
+                    <h4>🎙️ 翻唱模式</h4>
+                    <div class="mode-row">
+                        <label><input type="radio" name="coverMode" value="one-step"> 一步翻唱（仅换风格，自动沿用原歌词）</label>
+                        <label><input type="radio" name="coverMode" value="two-step" checked> 两步翻唱（可改写歌词）</label>
+                    </div>
+                </div>
+                <div class="cover-section">
+                    <h4>📎 参考音频（6秒~6分钟，≤50MB，mp3/wav/flac）</h4>
+                    <div class="mode-row">
+                        <label><input type="radio" name="coverInputType" value="url" checked> 公网 URL</label>
+                        <label><input type="radio" name="coverInputType" value="file"> 上传文件</label>
+                        <label><input type="radio" name="coverInputType" value="feature_id"> 已有 cover_feature_id</label>
+                    </div>
+                    <div id="coverInputUrl">
+                        <input type="text" id="coverAudioUrl" placeholder="https://... .mp3 / .wav / .flac">
+                    </div>
+                    <div id="coverInputFile" style="display:none;">
+                        <div class="upload-area cover mini" id="coverUploadArea">
+                            <input type="file" id="coverFileInput" accept="audio/mpeg,audio/mp3,audio/wav,audio/flac,.mp3,.wav,.flac" style="display:none;">
+                            <div id="coverFileLabel">📁 点击选择音频文件 (mp3/wav/flac，≤50MB)</div>
+                        </div>
+                        <div class="hint" style="margin-top:6px;">大于 20MB 的文件建议使用 URL 模式，避免 Base64 编码造成浏览器卡顿</div>
+                        <div class="status" id="coverFileStatus"></div>
+                    </div>
+                    <div id="coverInputFeatureId" style="display:none;">
+                        <input type="text" id="coverFeatureIdInput" placeholder="预处理返回的 cover_feature_id（24h 有效）">
+                        <div class="hint" style="margin-top:6px;">仅限「两步翻唱」使用；一步翻唱请改选 URL 或上传文件</div>
+                    </div>
+                    <div style="margin-top:10px;" id="coverPreprocessBtnWrap">
+                        <button class="btn btn-secondary btn-sm" id="btnCoverPreprocess" style="margin:0;">🔍 调用预处理</button>
+                        <span class="status" id="coverPreprocessStatus" style="margin-left:10px;display:inline-block;"></span>
+                    </div>
+                    <div class="cover-result-card" id="coverPreprocessResult" style="display:none;">
+                        <div class="row-meta"><span class="k">cover_feature_id：</span><code id="cprFeatureId"></code> <span style="color:#666;">(24h 有效)</span></div>
+                        <div class="row-meta"><span class="k">音频时长：</span><span id="cprDuration">-</span> 秒</div>
+                        <div class="row-meta"><span class="k">段落结构：</span><span id="cprSegments"></span></div>
+                        <button class="btn btn-secondary btn-sm" id="btnFillLyricsTpl" style="margin-top:8px;">📋 将模板填入下方歌词框</button>
+                    </div>
+                </div>
+            </div>
+
+            <label id="musicPromptLabel">风格描述 prompt（必填，1~2000 字符）</label>
+            <textarea id="musicPrompt" placeholder="例如：Indie folk, melancholic, rainy night, soft female vocals, acoustic guitar" style="min-height:80px;"></textarea>
+            <div class="hint"><span id="musicPromptCount">0</span> / <span id="musicPromptMax">2000</span> 字符</div>
+
+            <div id="musicLyricsBlock">
+                <label id="musicLyricsLabel">歌词 lyrics（用 [Verse]/[Chorus] 等标签分段，1~3500 字符）</label>
+                <textarea id="musicLyrics" placeholder="[Verse]&#10;Streetlights flicker, the night breeze sighs&#10;&#10;[Chorus]&#10;..." style="min-height:160px;"></textarea>
+                <div class="hint"><span id="musicLyricsCount">0</span> / <span id="musicLyricsMax">3500</span> 字符</div>
+                <label>快速插入结构标签</label>
+                <div class="tags">
+                    <span class="tag music-tag" data-tag="[Verse]\n">[Verse] 主歌</span>
+                    <span class="tag music-tag" data-tag="[Chorus]\n">[Chorus] 副歌</span>
+                    <span class="tag music-tag" data-tag="[Pre Chorus]\n">[Pre Chorus] 导歌</span>
+                    <span class="tag music-tag" data-tag="[Bridge]\n">[Bridge] 桥段</span>
+                    <span class="tag music-tag" data-tag="[Intro]\n">[Intro] 前奏</span>
+                    <span class="tag music-tag" data-tag="[Outro]\n">[Outro] 尾奏</span>
+                    <span class="tag music-tag" data-tag="[Hook]\n">[Hook] 钩子</span>
+                    <span class="tag music-tag" data-tag="[Inst]\n">[Inst] 器乐段</span>
+                </div>
+            </div>
+
+            <hr class="section-divider">
+            <label>音频参数</label>
+            <div class="row-3">
+                <div>
+                    <label>格式</label>
+                    <select id="musicFormat">
+                        <option value="mp3">MP3</option>
+                        <option value="wav">WAV</option>
+                        <option value="flac">FLAC</option>
+                    </select>
+                </div>
+                <div>
+                    <label>采样率</label>
+                    <select id="musicSampleRate">
+                        <option value="44100">44100 Hz</option>
+                        <option value="32000">32000 Hz</option>
+                        <option value="24000">24000 Hz</option>
+                    </select>
+                </div>
+                <div>
+                    <label>比特率</label>
+                    <select id="musicBitrate">
+                        <option value="256000">256 kbps</option>
+                        <option value="128000">128 kbps</option>
+                        <option value="64000">64 kbps</option>
+                        <option value="32000">32 kbps</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-top:16px;">
+                <button class="btn btn-primary" id="btnGenMusic">🎵 生成音乐</button>
+                <button class="btn btn-secondary" id="btnToggleLog4">查看日志</button>
+            </div>
+            <div class="log" id="log-music"></div>
+            <div class="audio-box" id="musicAudioBox">
+                <div id="musicInfo"></div>
+                <audio id="musicAudio" controls></audio>
+                <div style="margin-top:8px;">
+                    <a id="musicDownload" class="btn btn-secondary btn-sm" download>⬇ 下载音乐</a>
+                </div>
+            </div>
+            <div class="status" id="musicStatus"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 导入音色 模态框 -->
+<div class="modal-mask" id="importVoiceMask">
+    <div class="modal">
+        <h3>📥 导入音色</h3>
+        <label>voice_id *</label>
+        <input type="text" id="importVid" placeholder="my_voice_001">
+        <label>备注（昵称）</label>
+        <input type="text" id="importNick" placeholder="例如：我的旁白">
+        <label>模型</label>
+        <select id="importModel">
+            <option value="speech-2.8-hd">speech-2.8-hd</option>
+            <option value="speech-2.8-turbo">speech-2.8-turbo</option>
+            <option value="speech-2.6-hd">speech-2.6-hd</option>
+            <option value="speech-2.6-turbo">speech-2.6-turbo</option>
+            <option value="speech-02-hd">speech-02-hd</option>
+            <option value="speech-02-turbo">speech-02-turbo</option>
+        </select>
+        <label>详细备注</label>
+        <input type="text" id="importNote" placeholder="(可选) 用途、来源等">
+        <div class="modal-actions">
+            <button class="btn btn-secondary btn-sm" id="btnImportCancel" style="margin:0;">取消</button>
+            <button class="btn btn-primary btn-sm" id="btnImportOk" style="margin:0;">导入</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const getApiKey = () => $('apiKey').value.trim();
+const DIRECT_MAP = { io: 'https://api.minimax.io/v1', cn: 'https://api.minimaxi.com/v1' };
+
+function getBaseUrl() {
+    const w = $('workerUrl').value.trim().replace(/\/+$/, ''), p = $('platform').value;
+    return w ? `${w}/${p}/v1` : DIRECT_MAP[p];
+}
+function updateUrlPreview() { $('urlPreview').textContent = getBaseUrl() + '/t2a_v2'; }
+$('workerUrl').addEventListener('input', updateUrlPreview);
+$('platform').addEventListener('change', updateUrlPreview);
+
+function saveSettings() {
+    try { localStorage.setItem('mm_s', JSON.stringify({
+        k: $('apiKey').value, w: $('workerUrl').value, p: $('platform').value
+    })); } catch(e) {}
+}
+function loadSettings() {
+    try { const s = JSON.parse(localStorage.getItem('mm_s') || '{}');
+        if (s.k) $('apiKey').value = s.k;
+        if (s.w) $('workerUrl').value = s.w;
+        if (s.p) $('platform').value = s.p;
+    } catch(e) {} updateUrlPreview();
+}
+loadSettings();
+['apiKey','workerUrl','platform'].forEach(id => {
+    $(id).addEventListener('change', saveSettings);
+    $(id).addEventListener('input', saveSettings);
+});
+
+let allVoices = [], cloneFileId = null, promptFileId = null;
+
+// Tabs
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active'); $(tab.dataset.tab).classList.add('active');
+    });
+});
+
+// Log toggles
+['btnToggleLog1','btnToggleLog2','btnToggleLog3'].forEach((b,i) => {
+    const logs = ['log-voices','log-tts','log-clone'];
+    $(b).addEventListener('click', () => {
+        const el = $(logs[i]); el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    });
+});
+
+// 折叠
+$('promptToggle').addEventListener('click', () => {
+    $('promptToggle').classList.toggle('open'); $('promptBody').classList.toggle('open');
+});
+$('voiceModifyToggle').addEventListener('click', () => {
+    $('voiceModifyToggle').classList.toggle('open'); $('voiceModifyBody').classList.toggle('open');
+});
+
+// Sliders
+['Speed','Vol','Pitch'].forEach(n => {
+    const s = $(`tts${n}`), v = $(`tts${n}Val`);
+    s.addEventListener('input', () => v.textContent = s.value);
+});
+
+// voice_modify sliders
+['vmPitch','vmIntensity','vmTimbre'].forEach(id => {
+    const s = $(id), v = $(`${id}Val`);
+    s.addEventListener('input', () => v.textContent = s.value);
+});
+
+// Reset voice_modify
+$('btnResetVoiceModify').addEventListener('click', () => {
+    $('vmPitch').value = 0; $('vmPitchVal').textContent = '0';
+    $('vmIntensity').value = 0; $('vmIntensityVal').textContent = '0';
+    $('vmTimbre').value = 0; $('vmTimbreVal').textContent = '0';
+    $('vmSoundEffect').value = '';
+});
+
+// ===== 文本分析 + 高亮叠加 =====
+function escapeHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function analyzeText(text) {
+    const tags = (text.match(/\([\w-]+\)|<#[\d.]+#>/g) || []).length;
+    const billable = text.replace(/<#[\d.]+#>/g, '').replace(/\([\w-]+\)/g, '');
+    let han = 0;
+    for (const ch of billable) {
+        if (/[\u4e00-\u9fff\u3400-\u4dbf]/.test(ch)) han++;
+    }
+    const enChars = (billable.match(/[A-Za-z]/g) || []).length;
+    const enWords = (billable.match(/[A-Za-z]+/g) || []).length;
+    const billing = han * 2 + (billable.length - han);
+    return { han, enChars, enWords, tags, billing };
+}
+function renderHighlight() {
+    const ta = $('ttsText'), hl = $('ttsHighlight');
+    let html = escapeHtml(ta.value)
+        .replace(/&lt;#[\d.]+#&gt;/g, m => `<span class="hl-pause">${m}</span>`)
+        .replace(/\(([\w-]+)\)/g, m => `<span class="hl-tone">${m}</span>`);
+    if (ta.value.endsWith('\n')) html += ' ';
+    hl.innerHTML = html;
+    hl.scrollTop = ta.scrollTop;
+    hl.scrollLeft = ta.scrollLeft;
+}
+$('ttsText').addEventListener('input', () => { renderHighlight(); updateCost(); });
+$('ttsText').addEventListener('compositionend', () => { renderHighlight(); updateCost(); });
+$('ttsText').addEventListener('scroll', () => {
+    $('ttsHighlight').scrollTop = $('ttsText').scrollTop;
+    $('ttsHighlight').scrollLeft = $('ttsText').scrollLeft;
+});
+function updateCost() {
+    const a = analyzeText($('ttsText').value);
+    $('hanCount').textContent = a.han;
+    $('enWordCount').textContent = a.enWords;
+    $('enCharCount').textContent = a.enChars;
+    $('tagCount').textContent = a.tags;
+    $('charCount').textContent = a.billing;
+    $('costIO').textContent = '$' + (a.billing * 100 / 1e6).toFixed(4);
+    $('costIOTurbo').textContent = '$' + (a.billing * 60 / 1e6).toFixed(4);
+    $('costCN').textContent = '¥' + (a.billing * 3.5 / 1e4).toFixed(4);
+}
+
+// 格式切换 → 启用/禁用 bitrate（WAV/FLAC 无损忽略）
+$('ttsFormat').addEventListener('change', () => {
+    $('ttsBitrate').disabled = $('ttsFormat').value !== 'mp3';
+});
+
+// 语气标签 & 停顿插入（仅 TTS Tab 的标签，排除音乐 Tab 的 .music-tag）
+document.querySelectorAll('.tag[data-tag]:not(.music-tag)').forEach(tag => {
+    tag.addEventListener('click', () => {
+        const ta = $('ttsText'), s = ta.selectionStart, e = ta.selectionEnd, ins = tag.dataset.tag;
+        ta.value = ta.value.slice(0, s) + ins + ta.value.slice(e);
+        ta.selectionStart = ta.selectionEnd = s + ins.length;
+        ta.focus(); updateCost(); renderHighlight();
+    });
+});
+
+// API 封装
+function log(logId, msg) {
+    const el = $(logId); el.style.display = 'block';
+    el.textContent += `[${new Date().toLocaleTimeString()}] ${msg}\n`;
+    el.scrollTop = el.scrollHeight;
+}
+
+async function apiPost(path, body, logId) {
+    const url = getBaseUrl() + path;
+    log(logId, `POST ${url}`);
+    log(logId, `→ ${JSON.stringify(body).slice(0, 800)}`);
+    const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${getApiKey()}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+    });
+    const text = await resp.text();
+    log(logId, `← ${resp.status} | ${text.slice(0, 800)}`);
+    try { return JSON.parse(text); }
+    catch (e) { throw new Error(`非JSON (${resp.status}): ${text.slice(0, 200)}`); }
+}
+
+async function apiUpload(path, file, purpose, logId) {
+    const url = getBaseUrl() + path;
+    log(logId, `UPLOAD ${url} | purpose=${purpose} | ${file.name} (${(file.size/1024).toFixed(1)}KB)`);
+    const form = new FormData();
+    form.append('purpose', purpose); form.append('file', file);
+    const resp = await fetch(url, {
+        method: 'POST', headers: { 'Authorization': `Bearer ${getApiKey()}` }, body: form,
+    });
+    const text = await resp.text();
+    log(logId, `← ${resp.status} | ${text.slice(0, 500)}`);
+    try { return JSON.parse(text); }
+    catch (e) { throw new Error(`非JSON (${resp.status}): ${text.slice(0, 200)}`); }
+}
+
+// Helper: build voice_modify object
+function buildVoiceModify() {
+    const p = parseInt($('vmPitch').value);
+    const i = parseInt($('vmIntensity').value);
+    const t = parseInt($('vmTimbre').value);
+    const se = $('vmSoundEffect').value;
+    // Only include if any value is non-default
+    if (p === 0 && i === 0 && t === 0 && !se) return null;
+    const vm = {};
+    if (p !== 0) vm.pitch = p;
+    if (i !== 0) vm.intensity = i;
+    if (t !== 0) vm.timbre = t;
+    if (se) vm.sound_effects = se;
+    return vm;
+}
+
+// 试听 URL 映射（voice_id -> sample_audio_url），由本地 minimax_voices.js 提供
+let voiceSamples = {};
+async function loadVoiceSamples() {
+    return window.PRESET_VOICE_SAMPLES || {};
+}
+
+// 1. 音色列表（同时拉取试听 URL）
+$('btnGetVoices').addEventListener('click', async () => {
+    if (!getApiKey()) return alert('请先输入 API Key');
+    $('btnGetVoices').disabled = true; $('btnGetVoices').textContent = '加载中...';
+    $('voiceStatus').className = 'status loading'; $('voiceStatus').textContent = '正在获取音色 + 试听库...';
+    try {
+        const [data, samples] = await Promise.all([
+            apiPost('/get_voice', { voice_type: 'all' }, 'log-voices'),
+            loadVoiceSamples(),
+        ]);
+        if (data.base_resp?.status_code !== 0) throw new Error(data.base_resp?.status_msg || '失败');
+        voiceSamples = samples || {};
+        const attach = v => ({ ...v, sample_audio: voiceSamples[v.voice_id] || '' });
+        allVoices = [];
+        (data.system_voice || []).forEach(v => allVoices.push({ ...attach(v), type: 'system', lang: extractLang(v.voice_id) }));
+        (data.voice_cloning || []).forEach(v => allVoices.push({ ...attach(v), type: 'clone', lang: '复刻音色' }));
+        (data.voice_generation || []).forEach(v => allVoices.push({ ...attach(v), type: 'design', lang: '设计音色' }));
+        const langs = [...new Set(allVoices.map(v => v.lang).filter(Boolean))].sort();
+        const sel = $('voiceLangFilter');
+        sel.innerHTML = '<option value="">全部语言</option>';
+        langs.forEach(l => sel.innerHTML += `<option value="${l}">${l}</option>`);
+        renderVoices();
+        const matched = allVoices.filter(v => v.sample_audio).length;
+        $('voiceStatus').className = 'status ok';
+        $('voiceStatus').textContent = `共 ${allVoices.length} 个音色（系统 ${data.system_voice?.length||0} / 复刻 ${data.voice_cloning?.length||0} / 设计 ${data.voice_generation?.length||0}），其中 ${matched} 个可试听`;
+    } catch (e) {
+        $('voiceStatus').className = 'status err';
+        $('voiceStatus').textContent = `失败: ${e.message}`;
+    }
+    $('btnGetVoices').disabled = false; $('btnGetVoices').textContent = '获取音色列表（含试听）';
+});
+
+function extractLang(vid) {
+    const m = {
+        'chinese (mandarin)':'中文（普通话）','cantonese':'粤语','english':'英语',
+        'japanese':'日语','korean':'韩语','spanish':'西班牙语','portuguese':'葡萄牙语',
+        'french':'法语','russian':'俄语','indonesian':'印尼语','german':'德语',
+        'italian':'意大利语','arabic':'阿拉伯语','turkish':'土耳其语','thai':'泰语',
+        'dutch':'荷兰语','vietnamese':'越南语','ukrainian':'乌克兰语','polish':'波兰语',
+        'romanian':'罗马尼亚语','greek':'希腊语','czech':'捷克语','finnish':'芬兰语',
+        'hindi':'印地语','bulgarian':'保加利亚语','danish':'丹麦语','hebrew':'希伯来语',
+        'malay':'马来语','persian':'波斯语','slovak':'斯洛伐克语','swedish':'瑞典语',
+        'croatian':'克罗地亚语','filipino':'菲律宾语','hungarian':'匈牙利语',
+        'norwegian':'挪威语','slovenian':'斯洛文尼亚语','catalan':'加泰罗尼亚语',
+        'tamil':'泰米尔语','afrikaans':'南非荷兰语',
+    };
+    const l = vid.toLowerCase();
+    for (const [k, v] of Object.entries(m)) if (l.startsWith(k)) return v;
+    return vid.split('_')[0] || '其他';
+}
+
+function renderVoices() {
+    const search = $('voiceSearch').value.toLowerCase();
+    const lang = $('voiceLangFilter').value, type = $('voiceTypeFilter').value;
+    const tl = { system: '系统', clone: '复刻', design: '设计' };
+    const filtered = allVoices.filter(v => {
+        if (lang && v.lang !== lang) return false;
+        if (type && v.type !== type) return false;
+        if (search) {
+            const h = `${v.voice_id} ${v.voice_name||''} ${(v.description||[]).join(' ')} ${v.lang}`.toLowerCase();
+            if (!h.includes(search)) return false;
+        }
+        return true;
+    });
+    $('voiceGrid').innerHTML = filtered.map(v => {
+        const sv = v.voice_id.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const desc = Array.isArray(v.description) ? v.description.join('; ') : (v.description || '');
+        const meta = [v.gender, v.age, v.accent].filter(Boolean).join(' · ');
+        const tags = [].concat(v.style||[], v.scene||[]).slice(0,6)
+            .map(t => `<span class="badge gray">${t}</span>`).join(' ');
+        const sa = (v.sample_audio || '').replace(/"/g,'&quot;');
+        const playBtn = sa
+            ? `<button class="btn btn-success btn-sm preview-btn" data-src="${sa}" onclick="event.stopPropagation();previewVoice(this)" style="margin-top:8px;margin-right:6px;">▶ 试听</button>`
+            : '';
+        const useBtn = `<button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();selectVoice(this.parentNode,'${sv}')" style="margin-top:8px;">使用此音色</button>`;
+        return `<div class="voice-item" onclick="selectVoice(this,'${sv}')">
+            <div class="vid">${v.voice_id}</div>
+            ${v.voice_name ? `<div class="vname">${v.voice_name}</div>` : ''}
+            ${desc ? `<div class="vdesc">${desc}</div>` : ''}
+            <div style="margin-top:4px;font-size:11px;color:#555;">[${tl[v.type]||v.type}] ${v.lang}${meta ? ' | '+meta : ''}${v.created_time && v.created_time !== '1970-01-01' ? ' | '+v.created_time : ''}</div>
+            ${tags ? `<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;">${tags}</div>` : ''}
+            <div>${playBtn}${useBtn}</div>
+        </div>`;
+    }).join('') || '<div style="color:#666;padding:20px;">没有匹配的音色</div>';
+}
+
+// ===== 试听播放器 (单实例, 同时只播放一个) =====
+const previewAudio = new Audio();
+let previewBtnCur = null;
+previewAudio.addEventListener('ended', () => {
+    if (previewBtnCur) { previewBtnCur.textContent = '▶ 试听'; previewBtnCur = null; }
+});
+previewAudio.addEventListener('error', () => {
+    if (previewBtnCur) { previewBtnCur.textContent = '✗ 加载失败'; previewBtnCur = null; }
+});
+function previewVoice(btn) {
+    const src = btn.dataset.src;
+    if (!src) return;
+    // 若点击的是当前正在播放的按钮 -> 暂停
+    if (previewBtnCur === btn && !previewAudio.paused) {
+        previewAudio.pause();
+        btn.textContent = '▶ 试听';
+        previewBtnCur = null;
+        return;
+    }
+    // 复位上一个按钮
+    if (previewBtnCur && previewBtnCur !== btn) previewBtnCur.textContent = '▶ 试听';
+    previewAudio.src = src;
+    previewAudio.play().then(() => {
+        btn.textContent = '⏸ 暂停';
+        previewBtnCur = btn;
+    }).catch(err => {
+        btn.textContent = '✗ 失败';
+        console.error('试听失败:', err);
+    });
+}
+
+['voiceSearch','voiceLangFilter','voiceTypeFilter'].forEach(id => {
+    $(id).addEventListener('input', renderVoices);
+    $(id).addEventListener('change', renderVoices);
+});
+
+function selectVoice(el, vid) {
+    $('ttsVoiceId').value = vid;
+    document.querySelectorAll('.voice-item').forEach(e => e.classList.remove('selected'));
+    el.classList.add('selected');
+    document.querySelectorAll('.tab')[1].click();
+}
+
+// 2. 语音合成
+$('btnSynthesize').addEventListener('click', async () => {
+    if (!getApiKey()) return alert('请先输入 API Key');
+    const text = $('ttsText').value.trim();
+    if (!text) return alert('请输入文本');
+
+    $('btnSynthesize').disabled = true; $('btnSynthesize').textContent = '合成中...';
+    $('ttsStatus').className = 'status loading'; $('ttsStatus').textContent = '正在合成...';
+    $('audioBox').style.display = 'none';
+
+    try {
+        const vs = {
+            voice_id: $('ttsVoiceId').value.trim(),
+            speed: parseFloat($('ttsSpeed').value),
+            vol: parseFloat($('ttsVol').value),
+            pitch: parseInt($('ttsPitch').value),
+        };
+
+        const emotion = $('ttsEmotion').value;
+        if (emotion) vs.emotion = emotion;
+
+        const fmt = $('ttsFormat').value;
+        const aset = {
+            format: fmt,
+            sample_rate: parseInt($('ttsSampleRate').value),
+            channel: parseInt($('ttsChannel').value),
+        };
+        if (fmt === 'mp3') aset.bitrate = parseInt($('ttsBitrate').value);
+
+        const body = {
+            model: $('ttsModel').value,
+            text: text,
+            stream: false,
+            voice_setting: vs,
+            audio_setting: aset,
+            language_boost: $('ttsLang').value,
+            output_format: 'url',
+        };
+
+        // voice_modify
+        const vm = buildVoiceModify();
+        if (vm) body.voice_modify = vm;
+
+        // pronunciation_dict
+        const pd = buildPronDict();
+        if (pd) body.pronunciation_dict = pd;
+
+        const data = await apiPost('/t2a_v2', body, 'log-tts');
+
+        if (data.base_resp?.status_code === 0 && data.data?.audio) {
+            const url = data.data.audio, ext = data.extra_info || {};
+            const dur = ext.audio_length ? (ext.audio_length / 1000).toFixed(1) + '秒' : '?';
+            const chars = ext.word_count || '?';
+            $('audioPlayer').src = url;
+            $('audioDownload').href = url;
+            $('audioDownload').download = `minimax_tts_${Date.now()}.${$('ttsFormat').value}`;
+            $('audioInfo').textContent = `✅ 合成成功！时长: ${dur} | 计费字符: ${chars}`;
+            $('audioBox').style.display = 'block';
+            $('ttsStatus').className = 'status ok';
+            $('ttsStatus').textContent = `合成成功 — 时长: ${dur}，计费: ${chars} 字符`;
+            markVoiceUsed(vs.voice_id);
+        } else {
+            throw new Error(data.base_resp?.status_msg || JSON.stringify(data));
+        }
+    } catch (e) {
+        $('ttsStatus').className = 'status err';
+        $('ttsStatus').textContent = `失败: ${e.message}`;
+        log('log-tts', `Error: ${e.message}`);
+    }
+    $('btnSynthesize').disabled = false; $('btnSynthesize').textContent = '合成语音';
+});
+
+// 3. 音色复刻
+const uploadArea = $('uploadArea'), cloneFileInput = $('cloneFile');
+uploadArea.addEventListener('click', () => cloneFileInput.click());
+uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.borderColor = '#667eea'; });
+uploadArea.addEventListener('dragleave', () => uploadArea.style.borderColor = '#3a3a5e');
+uploadArea.addEventListener('drop', e => {
+    e.preventDefault(); uploadArea.style.borderColor = '#3a3a5e';
+    if (e.dataTransfer.files.length) { cloneFileInput.files = e.dataTransfer.files; handleCloneUpload(); }
+});
+cloneFileInput.addEventListener('change', handleCloneUpload);
+
+async function handleCloneUpload() {
+    const file = cloneFileInput.files[0]; if (!file) return;
+    if (!getApiKey()) return alert('请先输入 API Key');
+    $('uploadStatus').className = 'status loading';
+    $('uploadStatus').textContent = `上传中: ${file.name} (${(file.size/1024/1024).toFixed(2)}MB)...`;
+    try {
+        const data = await apiUpload('/files/upload', file, 'voice_clone', 'log-clone');
+        if (data.file?.file_id) {
+            cloneFileId = data.file.file_id;
+            $('uploadStatus').className = 'status ok';
+            $('uploadStatus').textContent = `上传成功！file_id: ${cloneFileId}`;
+            uploadArea.innerHTML = `<div>✅ ${file.name}</div>
+                <div style="font-size:12px;margin-top:4px;color:#667eea;">file_id: ${cloneFileId}</div>
+                <div style="font-size:11px;margin-top:4px;color:#666;">点击重新上传</div>`;
+        } else throw new Error(data.base_resp?.status_msg || JSON.stringify(data));
+    } catch (e) {
+        $('uploadStatus').className = 'status err';
+        $('uploadStatus').textContent = `失败: ${e.message}`;
+    }
+}
+
+const promptUploadArea = $('promptUploadArea'), promptFileInput = $('promptFile');
+promptUploadArea.addEventListener('click', () => promptFileInput.click());
+promptUploadArea.addEventListener('dragover', e => { e.preventDefault(); promptUploadArea.style.borderColor = '#a78bfa'; });
+promptUploadArea.addEventListener('dragleave', () => promptUploadArea.style.borderColor = '#3a3a5e');
+promptUploadArea.addEventListener('drop', e => {
+    e.preventDefault(); promptUploadArea.style.borderColor = '#3a3a5e';
+    if (e.dataTransfer.files.length) { promptFileInput.files = e.dataTransfer.files; handlePromptUpload(); }
+});
+promptFileInput.addEventListener('change', handlePromptUpload);
+
+async function handlePromptUpload() {
+    const file = promptFileInput.files[0]; if (!file) return;
+    if (!getApiKey()) return alert('请先输入 API Key');
+    $('promptUploadStatus').className = 'status loading';
+    $('promptUploadStatus').textContent = `上传中: ${file.name}...`;
+    try {
+        const data = await apiUpload('/files/upload', file, 'prompt_audio', 'log-clone');
+        if (data.file?.file_id) {
+            promptFileId = data.file.file_id;
+            $('promptUploadStatus').className = 'status ok';
+            $('promptUploadStatus').textContent = `成功！file_id: ${promptFileId}`;
+            promptUploadArea.innerHTML = `<div>✅ ${file.name}</div>
+                <div style="font-size:12px;margin-top:4px;color:#a78bfa;">file_id: ${promptFileId}</div>
+                <div style="font-size:11px;margin-top:4px;color:#666;">点击重新上传</div>`;
+        } else throw new Error(data.base_resp?.status_msg || JSON.stringify(data));
+    } catch (e) {
+        $('promptUploadStatus').className = 'status err';
+        $('promptUploadStatus').textContent = `失败: ${e.message}`;
+    }
+}
+
+$('btnClone').addEventListener('click', async () => {
+    if (!getApiKey()) return alert('请先输入 API Key');
+    if (!cloneFileId) return alert('请先上传复刻音频');
+    const vid = $('cloneVoiceId').value.trim();
+    if (!vid) return alert('请设置 voice_id');
+    if (promptFileId && !$('promptText').value.trim()) return alert('已上传示例音频，请填写对应文字');
+
+    $('btnClone').disabled = true; $('btnClone').textContent = '复刻中...';
+    $('cloneStatus').className = 'status loading'; $('cloneStatus').textContent = '正在复刻...';
+    $('cloneAudioBox').style.display = 'none';
+    $('activateBox').style.display = 'none';
+
+    try {
+        const body = {
+            file_id: cloneFileId,
+            voice_id: vid,
+            model: $('cloneModel').value,
+            need_noise_reduction: $('cloneNoiseReduce').value === 'true',
+            need_volumn_normalization: $('cloneVolNorm').value === 'true',
+        };
+        if (promptFileId) {
+            body.clone_prompt = {
+                prompt_audio: promptFileId,
+                prompt_text: $('promptText').value.trim(),
+            };
+        }
+        const pt = $('clonePreviewText').value.trim();
+        if (pt) body.text = pt;
+
+        const data = await apiPost('/voice_clone', body, 'log-clone');
+
+        if (data.base_resp?.status_code === 0) {
+            $('cloneStatus').className = 'status ok';
+            $('cloneStatus').textContent = `复刻成功！voice_id: ${vid} — 请继续第4步激活`;
+            registerCloneVoice(vid, $('cloneModel').value);
+            if (data.data?.audio) {
+                try {
+                    const h = data.data.audio;
+                    const b = new Uint8Array(h.match(/.{1,2}/g).map(x => parseInt(x, 16)));
+                    $('cloneAudioPlayer').src = URL.createObjectURL(new Blob([b], { type: 'audio/mp3' }));
+                    $('cloneAudioBox').style.display = 'block';
+                } catch (e) { log('log-clone', `音频解码失败: ${e.message}`); }
+            }
+            // Show activation box
+            $('activateVoiceId').value = vid;
+            $('activateBox').style.display = 'block';
+            $('activateAudioBox').style.display = 'none';
+            $('activateStatus').textContent = '';
+            $('activateBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else throw new Error(data.base_resp?.status_msg || JSON.stringify(data));
+    } catch (e) {
+        $('cloneStatus').className = 'status err';
+        $('cloneStatus').textContent = `失败: ${e.message}`;
+        log('log-clone', `Error: ${e.message}`);
+    }
+    $('btnClone').disabled = false; $('btnClone').textContent = '开始复刻';
+});
+
+// 4. 激活复刻音色
+$('btnActivate').addEventListener('click', async () => {
+    if (!getApiKey()) return alert('请先输入 API Key');
+    const vid = $('activateVoiceId').value.trim();
+    if (!vid) return alert('voice_id 为空');
+    const text = $('activateText').value.trim();
+    if (!text) return alert('请输入激活文本');
+
+    $('btnActivate').disabled = true; $('btnActivate').textContent = '激活中...';
+    $('activateStatus').className = 'status loading';
+    $('activateStatus').textContent = '正在调用 T2A 合成接口激活音色...';
+    $('activateAudioBox').style.display = 'none';
+
+    try {
+        const body = {
+            model: $('cloneModel').value,
+            text: text,
+            stream: false,
+            voice_setting: {
+                voice_id: vid,
+                speed: 1.0,
+                vol: 1.0,
+                pitch: 0,
+            },
+            audio_setting: {
+                format: 'mp3',
+                sample_rate: 32000,
+            },
+            language_boost: 'Chinese',
+            output_format: 'url',
+        };
+
+        const data = await apiPost('/t2a_v2', body, 'log-clone');
+
+        if (data.base_resp?.status_code === 0 && data.data?.audio) {
+            $('activateAudioPlayer').src = data.data.audio;
+            $('activateAudioBox').style.display = 'block';
+            $('activateStatus').className = 'status ok';
+            $('activateStatus').textContent = `✅ 激活成功！音色 "${vid}" 已永久保留。可在语音合成 Tab 中使用。`;
+            markVoiceUsed(vid);
+        } else {
+            throw new Error(data.base_resp?.status_msg || JSON.stringify(data));
+        }
+    } catch (e) {
+        $('activateStatus').className = 'status err';
+        $('activateStatus').textContent = `激活失败: ${e.message}`;
+        log('log-clone', `Activate Error: ${e.message}`);
+    }
+    $('btnActivate').disabled = false; $('btnActivate').textContent = '⚡ 立即激活（调用一次 T2A 合成）';
+});
+
+// =================== 5. 发音字典 pronunciation_dict ===================
+let pronDict = [];
+try { pronDict = JSON.parse(localStorage.getItem('mm_pron') || '[]'); } catch (e) { pronDict = []; }
+
+function savePron() { localStorage.setItem('mm_pron', JSON.stringify(pronDict)); }
+function renderPronTable() {
+    const tbl = $('pronTable');
+    if (!pronDict.length) {
+        tbl.innerHTML = '<div style="color:#666;font-size:12px;padding:8px;">尚未添加 — 点 [+ 添加一行] 或 [📋 常用模板]</div>';
+        return;
+    }
+    tbl.innerHTML = pronDict.map((p, i) => `
+        <div class="pron-row">
+            <input type="text" placeholder="原词，如 重庆" value="${escapeHtml(p.word||'')}" data-i="${i}" data-k="word">
+            <input type="text" placeholder="读音，如 chóng qìng" value="${escapeHtml(p.phonetic||'')}" data-i="${i}" data-k="phonetic">
+            <button class="pron-del" data-del="${i}">✕ 删除</button>
+        </div>`).join('');
+    tbl.querySelectorAll('input').forEach(inp => {
+        inp.addEventListener('input', () => {
+            pronDict[+inp.dataset.i][inp.dataset.k] = inp.value;
+            savePron();
+        });
+    });
+    tbl.querySelectorAll('button[data-del]').forEach(b => {
+        b.addEventListener('click', () => {
+            pronDict.splice(+b.dataset.del, 1); savePron(); renderPronTable();
+        });
+    });
+}
+function buildPronDict() {
+    const tone = pronDict.filter(p => p.word && p.phonetic && p.word.trim() && p.phonetic.trim())
+        .map(p => `${p.word.trim()}/${p.phonetic.trim()}`);
+    return tone.length ? { tone } : null;
+}
+$('pronToggle').addEventListener('click', () => {
+    $('pronToggle').classList.toggle('open'); $('pronBody').classList.toggle('open');
+});
+$('btnAddPron').addEventListener('click', () => {
+    pronDict.push({ word: '', phonetic: '' }); savePron(); renderPronTable();
+});
+$('btnPronTpl').addEventListener('click', () => {
+    const tpl = [
+        { word: 'AI', phonetic: 'A I' },
+        { word: 'GPT', phonetic: 'G P T' },
+        { word: 'API', phonetic: 'A P I' },
+        { word: 'URL', phonetic: 'U R L' },
+        { word: 'MiniMax', phonetic: '迷你麦克斯' },
+        { word: '重庆', phonetic: 'chóng qìng' },
+        { word: '行长', phonetic: 'háng zhǎng' },
+        { word: '银行', phonetic: 'yín háng' },
+    ];
+    let added = 0;
+    tpl.forEach(t => {
+        if (!pronDict.find(p => p.word === t.word)) { pronDict.push(t); added++; }
+    });
+    savePron(); renderPronTable();
+    alert(`已导入 ${added} 条常用读音`);
+});
+$('btnClearPron').addEventListener('click', () => {
+    if (!pronDict.length) return;
+    if (!confirm(`确定清空 ${pronDict.length} 条发音字典？`)) return;
+    pronDict = []; savePron(); renderPronTable();
+});
+
+// =================== 6. 我的音色（复刻音色管理） ===================
+let myVoices = [];
+try { myVoices = JSON.parse(localStorage.getItem('mm_my_voices') || '[]'); } catch (e) { myVoices = []; }
+
+function saveMyVoices() { localStorage.setItem('mm_my_voices', JSON.stringify(myVoices)); }
+
+function getExpiryStatus(item) {
+    if (item.activated) return { text: '永久', cls: 'green' };
+    const elapsed = Date.now() - (item.created_at || Date.now());
+    const remain = 7 * 86400000 - elapsed;
+    if (remain <= 0) return { text: '已过期', cls: 'red' };
+    const days = Math.floor(remain / 86400000);
+    const hours = Math.floor((remain % 86400000) / 3600000);
+    return { text: `⏰ ${days}天${hours}小时`, cls: 'amber' };
+}
+
+function renderMyVoices() {
+    const wrap = $('myVoicesList');
+    if (!myVoices.length) {
+        wrap.innerHTML = '<div style="color:#666;padding:30px;text-align:center;">暂无音色，可点上方按钮 [📥 从 ID 导入] 或 [🔄 从云端同步] 添加</div>';
+        return;
+    }
+    // sort: 未过期未激活在前（紧迫感），已激活其后，过期最后
+    const sorted = myVoices.map((v, i) => ({ v, i })).sort((a, b) => {
+        const sa = getExpiryStatus(a.v).cls, sb = getExpiryStatus(b.v).cls;
+        const order = { amber: 0, green: 1, red: 2 };
+        return (order[sa] ?? 9) - (order[sb] ?? 9);
+    });
+    wrap.innerHTML = sorted.map(({ v, i }) => {
+        const exp = getExpiryStatus(v);
+        const sourceBadge = v.source === 'manual' ? '<span class="badge blue">手动</span>'
+            : v.source === 'clone' ? '<span class="badge green">复刻</span>'
+            : '<span class="badge gray">同步</span>';
+        const actBadge = v.activated ? '<span class="badge green">✓已激活</span>' : '<span class="badge amber">⚠未激活</span>';
+        const created = v.created_at ? new Date(v.created_at).toLocaleString() : '-';
+        const lastUsed = v.last_used_at ? new Date(v.last_used_at).toLocaleString() : '从未';
+        return `
+        <div class="vm-card">
+            <div>🎤 <span class="vm-vid">${escapeHtml(v.voice_id)}</span> ${sourceBadge} ${actBadge} <span class="badge ${exp.cls}">${exp.text}</span></div>
+            <div class="vm-meta">备注：${escapeHtml(v.nickname || '(未设置)')} · 模型：${escapeHtml(v.model || '-')} · 创建：${created} · 最近使用：${lastUsed}</div>
+            ${v.note ? `<div class="vm-meta">📝 ${escapeHtml(v.note)}</div>` : ''}
+            <div id="vmAudio-${i}"></div>
+            <div class="vm-actions">
+                <button data-act="use" data-i="${i}">📤 使用</button>
+                <button data-act="preview" data-i="${i}">▶ 试听</button>
+                <button data-act="activate" data-i="${i}">⚡ 激活</button>
+                <button data-act="edit" data-i="${i}">📝 备注</button>
+                <button data-act="copy" data-i="${i}">📋 复制ID</button>
+                <button class="danger" data-act="delete" data-i="${i}">🗑 删除</button>
+            </div>
+        </div>`;
+    }).join('');
+    wrap.querySelectorAll('button[data-act]').forEach(b => {
+        b.addEventListener('click', () => handleVoiceAction(b.dataset.act, +b.dataset.i));
+    });
+}
+
+function markVoiceUsed(vid) {
+    const v = myVoices.find(x => x.voice_id === vid);
+    if (!v) return;
+    v.activated = true; v.last_used_at = Date.now();
+    saveMyVoices();
+    if ($('tab-myvoices').classList.contains('active')) renderMyVoices();
+}
+
+function registerCloneVoice(vid, model) {
+    if (myVoices.find(v => v.voice_id === vid)) return;
+    myVoices.push({
+        voice_id: vid, nickname: '', note: '', model: model || '',
+        created_at: Date.now(), source: 'clone', activated: false, last_used_at: null,
+    });
+    saveMyVoices();
+}
+
+async function handleVoiceAction(act, i) {
+    const v = myVoices[i];
+    if (!v) return;
+    if (act === 'use') {
+        $('ttsVoiceId').value = v.voice_id;
+        document.querySelectorAll('.tab')[1].click();
+        return;
+    }
+    if (act === 'copy') {
+        try { await navigator.clipboard.writeText(v.voice_id); alert('已复制：' + v.voice_id); }
+        catch (e) { alert('复制失败：' + e.message); }
+        return;
+    }
+    if (act === 'edit') {
+        const nick = prompt('备注（昵称）：', v.nickname || '');
+        if (nick === null) return;
+        v.nickname = nick;
+        const note = prompt('详细备注：', v.note || '');
+        if (note !== null) v.note = note;
+        saveMyVoices(); renderMyVoices();
+        return;
+    }
+    if (act === 'delete') {
+        if (!confirm(`确定删除 ${v.voice_id}？将同时调用云端 /delete_voice 接口删除（系统音色不可删）。`)) return;
+        if (getApiKey()) {
+            try {
+                await apiPost('/delete_voice', { voice_id: v.voice_id, voice_type: 'voice_cloning' }, 'log-myvoices');
+            } catch (e) {
+                if (!confirm(`云端删除失败：${e.message}\n仍要从本地删除吗？`)) return;
+            }
+        }
+        myVoices.splice(i, 1); saveMyVoices(); renderMyVoices();
+        return;
+    }
+    if (act === 'preview' || act === 'activate') {
+        if (!getApiKey()) return alert('请先输入 API Key');
+        const wrap = $('vmAudio-' + i);
+        wrap.innerHTML = '<div class="status loading">合成中...</div>';
+        try {
+            const data = await apiPost('/t2a_v2', {
+                model: v.model || 'speech-2.8-hd',
+                text: '你好，这是声音预览测试。',
+                stream: false,
+                voice_setting: { voice_id: v.voice_id, speed: 1.0, vol: 1.0, pitch: 0 },
+                audio_setting: { format: 'mp3', sample_rate: 32000 },
+                language_boost: 'auto',
+                output_format: 'url',
+            }, 'log-myvoices');
+            if (data.base_resp?.status_code === 0 && data.data?.audio) {
+                wrap.innerHTML = `<audio src="${data.data.audio}" controls autoplay></audio>`;
+                v.activated = true; v.last_used_at = Date.now();
+                saveMyVoices(); renderMyVoices();
+            } else throw new Error(data.base_resp?.status_msg || '失败');
+        } catch (e) {
+            wrap.innerHTML = `<div class="status err">失败：${e.message}</div>`;
+        }
+    }
+}
+
+$('btnImportVoice').addEventListener('click', () => $('importVoiceMask').classList.add('open'));
+$('btnImportCancel').addEventListener('click', () => $('importVoiceMask').classList.remove('open'));
+$('importVoiceMask').addEventListener('click', e => {
+    if (e.target === $('importVoiceMask')) $('importVoiceMask').classList.remove('open');
+});
+$('btnImportOk').addEventListener('click', () => {
+    const vid = $('importVid').value.trim();
+    if (!vid) return alert('voice_id 必填');
+    if (myVoices.find(v => v.voice_id === vid)) return alert('该 voice_id 已存在于本地列表');
+    myVoices.push({
+        voice_id: vid,
+        nickname: $('importNick').value.trim(),
+        note: $('importNote').value.trim(),
+        model: $('importModel').value,
+        created_at: Date.now(),
+        source: 'manual',
+        activated: false,
+        last_used_at: null,
+    });
+    saveMyVoices(); renderMyVoices();
+    $('importVid').value = ''; $('importNick').value = ''; $('importNote').value = '';
+    $('importVoiceMask').classList.remove('open');
+});
+
+$('btnSyncVoices').addEventListener('click', async () => {
+    if (!getApiKey()) return alert('请先输入 API Key');
+    try {
+        const data = await apiPost('/get_voice', { voice_type: 'all' }, 'log-myvoices');
+        const list = data.voice_cloning || [];
+        let added = 0, updated = 0;
+        list.forEach(v => {
+            const existing = myVoices.find(x => x.voice_id === v.voice_id);
+            if (existing) { existing.activated = true; updated++; }
+            else {
+                myVoices.push({
+                    voice_id: v.voice_id,
+                    nickname: v.voice_name || '',
+                    note: (v.description || []).join('; '),
+                    model: '',
+                    created_at: v.created_time && v.created_time !== '1970-01-01'
+                        ? new Date(v.created_time).getTime() : Date.now(),
+                    source: 'api',
+                    activated: true,
+                    last_used_at: null,
+                });
+                added++;
+            }
+        });
+        saveMyVoices(); renderMyVoices();
+        alert(`同步完成：新增 ${added}，更新 ${updated}`);
+    } catch (e) { alert('同步失败：' + e.message); }
+});
+
+$('btnCleanExpired').addEventListener('click', () => {
+    const before = myVoices.length;
+    myVoices = myVoices.filter(v => v.activated || (Date.now() - (v.created_at || 0) < 7 * 86400000));
+    saveMyVoices(); renderMyVoices();
+    alert(`已清理 ${before - myVoices.length} 条过期未激活音色`);
+});
+
+$('btnToggleLog5').addEventListener('click', () => {
+    const el = $('log-myvoices'); el.style.display = el.style.display === 'block' ? 'none' : 'block';
+});
+
+// 倒计时刷新
+setInterval(() => { if ($('tab-myvoices').classList.contains('active')) renderMyVoices(); }, 60000);
+
+// =================== 7. 音乐生成 ===================
+const coverState = {
+    mode: 'two-step',          // 'one-step' | 'two-step'
+    inputType: 'url',          // 'url' | 'file' | 'feature_id'
+    audioUrl: '',
+    audioBase64: '',
+    audioFileName: '',
+    coverFeatureId: '',
+    preprocessResult: null,
+    preprocessTime: 0,
+};
+
+function updateMusicMode() {
+    const mode = document.querySelector('input[name="musicMode"]:checked').value;
+    const isCover = mode === 'cover';
+    $('musicCoverBlock').style.display = isCover ? '' : 'none';
+    if (isCover) {
+        $('musicLyricsBlock').style.display = coverState.mode === 'two-step' ? '' : 'none';
+    } else {
+        $('musicLyricsBlock').style.display = mode === 'song' ? '' : 'none';
+    }
+    // 自动切换模型,使其与模式匹配
+    const sel = $('musicModel');
+    if (isCover && !sel.value.startsWith('music-cover')) sel.value = 'music-cover-free';
+    if (!isCover && sel.value.startsWith('music-cover')) sel.value = 'music-2.6-free';
+    updateMusicHints();
+    $('btnGenMusic').textContent = isCover ? '🎙️ 生成翻唱' : '🎵 生成音乐';
+}
+
+function updateMusicHints() {
+    const isCover = document.querySelector('input[name="musicMode"]:checked').value === 'cover';
+    $('musicPromptLabel').textContent = isCover
+        ? '风格描述 prompt（翻唱模式必填,10~300 字符）'
+        : '风格描述 prompt（必填,1~2000 字符）';
+    $('musicPromptMax').textContent = isCover ? '300' : '2000';
+    $('musicLyricsLabel').textContent = isCover
+        ? '歌词 lyrics（两步翻唱必填,10~1000 字符）'
+        : '歌词 lyrics（用 [Verse]/[Chorus] 等标签分段,1~3500 字符）';
+    $('musicLyricsMax').textContent = isCover ? '1000' : '3500';
+}
+
+function updateCoverMode() {
+    coverState.mode = document.querySelector('input[name="coverMode"]:checked').value;
+    if (document.querySelector('input[name="musicMode"]:checked').value === 'cover') {
+        $('musicLyricsBlock').style.display = coverState.mode === 'two-step' ? '' : 'none';
+    }
+    // 一步翻唱不支持 feature_id
+    const fidRadio = document.querySelector('input[name="coverInputType"][value="feature_id"]');
+    fidRadio.disabled = (coverState.mode === 'one-step');
+    if (fidRadio.disabled && fidRadio.checked) {
+        document.querySelector('input[name="coverInputType"][value="url"]').checked = true;
+    }
+    updateCoverInputType();
+}
+
+function updateCoverInputType() {
+    const t = document.querySelector('input[name="coverInputType"]:checked').value;
+    coverState.inputType = t;
+    $('coverInputUrl').style.display    = t === 'url'        ? '' : 'none';
+    $('coverInputFile').style.display   = t === 'file'       ? '' : 'none';
+    $('coverInputFeatureId').style.display = t === 'feature_id' ? '' : 'none';
+    // 预处理按钮:仅两步翻唱 + (url|file) 时显示
+    const showPp = coverState.mode === 'two-step' && t !== 'feature_id';
+    $('coverPreprocessBtnWrap').style.display = showPp ? '' : 'none';
+}
+
+document.querySelectorAll('input[name="musicMode"]').forEach(r => r.addEventListener('change', updateMusicMode));
+document.querySelectorAll('input[name="coverMode"]').forEach(r => r.addEventListener('change', updateCoverMode));
+document.querySelectorAll('input[name="coverInputType"]').forEach(r => r.addEventListener('change', updateCoverInputType));
+
+// 模型下拉锁定校验:翻唱模式下若被改为非 cover 模型,自动还原
+$('musicModel').addEventListener('change', () => {
+    const isCover = document.querySelector('input[name="musicMode"]:checked').value === 'cover';
+    if (isCover && !$('musicModel').value.startsWith('music-cover')) {
+        alert('翻唱模式仅支持 music-cover / music-cover-free,已自动切回 music-cover-free');
+        $('musicModel').value = 'music-cover-free';
+    }
+    if (!isCover && $('musicModel').value.startsWith('music-cover')) {
+        alert('music-cover 模型仅用于翻唱模式,已自动切回 music-2.6-free');
+        $('musicModel').value = 'music-2.6-free';
+    }
+});
+
+$('musicPrompt').addEventListener('input', () => $('musicPromptCount').textContent = $('musicPrompt').value.length);
+$('musicLyrics').addEventListener('input', () => $('musicLyricsCount').textContent = $('musicLyrics').value.length);
+
+// ---- 翻唱:文件读取与校验 ----
+function fileToBase64(file) {
+    return new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(String(r.result).split(',')[1] || '');
+        r.onerror = () => rej(new Error('文件读取失败'));
+        r.readAsDataURL(file);
+    });
+}
+
+function validateCoverAudio(file) {
+    return new Promise((res, rej) => {
+        if (file.size > 50 * 1024 * 1024) return rej(new Error('文件超过 50MB,请压缩后再上传'));
+        const ext = (file.name.split('.').pop() || '').toLowerCase();
+        if (!['mp3','wav','flac'].includes(ext)) return rej(new Error('仅支持 mp3 / wav / flac 格式'));
+        const url = URL.createObjectURL(file);
+        const a = new Audio();
+        a.preload = 'metadata';
+        let done = false;
+        const finish = (err, dur) => {
+            if (done) return; done = true;
+            URL.revokeObjectURL(url);
+            if (err) return rej(err);
+            res(dur || 0);
+        };
+        a.onloadedmetadata = () => {
+            const d = a.duration;
+            if (d && isFinite(d)) {
+                if (d < 6)   return finish(new Error(`音频时长 ${d.toFixed(1)} 秒,必须 ≥ 6 秒`));
+                if (d > 360) return finish(new Error(`音频时长 ${d.toFixed(1)} 秒,必须 ≤ 6 分钟`));
+            }
+            finish(null, d);
+        };
+        a.onerror = () => finish(null, 0); // 解码失败时跳过时长校验,由后端兜底
+        a.src = url;
+        setTimeout(() => finish(null, 0), 5000);
+    });
+}
+
+$('coverUploadArea').addEventListener('click', () => $('coverFileInput').click());
+$('coverFileInput').addEventListener('change', async () => {
+    const f = $('coverFileInput').files[0]; if (!f) return;
+    $('coverFileStatus').className = 'status loading';
+    $('coverFileStatus').textContent = '校验中...';
+    try {
+        const dur = await validateCoverAudio(f);
+        $('coverFileStatus').textContent = `读取并 Base64 编码中(${(f.size/1024/1024).toFixed(2)}MB)...`;
+        const b64 = await fileToBase64(f);
+        coverState.audioBase64 = b64;
+        coverState.audioFileName = f.name;
+        $('coverFileLabel').textContent = `✅ ${f.name} (${(f.size/1024/1024).toFixed(2)}MB${dur ? ', ' + dur.toFixed(1) + 's' : ''})`;
+        $('coverFileStatus').className = 'status ok';
+        $('coverFileStatus').textContent = '已就绪';
+    } catch (e) {
+        coverState.audioBase64 = '';
+        $('coverFileStatus').className = 'status err';
+        $('coverFileStatus').textContent = e.message;
+    }
+});
+
+$('coverAudioUrl').addEventListener('input', () => {
+    coverState.audioUrl = $('coverAudioUrl').value.trim();
+});
+$('coverFeatureIdInput').addEventListener('input', () => {
+    coverState.coverFeatureId = $('coverFeatureIdInput').value.trim();
+    coverState.preprocessTime = Date.now(); // 视为新输入,重置 24h 计时
+});
+
+// ---- 预处理调用 ----
+$('btnCoverPreprocess').addEventListener('click', async () => {
+    if (!getApiKey()) return alert('请先输入 API Key');
+    const t = coverState.inputType;
+    // 预处理接口固定使用 model=music-cover（免费调用，与生成阶段是否付费无关）
+    const body = { model: 'music-cover' };
+    if (t === 'url') {
+        const u = $('coverAudioUrl').value.trim();
+        if (!/^https?:\/\//i.test(u)) return alert('请填写以 http(s):// 开头的公网音频 URL');
+        coverState.audioUrl = u;
+        body.audio_url = u;
+    } else if (t === 'file') {
+        if (!coverState.audioBase64) return alert('请先选择音频文件');
+        body.audio_base64 = coverState.audioBase64;
+    } else {
+        return alert('已使用 cover_feature_id,无需再次预处理');
+    }
+    $('btnCoverPreprocess').disabled = true;
+    $('coverPreprocessStatus').className = 'status loading';
+    $('coverPreprocessStatus').textContent = '预处理中...';
+    try {
+        const data = await apiPost('/music_cover_preprocess', body, 'log-music');
+        if (data.base_resp?.status_code !== 0) throw new Error(data.base_resp?.status_msg || '预处理失败');
+        coverState.coverFeatureId = data.cover_feature_id || '';
+        coverState.preprocessResult = data;
+        coverState.preprocessTime = Date.now();
+        renderPreprocessResult();
+        $('coverPreprocessStatus').className = 'status ok';
+        $('coverPreprocessStatus').textContent = '✅ 完成,可继续编辑歌词后生成翻唱';
+    } catch (e) {
+        $('coverPreprocessStatus').className = 'status err';
+        $('coverPreprocessStatus').textContent = '失败:' + e.message;
+    }
+    $('btnCoverPreprocess').disabled = false;
+});
+
+function renderPreprocessResult() {
+    const r = coverState.preprocessResult; if (!r) return;
+    $('coverPreprocessResult').style.display = '';
+    $('cprFeatureId').textContent = r.cover_feature_id || '';
+    $('cprDuration').textContent = r.audio_duration != null ? r.audio_duration : '?';
+    let segHtml = '';
+    try {
+        const s = typeof r.structure_result === 'string' ? JSON.parse(r.structure_result) : r.structure_result;
+        const segs = (s && s.segments) || [];
+        segHtml = segs.map(seg => {
+            const cls = String(seg.label || '').toLowerCase().replace(/\s+/g, '_');
+            const lab = seg.label || '?';
+            const st = Number(seg.start || 0).toFixed(1);
+            const en = Number(seg.end || 0).toFixed(1);
+            return `<span class="segment-tag ${cls}">${lab} (${st}-${en}s)</span>`;
+        }).join('');
+        if (!segHtml) segHtml = '<i style="color:#888;">无段落数据</i>';
+    } catch (e) {
+        segHtml = '<i style="color:#888;">结构解析失败</i>';
+    }
+    $('cprSegments').innerHTML = segHtml;
+}
+
+$('btnFillLyricsTpl').addEventListener('click', () => {
+    const r = coverState.preprocessResult;
+    if (!r || !r.formatted_lyrics) return alert('暂无可用的歌词模板');
+    $('musicLyrics').value = r.formatted_lyrics;
+    $('musicLyricsCount').textContent = r.formatted_lyrics.length;
+    $('musicLyrics').focus();
+});
+
+// 结构标签 — 在歌词框光标位置插入
+document.querySelectorAll('.music-tag').forEach(t => {
+    t.addEventListener('click', () => {
+        const ta = $('musicLyrics'); const ins = t.dataset.tag.replace(/\\n/g, '\n');
+        const s = ta.selectionStart, e = ta.selectionEnd;
+        ta.value = ta.value.slice(0, s) + ins + ta.value.slice(e);
+        ta.selectionStart = ta.selectionEnd = s + ins.length;
+        ta.focus();
+        $('musicLyricsCount').textContent = ta.value.length;
+    });
+});
+
+const MUSIC_PRESETS = [
+    'Pop, upbeat, cheerful, summer, electric guitar, female vocals',
+    'Lo-fi hip hop, chill, study, rainy day, soft piano',
+    'Cinematic, epic, orchestral, battle scene, choir',
+    'Jazz, smooth, late night, saxophone, walking bass',
+    'Ambient, ethereal, meditation, soft synth, slow',
+    'Rock, energetic, anthem, distorted guitar, drums',
+    'Indie folk, melancholic, rainy night, acoustic guitar, soft female vocals',
+    'EDM, festival, drop, big synth, 128 BPM',
+    'Classical, baroque, harpsichord, string quartet',
+    'K-pop, bright, dance, synth-pop, catchy hook',
+];
+$('btnMusicPresets').addEventListener('click', () => {
+    const list = MUSIC_PRESETS.map((p, i) => `${i + 1}. ${p}`).join('\n');
+    const choice = prompt(`选择风格序号 (1-${MUSIC_PRESETS.length})：\n\n${list}`);
+    if (choice === null) return;
+    const idx = parseInt(choice) - 1;
+    if (idx >= 0 && idx < MUSIC_PRESETS.length) {
+        $('musicPrompt').value = MUSIC_PRESETS[idx];
+        $('musicPromptCount').textContent = MUSIC_PRESETS[idx].length;
+    }
+});
+
+$('btnGenMusic').addEventListener('click', async () => {
+    if (!getApiKey()) return alert('请先输入 API Key');
+    const prompt = $('musicPrompt').value.trim();
+    if (!prompt) return alert('请填写风格描述 prompt');
+
+    const mode = document.querySelector('input[name="musicMode"]:checked').value;
+    const isCover = mode === 'cover';
+    if (isCover) {
+        if (prompt.length < 10 || prompt.length > 300) return alert(`翻唱模式 prompt 长度必须 10~300 字符（当前 ${prompt.length}）`);
+    } else {
+        if (prompt.length > 2000) return alert('prompt 超过 2000 字符');
+    }
+
+    const body = {
+        model: $('musicModel').value,
+        prompt: prompt,
+        output_format: 'url',
+        audio_setting: {
+            format: $('musicFormat').value,
+            sample_rate: parseInt($('musicSampleRate').value),
+            bitrate: parseInt($('musicBitrate').value),
+        },
+    };
+
+    if (isCover) {
+        if (!body.model.startsWith('music-cover')) {
+            return alert('翻唱模式必须使用 music-cover / music-cover-free 模型');
+        }
+        if (coverState.mode === 'two-step') {
+            const ly = $('musicLyrics').value.trim();
+            if (ly.length < 10 || ly.length > 1000) return alert(`两步翻唱 lyrics 长度必须 10~1000 字符（当前 ${ly.length}）`);
+            let fid;
+            if (coverState.inputType === 'feature_id') {
+                fid = $('coverFeatureIdInput').value.trim();
+                if (!fid) return alert('请填写 cover_feature_id');
+                coverState.coverFeatureId = fid;
+            } else {
+                fid = coverState.coverFeatureId;
+                if (!fid) return alert('请先点击「🔍 调用预处理」生成 cover_feature_id');
+                if (Date.now() - coverState.preprocessTime > 24 * 3600 * 1000) {
+                    coverState.coverFeatureId = '';
+                    return alert('预处理结果已过期（>24h），请重新调用预处理');
+                }
+            }
+            body.cover_feature_id = fid;
+            body.lyrics = ly;
+        } else {
+            // 一步翻唱
+            if (coverState.inputType === 'url') {
+                const u = $('coverAudioUrl').value.trim();
+                if (!/^https?:\/\//i.test(u)) return alert('请填写以 http(s):// 开头的公网音频 URL');
+                body.audio_url = u;
+            } else if (coverState.inputType === 'file') {
+                if (!coverState.audioBase64) return alert('请先选择参考音频文件');
+                body.audio_base64 = coverState.audioBase64;
+            } else {
+                return alert('一步翻唱不支持直接使用 cover_feature_id，请改为两步翻唱或选择 URL/文件');
+            }
+        }
+    } else if (mode === 'song') {
+        const ly = $('musicLyrics').value.trim();
+        if (!ly) return alert('歌曲模式必须填写歌词，或切换到「纯音乐 / AI 写词」模式');
+        if (ly.length > 3500) return alert('歌词超过 3500 字符');
+        body.lyrics = ly;
+    } else if (mode === 'instrumental') {
+        body.is_instrumental = true;
+    } else if (mode === 'auto-lyrics') {
+        body.lyrics_optimizer = true;
+    }
+
+    $('btnGenMusic').disabled = true; $('btnGenMusic').textContent = '生成中...';
+    $('musicStatus').className = 'status loading';
+    $('musicStatus').textContent = '生成中（可能需要 30-60 秒，请耐心等待）...';
+    $('musicAudioBox').style.display = 'none';
+
+    try {
+        const data = await apiPost('/music_generation', body, 'log-music');
+        if (data.base_resp?.status_code === 0 && data.data?.audio) {
+            let url = data.data.audio;
+            // 若返回 hex 字符串则转换为 blob URL
+            if (/^[0-9a-fA-F]+$/.test(url) && url.length > 200) {
+                const b = new Uint8Array(url.match(/.{1,2}/g).map(x => parseInt(x, 16)));
+                url = URL.createObjectURL(new Blob([b], { type: 'audio/' + $('musicFormat').value }));
+            }
+            $('musicAudio').src = url;
+            $('musicDownload').href = url;
+            $('musicDownload').download = `minimax_music_${Date.now()}.${$('musicFormat').value}`;
+            const dur = data.extra_info?.audio_length
+                ? (data.extra_info.audio_length / 1000).toFixed(1) + '秒' : '?';
+            $('musicInfo').textContent = `✅ 生成成功！时长: ${dur}`;
+            $('musicAudioBox').style.display = 'block';
+            $('musicStatus').className = 'status ok';
+            $('musicStatus').textContent = `成功 — 时长 ${dur}`;
+        } else {
+            const code = data.base_resp?.status_code;
+            let msg = data.base_resp?.status_msg || JSON.stringify(data);
+            if (code === 1024 || /payment|余额|额度|insufficient/i.test(msg)) {
+                const fb = isCover ? 'music-cover-free' : 'music-2.6-free';
+                msg += `\n💡 提示：该模型可能需要付费，请尝试切换到 ${fb}。`;
+            } else if (/feature_id.*expire|expired/i.test(msg)) {
+                msg += '\n💡 提示：预处理 ID 已过期，请重新上传音频。';
+                coverState.coverFeatureId = '';
+            } else if (/audio.*format|invalid.*audio/i.test(msg)) {
+                msg += '\n💡 提示：音频格式或采样率不支持，请使用标准 mp3/wav/flac。';
+            } else if (/sensitive/i.test(msg)) {
+                const field = (msg.match(/sensitive:\s*(\w+)/i) || [])[1] || '内容';
+                msg += `\n⚠️ 提示：「${field}」字段触发了内容安全审核，请检查是否含有政治/暴力/涉黄/真实人名等敏感词，替换后重试（可二分法定位具体段落）。`;
+            }
+            throw new Error(msg);
+        }
+    } catch (e) {
+        $('musicStatus').className = 'status err';
+        $('musicStatus').textContent = '失败：' + e.message;
+    }
+    $('btnGenMusic').disabled = false; $('btnGenMusic').textContent = isCover ? '🎙️ 生成翻唱' : '🎵 生成音乐';
+});
+
+$('btnToggleLog4').addEventListener('click', () => {
+    const el = $('log-music'); el.style.display = el.style.display === 'block' ? 'none' : 'block';
+});
+
+// 初始化
+updateCost(); updateUrlPreview(); renderHighlight();
+renderPronTable(); renderMyVoices(); updateMusicMode(); updateCoverInputType();
+$('ttsBitrate').disabled = $('ttsFormat').value !== 'mp3';
+</script>
+</body>
+</html>

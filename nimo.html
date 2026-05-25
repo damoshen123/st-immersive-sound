@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>MiMo-V2.5-TTS 语音合成 Demo</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    margin: 0; padding: 24px;
+    background: linear-gradient(135deg, #f6f8fb 0%, #eef1f7 100%);
+    color: #222; min-height: 100vh;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 16px; }
+  .card {
+    background: #fff; border-radius: 12px; padding: 20px;
+    box-shadow: 0 4px 18px rgba(0,0,0,.06); margin-bottom: 16px;
+  }
+  label { display: block; font-size: 13px; color: #555; margin: 12px 0 6px; font-weight: 600; }
+  input[type="text"], input[type="password"], select, textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid #d8dde6;
+    border-radius: 8px; font-size: 14px; font-family: inherit;
+    background: #fafbfd; transition: border-color .15s;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none; border-color: #4f7cff; background: #fff;
+  }
+  textarea { resize: vertical; min-height: 80px; }
+  .row { display: flex; gap: 12px; }
+  .row > div { flex: 1; }
+  button {
+    background: #4f7cff; color: #fff; border: 0; padding: 11px 22px;
+    border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: background .15s;
+  }
+  button:hover:not(:disabled) { background: #3a66e8; }
+  button:disabled { background: #b8c4dd; cursor: not-allowed; }
+  .btn-row { margin-top: 16px; display: flex; gap: 10px; align-items: center; }
+  .status { font-size: 13px; color: #666; }
+  .status.error { color: #d4351c; }
+  .status.success { color: #1f9d55; }
+  audio { width: 100%; margin-top: 12px; }
+  .hint { font-size: 12px; color: #888; margin-top: 4px; }
+  details { margin-top: 8px; }
+  details summary { cursor: pointer; font-size: 13px; color: #4f7cff; }
+  .hidden { display: none; }
+  a.dl { display: inline-block; margin-left: 12px; font-size: 13px; color: #4f7cff; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🎙 MiMo-V2.5-TTS 语音合成</h1>
+
+  <div class="card">
+    <label>API Key</label>
+    <input type="password" id="apiKey" placeholder="粘贴你的 MiMo API Key" />
+    <div class="hint">Key 仅保存在浏览器 localStorage，不会上传到任何第三方服务器。</div>
+
+    <label>API Base URL</label>
+    <input type="text" id="baseUrl" value="https://api.xiaomimimo.com/v1" />
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <label>模型</label>
+        <select id="model">
+          <option value="mimo-v2.5-tts">mimo-v2.5-tts（预置音色）</option>
+          <option value="mimo-v2.5-tts-voicedesign">mimo-v2.5-tts-voicedesign（文本设计音色）</option>
+          <option value="mimo-v2.5-tts-voiceclone">mimo-v2.5-tts-voiceclone（音色复刻）</option>
+        </select>
+      </div>
+      <div>
+        <label>输出格式</label>
+        <select id="format">
+          <option value="wav">wav</option>
+          <option value="mp3">mp3</option>
+          <option value="pcm16">pcm16（流式）</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 预置音色 -->
+    <div id="voiceBox">
+      <label>预置音色</label>
+      <select id="voice">
+        <option value="mimo_default">MiMo-默认</option>
+        <option value="冰糖">冰糖（中文女）</option>
+        <option value="茉莉">茉莉（中文女）</option>
+        <option value="苏打">苏打（中文男）</option>
+        <option value="白桦">白桦（中文男）</option>
+        <option value="Mia">Mia（英文女）</option>
+        <option value="Chloe">Chloe（英文女）</option>
+        <option value="Milo">Milo（英文男）</option>
+        <option value="Dean">Dean（英文男）</option>
+      </select>
+    </div>
+
+    <!-- 音色复刻：上传参考音频 -->
+    <div id="cloneBox" class="hidden">
+      <label>参考音频（mp3 / wav，≤10MB）</label>
+      <input type="file" id="refAudio" accept="audio/mp3,audio/mpeg,audio/wav" />
+    </div>
+
+    <label id="userLabel">User 指令（可选：风格控制 / voicedesign 时为音色描述，必填）</label>
+    <textarea id="userMsg" placeholder="例如：用轻快上扬的语调，语速稍快……"></textarea>
+
+    <label>Assistant 文本（要合成的目标内容）</label>
+    <textarea id="assistantMsg" rows="4" placeholder="例如：(开心)今天天气真好，我们出去走走吧！"></textarea>
+
+    <div class="btn-row">
+      <button id="genBtn">生成音频</button>
+      <span id="status" class="status"></span>
+    </div>
+
+    <audio id="player" controls class="hidden"></audio>
+    <a id="dlLink" class="dl hidden" download="tts.wav">⬇ 下载音频</a>
+  </div>
+
+  <details class="card">
+    <summary>风格标签速查</summary>
+    <p style="font-size:13px;color:#555;line-height:1.7;">
+      在 assistant 文本开头加 <code>(风格)</code>，例：<code>(怅然)这么多年过去了……</code><br/>
+      支持：开心 / 悲伤 / 愤怒 / 温柔 / 高冷 / 慵懒 / 磁性 / 醇厚 / 夹子音 / 御姐音 / 东北话 / 四川话 / 粤语 / 唱歌 等。<br/>
+      也可在文本中插入 <code>[音频标签]</code>，例：<code>(紧张，深呼吸)呼……冷静，冷静。</code>
+    </p>
+  </details>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const apiKeyInput = $('apiKey');
+const baseUrlInput = $('baseUrl');
+
+// 持久化 key 和 base url
+apiKeyInput.value = localStorage.getItem('mimo_api_key') || '';
+const savedBase = localStorage.getItem('mimo_base_url');
+if (savedBase) baseUrlInput.value = savedBase;
+apiKeyInput.addEventListener('change', () => localStorage.setItem('mimo_api_key', apiKeyInput.value));
+baseUrlInput.addEventListener('change', () => localStorage.setItem('mimo_base_url', baseUrlInput.value));
+
+// 根据模型切换可见字段
+const modelSel = $('model');
+modelSel.addEventListener('change', updateUI);
+function updateUI() {
+  const m = modelSel.value;
+  $('voiceBox').classList.toggle('hidden', m !== 'mimo-v2.5-tts');
+  $('cloneBox').classList.toggle('hidden', m !== 'mimo-v2.5-tts-voiceclone');
+  if (m === 'mimo-v2.5-tts-voicedesign') {
+    $('userLabel').textContent = 'User 指令（音色描述，必填）';
+  } else {
+    $('userLabel').textContent = 'User 指令（可选：风格控制）';
+  }
+}
+updateUI();
+
+// 工具：File -> base64
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => {
+      const s = r.result;        // data:audio/xxx;base64,AAAA...
+      resolve(s.split(',')[1]);  // 仅纯 base64
+    };
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+}
+
+function setStatus(msg, type) {
+  const s = $('status');
+  s.textContent = msg;
+  s.className = 'status' + (type ? ' ' + type : '');
+}
+
+// 把 PCM16LE 24kHz 单声道转为 WAV Blob
+function pcm16ToWav(pcmBytes, sampleRate = 24000) {
+  const numSamples = pcmBytes.length / 2;
+  const buffer = new ArrayBuffer(44 + pcmBytes.length);
+  const view = new DataView(buffer);
+  const writeStr = (off, s) => { for (let i = 0; i < s.length; i++) view.setUint8(off + i, s.charCodeAt(i)); };
+  writeStr(0, 'RIFF');
+  view.setUint32(4, 36 + pcmBytes.length, true);
+  writeStr(8, 'WAVE'); writeStr(12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);  // PCM
+  view.setUint16(22, 1, true);  // mono
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * 2, true);
+  view.setUint16(32, 2, true);
+  view.setUint16(34, 16, true);
+  writeStr(36, 'data');
+  view.setUint32(40, pcmBytes.length, true);
+  new Uint8Array(buffer, 44).set(pcmBytes);
+  return new Blob([buffer], { type: 'audio/wav' });
+}
+
+// base64 -> Uint8Array
+function b64ToBytes(b64) {
+  const bin = atob(b64);
+  const arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return arr;
+}
+
+$('genBtn').addEventListener('click', async () => {
+  const apiKey = apiKeyInput.value.trim();
+  const baseUrl = baseUrlInput.value.trim().replace(/\/+$/, '');
+  const model = modelSel.value;
+  const format = $('format').value;
+  const userMsg = $('userMsg').value;
+  const assistantMsg = $('assistantMsg').value.trim();
+
+  if (!apiKey) return setStatus('请先填写 API Key', 'error');
+  if (!assistantMsg) return setStatus('请填写要合成的文本', 'error');
+  if (model === 'mimo-v2.5-tts-voicedesign' && !userMsg.trim()) {
+    return setStatus('voicedesign 模型需要在 User 指令中填写音色描述', 'error');
+  }
+
+  // 构造 audio 字段
+  const audio = { format };
+  if (model === 'mimo-v2.5-tts') {
+    audio.voice = $('voice').value;
+  } else if (model === 'mimo-v2.5-tts-voiceclone') {
+    const f = $('refAudio').files[0];
+    if (!f) return setStatus('音色复刻需上传参考音频', 'error');
+    setStatus('读取参考音频…');
+    const b64 = await fileToBase64(f);
+    const mime = f.name.toLowerCase().endsWith('.wav') ? 'audio/wav' : 'audio/mpeg';
+    audio.voice = `data:${mime};base64,${b64}`;
+  }
+
+  const body = {
+    model,
+    messages: [
+      { role: 'user', content: userMsg },
+      { role: 'assistant', content: assistantMsg }
+    ],
+    audio
+  };
+
+  const btn = $('genBtn');
+  btn.disabled = true;
+  setStatus('合成中，请稍候…');
+
+  try {
+    const resp = await fetch(`${baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key': apiKey,
+        'Authorization': `Bearer ${apiKey}`  // 兼容
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!resp.ok) {
+      const errText = await resp.text();
+      throw new Error(`HTTP ${resp.status}: ${errText}`);
+    }
+
+    const data = await resp.json();
+    const audioObj = data?.choices?.[0]?.message?.audio;
+    if (!audioObj?.data) throw new Error('返回中未找到音频数据：' + JSON.stringify(data).slice(0, 300));
+
+    const bytes = b64ToBytes(audioObj.data);
+    let blob, ext;
+    if (format === 'pcm16') {
+      blob = pcm16ToWav(bytes, 24000); ext = 'wav';
+    } else if (format === 'mp3') {
+      blob = new Blob([bytes], { type: 'audio/mpeg' }); ext = 'mp3';
+    } else {
+      blob = new Blob([bytes], { type: 'audio/wav' }); ext = 'wav';
+    }
+
+    const url = URL.createObjectURL(blob);
+    const player = $('player');
+    player.src = url;
+    player.classList.remove('hidden');
+    player.play().catch(()=>{});
+
+    const dl = $('dlLink');
+    dl.href = url;
+    dl.download = `tts_${Date.now()}.${ext}`;
+    dl.classList.remove('hidden');
+
+    setStatus(`合成成功（${(blob.size/1024).toFixed(1)} KB）`, 'success');
+  } catch (e) {
+    console.error(e);
+    setStatus('失败：' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

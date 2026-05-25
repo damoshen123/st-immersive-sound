@@ -1,0 +1,76 @@
+<div class="st-is-tab-content" id="st-is-tab-regex">
+    <div class="st-is-settings-section">
+        <h3>正则设置</h3>
+        <div class="st-is-field">
+            <label for="regex_profile_select">正则配置</label>
+            <div class="st-is-profile-controls">
+                <select id="regex_profile_select" class="st-is-select"></select>
+                <button class="st-is-icon-btn" id="new_regex_profile_button" title="新建"><i class="fa-solid fa-plus"></i></button>
+                <button class="st-is-icon-btn" id="save_regex_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                <button class="st-is-icon-btn" id="save_as_regex_profile_button" title="另存为"><i class="fa-solid fa-floppy-disk"></i></button>
+                <button class="st-is-icon-btn" id="import_regex_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                <button class="st-is-icon-btn" id="export_regex_profile_button" title="导出"><i class="fa-solid fa-file-export"></i></button>
+                <button class="st-is-icon-btn danger" id="delete_regex_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+        <div class="st-is-field-col">
+            <label for="regex_before_after_editor">前后正则 (用于切掉前后文)</label>
+            <textarea id="regex_before_after_editor" class="st-is-textarea" rows="3" placeholder="输入正则表达式..."></textarea>
+        </div>
+        <div class="st-is-field-col">
+            <label for="regex_text_editor">文字正则 (用于替换内容)</label>
+            <textarea id="regex_text_editor" class="st-is-textarea" rows="5" placeholder="输入正则表达式..."></textarea>
+        </div>
+        <div class="st-is-field">
+            <label for="regex_built_in_filters">内置默认过滤 (&lt;image&gt;/image###/HTML注释)</label>
+            <div class="st-is-toggle">
+                <input id="regex_built_in_filters" type="checkbox" />
+                <span class="st-is-slider"></span>
+            </div>
+        </div>
+    </div>
+    <div class="st-is-settings-section">
+        <h4>正则预设编辑器</h4>
+        <div class="st-is-field">
+            <div class="st-is-profile-controls">
+                <button class="st-is-btn" id="add_regex_entry_button" title="新建正则条目">
+                    <i class="fa-solid fa-plus"></i> 新建
+                </button>
+                <button class="st-is-btn" id="import_regex_entry_button" title="从 JSON 文件导入正则条目">
+                    <i class="fa-solid fa-file-import"></i> 导入
+                </button>
+                <button class="st-is-btn" id="import_regex_entry_engine_button" title="从 SillyTavern 正则引擎导入">
+                    <i class="fa-solid fa-download"></i> 从ST引擎导入
+                </button>
+            </div>
+        </div>
+        <div id="regex_entries_container" class="st-is-preset-entries-container">
+            <!-- 正则条目将在这里动态渲染 -->
+        </div>
+    </div>
+    <div class="st-is-settings-section">
+        <h4>测试工具</h4>
+        <div class="st-is-field">
+            <label for="regexTestMode">测试模式</label>
+            <div class="st-is-toggle">
+                <input id="regexTestMode" type="checkbox" />
+                <span class="st-is-slider"></span>
+            </div>
+        </div>
+        <div class="st-is-field-col">
+            <label for="regex_test_original_text">原文</label>
+            <textarea id="regex_test_original_text" class="st-is-textarea" rows="6"></textarea>
+        </div>
+        <div style="text-align: center; margin: 10px 0;">
+            <button class="st-is-btn" id="test_regex_button">
+                <i class="fa-solid fa-arrow-down"></i>
+                应用正则并测试
+                <i class="fa-solid fa-arrow-down"></i>
+            </button>
+        </div>
+        <div class="st-is-field-col">
+            <label for="regex_test_result_text">正则后文本</label>
+            <textarea id="regex_test_result_text" class="st-is-textarea" rows="6" readonly></textarea>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,32 @@
+<div class="st-is-tab-content" id="st-is-tab-vibration">
+    <div class="st-is-settings-section">
+        <h3>震动设置</h3>
+        <div class="st-is-field">
+            <label for="enable_vibration">启用震动</label>
+            <div class="st-is-toggle">
+                <input id="enable_vibration" type="checkbox" />
+                <span class="st-is-slider"></span>
+            </div>
+        </div>
+    </div>
+    <div class="st-is-settings-section">
+        <h4>自定义震动模式</h4>
+        <div class="st-is-field">
+            <label for="vibration_profile_select">震动配置</label>
+            <div class="st-is-profile-controls">
+                <select id="vibration_profile_select" class="st-is-select"></select>
+                <button class="st-is-icon-btn" id="new_vibration_profile_button" title="新建"><i class="fa-solid fa-plus"></i></button>
+                <button class="st-is-icon-btn" id="save_vibration_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                <button class="st-is-icon-btn" id="rename_vibration_profile_button" title="重命名"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button class="st-is-icon-btn danger" id="delete_vibration_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+        <div class="st-is-field-col">
+            <label for="vibration_pattern_editor">震动模式 (0=单次, 1=循环. 例: [0,100,50,100])</label>
+            <textarea id="vibration_pattern_editor" class="st-is-textarea" rows="3"></textarea>
+            <div style="text-align: right; margin-top: 10px;">
+                <button class="st-is-btn" id="test_vibration_button">测试震动</button>
+            </div>
+        </div>
+    </div>
+</div>

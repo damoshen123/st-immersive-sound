@@ -1,0 +1,225 @@
+<div class="st-is-tab-content" id="st-is-tab-llm">
+    <div class="st-is-settings-section">
+        <h3>大模型设置</h3>
+    </div>
+
+    <!-- 请求类型配置：为不同功能分别绑定 API 配置 + 上下文预设 -->
+    <div class="st-is-settings-section">
+        <h4>请求类型配置</h4>
+        <p class="st-is-section-desc">
+            为不同功能分别选择要使用的 API 配置和上下文预设。<br>
+            <span class="st-is-section-hint">※ 智绘姬助手在它自己的设置面板里配置，不在这里。</span>
+        </p>
+        <div class="st-is-request-cards-grid">
+            <!-- 正文音效生成（默认） -->
+            <div class="st-is-request-card">
+                <div class="st-is-request-card-header">
+                    <i class="fa-solid fa-music"></i> 正文音效生成（默认）
+                </div>
+                <div class="st-is-request-card-selects">
+                    <div class="st-is-request-card-select-item">
+                        <label for="llm_main_sfx_api_select">API 配置</label>
+                        <select id="llm_main_sfx_api_select" class="st-is-select"></select>
+                    </div>
+                    <div class="st-is-request-card-select-item">
+                        <label for="llm_main_sfx_context_select">上下文预设</label>
+                        <select id="llm_main_sfx_context_select" class="st-is-select"></select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 助眠脚本 -->
+            <div class="st-is-request-card">
+                <div class="st-is-request-card-header">
+                    <i class="fa-solid fa-moon"></i> 助眠脚本
+                </div>
+                <div class="st-is-request-card-selects">
+                    <div class="st-is-request-card-select-item">
+                        <label for="llm_sleep_aid_script_api_select">API 配置</label>
+                        <select id="llm_sleep_aid_script_api_select" class="st-is-select"></select>
+                    </div>
+                    <div class="st-is-request-card-select-item">
+                        <label for="llm_sleep_aid_script_context_select">上下文预设</label>
+                        <select id="llm_sleep_aid_script_context_select" class="st-is-select"></select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 助眠音效生成 -->
+            <div class="st-is-request-card">
+                <div class="st-is-request-card-header">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> 助眠音效生成
+                </div>
+                <div class="st-is-request-card-selects">
+                    <div class="st-is-request-card-select-item">
+                        <label for="llm_sleep_aid_sfx_api_select">API 配置</label>
+                        <select id="llm_sleep_aid_sfx_api_select" class="st-is-select"></select>
+                    </div>
+                    <div class="st-is-request-card-select-item">
+                        <label for="llm_sleep_aid_sfx_context_select">上下文预设</label>
+                        <select id="llm_sleep_aid_sfx_context_select" class="st-is-select"></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="st-is-settings-section">
+        <!-- 预设管理 -->
+        <div class="st-is-field">
+            <label for="llm_profile_select">LLM 配置</label>
+            <div class="st-is-profile-controls">
+                <select id="llm_profile_select" class="st-is-select"></select>
+                <button class="st-is-icon-btn" id="new_llm_profile_button" title="新建"><i class="fa-solid fa-plus"></i></button>
+                <button class="st-is-icon-btn" id="save_llm_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                <button class="st-is-icon-btn" id="import_llm_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                <button class="st-is-icon-btn" id="export_llm_profile_button" title="导出"><i class="fa-solid fa-file-export"></i></button>
+                <button class="st-is-icon-btn danger" id="delete_llm_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="st-is-settings-section">
+        <!-- API 配置 (V3 更新) -->
+        <h4>API 配置</h4>
+        <div class="st-is-field-col">
+            <label for="llm_api_url">API Base URL</label>
+            <textarea id="llm_api_url" class="st-is-textarea" rows="2" placeholder="例如: https://api.openai.com/v1"></textarea>
+        </div>
+        <div class="st-is-field-col">
+            <label for="llm_api_key">API Key</label>
+            <textarea id="llm_api_key" class="st-is-textarea" rows="3" placeholder="请输入你的 API Key"></textarea>
+        </div>
+        <div class="st-is-field">
+            <label for="llm_model_custom">模型选择</label>
+            <div class="st-is-model-select-stack">
+                <textarea id="llm_model_custom" class="st-is-textarea" rows="1" placeholder="模型名称，例如 gpt-4o-mini（从下方选择会自动填入，也可手动编辑）"></textarea>
+                <div class="st-is-profile-controls">
+                    <select id="llm_model_select" class="st-is-select"></select>
+                    <button class="st-is-btn" id="llm_fetch_models_button" title="获取模型列表">
+                        <i class="fa-solid fa-plug-circle-bolt"></i>
+                        连接并获取模型
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 高级请求开关（与 AI 助手设置保持一致；保存到当前 LLM 预设） -->
+        <div class="st-is-field">
+            <label for="llm_stream">流式生成</label>
+            <div class="st-is-toggle">
+                <input id="llm_stream" type="checkbox" />
+                <span class="st-is-slider"></span>
+            </div>
+        </div>
+        <div class="st-is-field">
+            <label for="llm_bypass_proxy">不通过酒馆代理</label>
+            <div class="st-is-toggle">
+                <input id="llm_bypass_proxy" type="checkbox" />
+                <span class="st-is-slider"></span>
+            </div>
+        </div>
+        <small style="color: var(--st-is-text-secondary); display:block; margin:-6px 0 8px 4px;">
+            默认通过酒馆后端转发以避免跨域；开启后将由浏览器直连 API。
+        </small>
+        <div class="st-is-field">
+            <label for="llm_merge_system_user">合并 System 和 User</label>
+            <div class="st-is-toggle">
+                <input id="llm_merge_system_user" type="checkbox" checked />
+                <span class="st-is-slider"></span>
+            </div>
+        </div>
+        <small style="color: var(--st-is-text-secondary); display:block; margin:-6px 0 8px 4px;">
+            开启后，合并相邻消息时会将 system 和 user 视为同类角色一并合并。
+        </small>
+        <div class="st-is-field">
+            <label for="llm_send_images">发送图片</label>
+            <div class="st-is-toggle">
+                <input id="llm_send_images" type="checkbox" />
+                <span class="st-is-slider"></span>
+            </div>
+        </div>
+        <small style="color: var(--st-is-text-secondary); display:block; margin:-6px 0 8px 4px;">
+            开启后，请求会保留消息中的图片（多模态）；关闭后图片会被过滤，仅发送文本。默认关闭，请确认所选模型支持多模态。
+        </small>
+    </div>
+
+    <div class="st-is-settings-section">
+        <!-- OpenAI 模型参数 -->
+        <h4>模型参数</h4>
+        <div class="st-is-grid">
+            <div class="st-is-field">
+                <label for="llm_temperature">Temperature</label>
+                <div class="st-is-range-container">
+                    <input class="st-is-range-slider" type="range" id="llm_temperature" min="0" max="2" step="0.1" value="0.7">
+                    <input class="st-is-range-input" type="number" id="llm_temperature_value" data-for="llm_temperature" min="0" max="2" step="0.1" value="0.7">
+                </div>
+            </div>
+            <div class="st-is-field">
+                <label for="llm_top_p">Top P</label>
+                <div class="st-is-range-container">
+                    <input class="st-is-range-slider" type="range" id="llm_top_p" min="0" max="1" step="0.1" value="1">
+                    <input class="st-is-range-input" type="number" id="llm_top_p_value" data-for="llm_top_p" min="0" max="1" step="0.1" value="1">
+                </div>
+            </div>
+            <div class="st-is-field">
+                <label for="llm_max_tokens">Max Tokens</label>
+                <div class="st-is-range-container">
+                    <input class="st-is-range-slider" type="range" id="llm_max_tokens" min="1" max="900000" step="1" value="60000">
+                    <input class="st-is-range-input" type="number" id="llm_max_tokens_value" data-for="llm_max_tokens" min="1" max="4096" step="1" value="512">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="st-is-settings-section">
+        <!-- 上下文配置 -->
+        <h4>测试上下文</h4>
+        <div class="st-is-field">
+            <label for="test_context_select">上下文预设</label>
+            <div class="st-is-profile-controls">
+                <select id="test_context_select" class="st-is-select"></select>
+                <button class="st-is-icon-btn" id="new_test_context_button" title="新建"><i class="fa-solid fa-plus"></i></button>
+                <button class="st-is-icon-btn" id="save_test_context_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                <button class="st-is-icon-btn" id="rename_test_context_button" title="修改名称"><i class="fa-solid fa-pen"></i></button>
+                <button class="st-is-icon-btn" id="import_test_context_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                <button class="st-is-icon-btn" id="export_test_context_button" title="导出"><i class="fa-solid fa-file-export"></i></button>
+                <button class="st-is-icon-btn" id="export_all_test_context_button" title="导出全部"><i class="fa-solid fa-file-zipper"></i></button>
+                <button class="st-is-icon-btn danger" id="delete_test_context_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+
+        <!-- 添加条目按钮 -->
+        <div class="st-is-add-entry-area">
+            <button class="st-is-btn st-is-add-entry-btn" id="add_preset_entry_button">
+                <i class="fa-solid fa-plus"></i> 添加条目
+            </button>
+        </div>
+
+        <!-- 条目列表容器 -->
+        <div id="preset-entries-container" class="st-is-preset-entries-container">
+            <!-- 条目将由 JS 动态生成 -->
+        </div>
+    </div>
+
+    <div class="st-is-settings-section">
+        <!-- 测试工具 -->
+        <h4>测试工具</h4>
+
+        <!-- 测试按钮和结果 -->
+        <div style="text-align: center; margin: 20px 0;">
+            <button class="st-is-btn" id="llm_test_button">
+                <i class="fa-solid fa-paper-plane"></i>
+                发送测试请求
+            </button>
+        </div>
+        <div class="st-is-field-col">
+            <label for="llm_combined_prompt">组合提示词</label>
+            <textarea id="llm_combined_prompt" class="st-is-textarea" rows="4" readonly placeholder="这里是根据上下文和外部请求组合的最终提示词..."></textarea>
+        </div>
+        <div class="st-is-field-col">
+            <label for="llm_test_result">AI 回复</label>
+            <textarea id="llm_test_result" class="st-is-textarea" rows="8" readonly placeholder="点击上方按钮后，AI 的回复将显示在这里..."></textarea>
+        </div>
+    </div>
+</div>

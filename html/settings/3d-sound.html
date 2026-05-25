@@ -1,0 +1,116 @@
+<div class="st-is-tab-content" id="st-is-tab-3d-sound">
+    <div class="st-is-settings-section">
+        <h3>Music 3D 音效设置</h3>
+        <div class="st-is-field">
+            <label for="enable3dAudio_music">开启 Music 3D</label>
+            <div class="st-is-toggle">
+                <input type="checkbox" id="enable3dAudio_music" />
+                <span class="st-is-slider"></span>
+            </div>
+        </div>
+        <div class="st-is-grid">
+            <div class="st-is-field">
+                <label>近距离不衰减</label>
+                <div class="st-is-range-container">
+                    <input class="st-is-range-slider" type="range" id="music_refDistance" min="0" max="20" step="0.1" value="0.6">
+                    <input class="st-is-range-input" type="number" id="music_refDistance_value" data-for="music_refDistance" min="0" max="20" step="0.1" value="0.6">
+                </div>
+            </div>
+            <div class="st-is-field">
+                <label>远距离不衰减</label>
+                <div class="st-is-range-container">
+                    <input class="st-is-range-slider" type="range" id="music_maxDistance" min="1" max="100" step="1" value="20">
+                    <input class="st-is-range-input" type="number" id="music_maxDistance_value" data-for="music_maxDistance" min="1" max="100" step="1" value="20">
+                </div>
+            </div>
+            <div class="st-is-field">
+                <label>衰减速度</label>
+                <div class="st-is-range-container">
+                    <input class="st-is-range-slider" type="range" id="music_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
+                    <input class="st-is-range-input" type="number" id="music_rolloffFactor_value" data-for="music_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
+                </div>
+            </div>
+        </div>
+        <h4>位置 (X, Y, Z)</h4>
+        <div class="st-is-grid">
+            <div class="st-is-field">
+                <label>左右 (X)</label>
+                <div class="st-is-range-container">
+                    <input class="st-is-range-slider" type="range" id="music_posX" min="-10" max="10" value="0" step="0.1">
+                    <input class="st-is-range-input" type="number" id="music_posX_value" data-for="music_posX" min="-10" max="10" step="0.1" value="0">
+                </div>
+            </div>
+            <div class="st-is-field">
+                <label>上下 (Y)</label>
+                <div class="st-is-range-container">
+                    <input class="st-is-range-slider" type="range" id="music_posY" min="-10" max="10" value="0" step="0.1">
+                    <input class="st-is-range-input" type="number" id="music_posY_value" data-for="music_posY" min="-10" max="10" step="0.1" value="0">
+                </div>
+            </div>
+            <div class="st-is-field">
+                <label>前后 (Z)</label>
+                <div class="st-is-range-container">
+                    <input class="st-is-range-slider" type="range" id="music_posZ" min="-10" max="10" value="0" step="0.1">
+                    <input class="st-is-range-input" type="number" id="music_posZ_value" data-for="music_posZ" min="-10" max="10" step="0.1" value="0">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="st-is-settings-section">
+        <h3>Ambiance 3D 音效设置</h3>
+        <div class="st-is-field">
+            <label for="enable3dAudio_ambiance">开启 Ambiance 3D</label>
+            <div class="st-is-toggle">
+                <input type="checkbox" id="enable3dAudio_ambiance" />
+                <span class="st-is-slider"></span>
+            </div>
+        </div>
+        <div class="st-is-grid">
+            <div class="st-is-field">
+                <label>近距离不衰减</label>
+                <div class="st-is-range-container">
+                    <input class="st-is-range-slider" type="range" id="ambiance_refDistance" min="0" max="20" step="0.1" value="0.6">
+                    <input class="st-is-range-input" type="number" id="ambiance_refDistance_value" data-for="ambiance_refDistance" min="0" max="20" step="0.1" value="0.6">
+                </div>
+            </div>
+            <div class="st-is-field">
+                <label>远距离不衰减</label>
+                <div class="st-is-range-container">
+                    <input class="st-is-range-slider" type="range" id="ambiance_maxDistance" min="1" max="100" step="1" value="20">
+                    <input class="st-is-range-input" type="number" id="ambiance_maxDistance_value" data-for="ambiance_maxDistance" min="1" max="100" step="1" value="20">
+                </div>
+            </div>
+            <div class="st-is-field">
+                <label>衰减速度</label>
+                <div class="st-is-range-container">
+                    <input class="st-is-range-slider" type="range" id="ambiance_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
+                    <input class="st-is-range-input" type="number" id="ambiance_rolloffFactor_value" data-for="ambiance_rolloffFactor" min="0" max="10" step="0.1" value="0.3">
+                </div>
+            </div>
+        </div>
+        <h4>位置 (X, Y, Z)</h4>
+        <div class="st-is-grid">
+            <div class="st-is-field">
+                <label>左右 (X)</label>
+                <div class="st-is-range-container">
+                    <input class="st-is-range-slider" type="range" id="ambiance_posX" min="-10" max="10" value="0" step="0.1">
+                    <input class="st-is-range-input" type="number" id="ambiance_posX_value" data-for="ambiance_posX" min="-10" max="10" step="0.1" value="0">
+                </div>
+            </div>
+            <div class="st-is-field">
+                <label>上下 (Y)</label>
+                <div class="st-is-range-container">
+                    <input class="st-is-range-slider" type="range" id="ambiance_posY" min="-10" max="10" value="0" step="0.1">
+                    <input class="st-is-range-input" type="number" id="ambiance_posY_value" data-for="ambiance_posY" min="-10" max="10" step="0.1" value="0">
+                </div>
+            </div>
+            <div class="st-is-field">
+                <label>前后 (Z)</label>
+                <div class="st-is-range-container">
+                    <input class="st-is-range-slider" type="range" id="ambiance_posZ" min="-10" max="10" value="0" step="0.1">
+                    <input class="st-is-range-input" type="number" id="ambiance_posZ_value" data-for="ambiance_posZ" min="-10" max="10" step="0.1" value="0">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

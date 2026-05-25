@@ -1,0 +1,23 @@
+<div class="st-is-tab-content" id="st-is-tab-sfx-preview">
+    <div class="st-is-settings-section">
+        <h3>音效预览</h3>
+        <p>这里会显示最近 AI 生成并实际使用过的音乐、环境音、音效等条目，支持修改并覆盖当前记录。</p>
+        <div class="st-is-field">
+            <input type="text" id="st-is-sfx-preview-search" placeholder="搜索音频名称...">
+        </div>
+        <div class="st-is-field">
+            <label for="st-is-sfx-preview-category">分类筛选:</label>
+            <select id="st-is-sfx-preview-category" class="st-is-select">
+                <option value="__all__">全部分类</option>
+                <option value="Music">音乐</option>
+                <option value="Ambiance">环境音</option>
+                <option value="SFX">音效</option>
+                <option value="SFX_WAIT">等待音效</option>
+            </select>
+        </div>
+        <div class="st-is-cache-controls">
+            <button id="st-is-sfx-preview-refresh" class="st-is-btn"><i class="fa-solid fa-rotate"></i> 刷新列表</button>
+        </div>
+        <div id="st-is-sfx-preview-list-container" class="st-is-cache-list-container"></div>
+    </div>
+</div>

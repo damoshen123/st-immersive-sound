@@ -1,0 +1,80 @@
+<div class="st-is-tab-content" id="st-is-tab-audio-resources">
+    <div class="st-is-settings-section">
+        <h3>音效设定</h3>
+        <div class="st-is-field">
+            <label for="audio_resources_profile_select">音效设定预设</label>
+            <div class="st-is-profile-controls">
+                <select id="audio_resources_profile_select" class="st-is-select"></select>
+                <button class="st-is-icon-btn" id="new_audio_resources_profile_button" title="新建"><i class="fa-solid fa-plus"></i></button>
+                <button class="st-is-icon-btn" id="save_audio_resources_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                <button class="st-is-icon-btn" id="import_audio_resources_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                <button class="st-is-icon-btn" id="export_audio_resources_profile_button" title="导出当前"><i class="fa-solid fa-file-export"></i></button>
+                <button class="st-is-icon-btn" id="export_all_audio_resources_profile_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                <button class="st-is-icon-btn" id="rename_audio_resources_profile_button" title="重命名"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button class="st-is-icon-btn danger" id="delete_audio_resources_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+        <div class="st-is-add-entry-area">
+            <button class="st-is-btn st-is-add-entry-btn" id="add_audio_resources_entry_button">
+                <i class="fa-solid fa-plus"></i> 添加条目
+            </button>
+            <button class="st-is-btn" id="check_audio_resources_entry_button" title="检测名称是否能在所有资源预设里找到">
+                <i class="fa-solid fa-magnifying-glass"></i> 检测名称
+            </button>
+        </div>
+        <div id="st-is-audio-resources-entries" class="st-is-preset-entries-container">
+            <!-- Audio resources entries will be dynamically inserted here -->
+        </div>
+    </div>
+    <div class="st-is-settings-section">
+        <h3>资源预设</h3>
+        <div class="st-is-field">
+            <label for="audio_asset_profile_select">资源预设</label>
+            <div class="st-is-profile-controls">
+                <select id="audio_asset_profile_select" class="st-is-select"></select>
+                <button class="st-is-icon-btn" id="new_audio_asset_profile_button" title="新建"><i class="fa-solid fa-plus"></i></button>
+                <button class="st-is-icon-btn" id="save_audio_asset_profile_button" title="保存"><i class="fa-solid fa-save"></i></button>
+                <button class="st-is-icon-btn" id="import_audio_asset_profile_button" title="导入"><i class="fa-solid fa-file-import"></i></button>
+                <button class="st-is-icon-btn" id="export_audio_asset_profile_button" title="导出当前"><i class="fa-solid fa-file-export"></i></button>
+                <button class="st-is-icon-btn" id="export_all_audio_asset_profile_button" title="导出全部"><i class="fa-solid fa-folder-open"></i></button>
+                <button class="st-is-icon-btn" id="rename_audio_asset_profile_button" title="重命名"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button class="st-is-icon-btn danger" id="delete_audio_asset_profile_button" title="删除"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+        <div id="st-is-audio-assets-editor">
+            <div class="st-is-settings-section" style="padding: 16px; margin-top: 16px; background-color: var(--st-is-bg-tertiary);">
+                <h4 style="margin-top: 0; margin-bottom: 16px;">添加新资源</h4>
+                <div class="st-is-grid" id="st-is-add-asset-form" style="gap: 12px;">
+                    <div class="st-is-field-col" style="margin-bottom: 0;">
+                        <label>名称 (Key)</label>
+                        <input type="text" class="st-is-text-input" id="st-is-new-asset-key">
+                    </div>
+                    <div class="st-is-field-col" style="margin-bottom: 0;">
+                        <label>链接 (URL)</label>
+                        <input type="text" class="st-is-text-input" id="st-is-new-asset-url">
+                    </div>
+                    <div class="st-is-field-col" style="margin-bottom: 0;">
+                        <label>上传者</label>
+                        <input type="text" class="st-is-text-input" id="st-is-new-asset-uploader" placeholder="N/A">
+                    </div>
+                    <div class="st-is-field-col" style="margin-bottom: 0;">
+                        <label>音量 (%)</label>
+                        <input type="number" class="st-is-text-input" id="st-is-new-asset-volume" value="100">
+                    </div>
+                    <div class="st-is-field-col" style="margin-bottom: 0;">
+                        <label>震动</label>
+                        <input type="text" class="st-is-text-input" id="st-is-new-asset-vibration" placeholder="N/A">
+                    </div>
+                </div>
+                <div style="text-align: right; margin-top: 16px;">
+                    <button class="st-is-btn" id="st-is-add-asset-button"><i class="fa-solid fa-plus"></i> 添加到列表</button>
+                </div>
+            </div>
+        
+            <div class="st-is-field-col" style="margin-top: 24px;">
+                <label for="st-is-audio-assets-textarea">资源列表 (格式: 名称=链接=上传者=音量=震动)</label>
+                <textarea id="st-is-audio-assets-textarea" class="st-is-textarea" rows="15"></textarea>
+            </div>
+        </div>
+    </div>
+</div>
