@@ -2,6 +2,18 @@
     <div class="st-is-settings-section">
         <h3>音频预览</h3>
         <p>这里将显示最近生成或缓存的 TTS 音频列表。</p>
+        <div class="st-is-form-group st-is-form-group-full-width">
+            <label for="st-is-main-sfx-config-text">正文音效配置文本</label>
+            <textarea id="st-is-main-sfx-config-text" class="st-is-textarea" rows="8" placeholder="这里将显示最近一次正文音效生成的配置文本，支持手动编辑后重新解析。"></textarea>
+        </div>
+        <div class="st-is-cache-controls">
+            <button id="st-is-main-sfx-reparse-button" class="st-is-btn" type="button" disabled><i class="fa-solid fa-arrows-rotate"></i> 重新解析</button>
+            <span id="st-is-main-sfx-config-status" style="color: var(--st-is-text-secondary);"></span>
+        </div>
+        <div id="st-is-main-sfx-issues-panel" class="st-is-main-sfx-issues-panel" style="display: none;">
+            <div class="st-is-main-sfx-issues-title">未命中配置项</div>
+            <div id="st-is-main-sfx-issues-list" class="st-is-main-sfx-issues-list"></div>
+        </div>
         <div class="st-is-tts-preview-filter" id="st-is-tts-preview-filter" role="tablist" aria-label="音频预览分类切换">
             <button class="st-is-tts-preview-filter-btn active" type="button" data-filter="all">全部</button>
             <button class="st-is-tts-preview-filter-btn" type="button" data-filter="normal">普通TTS</button>
