@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "esbuild": "^0.28.1",
     "javascript-obfuscator": "^4.1.1"
   }
 }

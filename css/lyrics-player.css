@@ -1,0 +1,561 @@
+/* ============================================================
+ * 歌词播放器样式 - st-immersive-sound
+ * 所有颜色通过 --lp-* CSS 变量引用，支持主题切换
+ * ============================================================ */
+
+/* --- 遮罩层 --- */
+.st-is-lyrics-backdrop {
+    display: none !important;
+}
+
+/* --- 播放器容器 --- */
+.st-is-lyrics-player {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 99999;
+    width: 480px;
+    max-width: 95vw;
+    height: 70vh;
+    max-height: 90vh;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 8px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--lp-border);
+    background: var(--lp-bg);
+    border: 1px solid var(--lp-border);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    transition: border-radius 0.3s ease, width 0.3s ease, height 0.3s ease;
+}
+
+/* 全屏模式 */
+.st-is-lyrics-player.fullscreen {
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+    border: none !important;
+    margin: 0 !important;
+}
+
+/* --- 标题栏 --- */
+.st-is-lyrics-titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--lp-titlebar-bg);
+    color: var(--lp-titlebar-text);
+    border-bottom: 1px solid var(--lp-border);
+    flex-shrink: 0;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.st-is-lyrics-titlebar-title {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+}
+
+.st-is-lyrics-titlebar-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.st-is-lyrics-titlebar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--lp-titlebar-text);
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s ease, opacity 0.2s ease;
+    opacity: 0.7;
+}
+
+.st-is-lyrics-titlebar-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 1;
+}
+
+/* --- 进度条区域 --- */
+.st-is-lyrics-progress-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    flex-shrink: 0;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.st-is-lyrics-time {
+    font-size: 11px;
+    color: var(--lp-titlebar-text);
+    opacity: 0.7;
+    font-variant-numeric: tabular-nums;
+    min-width: 38px;
+    text-align: center;
+}
+
+.st-is-lyrics-progress-track {
+    flex: 1;
+    height: 4px;
+    background: var(--lp-progress-bg);
+    border-radius: 2px;
+    position: relative;
+    cursor: pointer;
+    overflow: visible;
+}
+
+.st-is-lyrics-progress-fill {
+    height: 100%;
+    background: var(--lp-progress-fill);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.1s linear;
+    pointer-events: none;
+}
+
+.st-is-lyrics-progress-thumb {
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--lp-progress-thumb);
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+    cursor: grab;
+    transition: transform 0.15s ease;
+    z-index: 2;
+}
+
+.st-is-lyrics-progress-thumb:hover {
+    transform: translate(-50%, -50%) scale(1.2);
+}
+
+.st-is-lyrics-progress-thumb:active {
+    cursor: grabbing;
+    transform: translate(-50%, -50%) scale(1.3);
+}
+
+/* --- 控制按钮区域 --- */
+.st-is-lyrics-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 0 16px 12px 16px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+}
+
+.st-is-lyrics-control-btn {
+    background: transparent;
+    border: none;
+    color: var(--lp-titlebar-text);
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.st-is-lyrics-control-btn:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+}
+
+.st-is-lyrics-control-btn.play-btn {
+    font-size: 24px;
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.st-is-lyrics-control-btn.play-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* --- 歌词区域 --- */
+.st-is-lyrics-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 24px;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* 上下留白，确保首/尾行可居中 */
+.st-is-lyrics-content::before,
+.st-is-lyrics-content::after {
+    content: '';
+    display: block;
+    height: 35vh;
+}
+
+.st-is-lyrics-content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.st-is-lyrics-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.st-is-lyrics-content::-webkit-scrollbar-thumb {
+    background: var(--lp-scrollbar-thumb);
+    border-radius: 2px;
+}
+
+/* --- 歌词行 --- */
+.st-is-lyrics-line {
+    padding: 8px 4px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--lp-text);
+    cursor: pointer;
+    transition: color 0.6s ease, text-shadow 0.6s ease, transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
+    border-radius: 6px;
+    transform-origin: center center;
+    transform: scale(1);
+    font-weight: normal;
+}
+
+.st-is-lyrics-line:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* 当前行 */
+.st-is-lyrics-line.active {
+    transform: scale(1.12);
+    color: var(--lp-text-active);
+    text-shadow: 0 0 20px var(--lp-glow), 0 0 40px var(--lp-glow);
+}
+
+/* 已播放行 */
+.st-is-lyrics-line.played {
+    color: var(--lp-text-played);
+}
+
+/* 跳过的内容（removedRanges） */
+.st-is-lyrics-line.skipped {
+    display: none;
+}
+
+/* 特殊行（特效、背景音乐、环境音） */
+.st-is-lyrics-line-special {
+    font-size: 14px;
+    opacity: 0.6;
+    font-style: italic;
+    color: var(--lp-text);
+}
+
+.st-is-lyrics-line-special.active {
+    opacity: 1;
+    transform: scale(1.05);
+    color: var(--lp-text-active);
+    text-shadow: 0 0 10px var(--lp-glow);
+}
+
+/* --- 入场/退场动画 --- */
+.st-is-lyrics-player.entering {
+    animation: lp-enter 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.st-is-lyrics-backdrop.entering {
+    animation: lp-backdrop-enter 0.3s ease forwards;
+}
+
+.st-is-lyrics-player.exiting {
+    animation: lp-exit 0.25s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+}
+
+.st-is-lyrics-backdrop.exiting {
+    animation: lp-backdrop-exit 0.25s ease forwards;
+}
+
+@keyframes lp-enter {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.92);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes lp-exit {
+    from {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.92);
+    }
+}
+
+@keyframes lp-backdrop-enter {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes lp-backdrop-exit {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* --- 音量控制 --- */
+.st-is-lyrics-volume-container {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    position: absolute;
+    right: 24px;
+    color: var(--lp-titlebar-text);
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.st-is-lyrics-volume-container:hover {
+    opacity: 1;
+}
+
+.st-is-lyrics-volume-icon {
+    font-size: 16px;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.st-is-lyrics-volume-icon:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.st-is-lyrics-volume-panel {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background: rgba(15, 15, 15, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
+    width: max-content;
+    
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100;
+}
+
+.st-is-lyrics-volume-container.expanded .st-is-lyrics-volume-panel {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.st-is-lyrics-volume-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.st-is-lyrics-volume-label {
+    font-size: 12px;
+    color: var(--lp-text);
+    opacity: 0.8;
+}
+
+.st-is-lyrics-volume-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.st-is-lyrics-volume-slider {
+    width: 80px;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.st-is-lyrics-volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--lp-progress-thumb);
+    cursor: pointer;
+}
+
+.st-is-lyrics-volume-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--lp-progress-thumb);
+    cursor: pointer;
+    border: none;
+}
+
+.st-is-lyrics-volume-value {
+    font-size: 12px;
+    color: var(--lp-text);
+    width: 28px;
+    text-align: right;
+    font-family: monospace;
+}
+
+/* --- 悬浮上下文菜单 (重新生成) --- */
+.st-is-lyrics-context-menu {
+    position: fixed;
+    z-index: 100000;
+    background: rgba(20, 20, 20, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    animation: lp-menu-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.st-is-lyrics-context-menu button {
+    background: transparent;
+    border: none;
+    color: #e0e0e0;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.st-is-lyrics-context-menu button:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.st-is-lyrics-context-menu button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@keyframes lp-menu-enter {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+
+/* --- 响应式适配：手机端及小屏幕 --- */
+@media (max-width: 767px), (max-height: 600px) {
+    .st-is-lyrics-player {
+        width: 95vw;
+        height: 80vh;
+        max-height: calc(100vh - 20px);
+        border-radius: 12px;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .st-is-lyrics-titlebar {
+        padding: 8px 12px;
+    }
+
+    .st-is-lyrics-titlebar-btn {
+        min-width: 40px;
+        min-height: 40px;
+        font-size: 16px;
+    }
+
+    .st-is-lyrics-progress-area {
+        padding: 6px 12px;
+    }
+
+    .st-is-lyrics-progress-track {
+        height: 6px;
+    }
+
+    .st-is-lyrics-progress-thumb {
+        width: 24px;
+        height: 24px;
+    }
+
+    .st-is-lyrics-content {
+        padding: 0 16px;
+    }
+
+    .st-is-lyrics-line {
+        font-size: 14px;
+        line-height: 1.8;
+        padding: 10px 4px;
+    }
+
+    .st-is-lyrics-volume-container {
+        right: 16px;
+    }
+
+    .st-is-lyrics-volume-panel {
+        grid-template-columns: 1fr;
+        top: 40px;
+        bottom: auto;
+        right: 0;
+        padding: 12px;
+        gap: 12px;
+    }
+}
